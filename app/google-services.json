@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "108884199972",
+    "project_id": "food-life-e5304",
+    "storage_bucket": "food-life-e5304.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:108884199972:android:f23e3503ad6135994ce6b1",
+        "android_client_info": {
+          "package_name": "com.forknowledge.foodlife"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "108884199972-hiv6udbe3a03k661rrpkkp9cqu97f14q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.forknowledge.foodlife",
+            "certificate_hash": "a750af3497bf8a43dfab8b43bf38a485bcaa09ec"
+          }
+        },
+        {
+          "client_id": "108884199972-j4orchvdeio3djqk37bll4aeqhrnol2g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9pL9229lWHkiqQWID4e1k6B_kNSz-Ku0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "108884199972-j4orchvdeio3djqk37bll4aeqhrnol2g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

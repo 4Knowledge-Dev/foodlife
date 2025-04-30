@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboading_welcome_title">Food in your area</string>
+    <string name="onboarding_welcome_text">Build food planner, track nutrition together to understand yourself and master your life! Let\'s walk around some step.</string>
+    <string name="onboarding_welcome_button">Start</string>
+    <string name="onboarding_survey_skip">Skip</string>"
+    <string name="onboarding_survey_previous">Previous</string>
+    <string name="onboarding_survey_next">Next step</string>
+    <string name="onboarding_survey_gender_male">Male</string>
+    <string name="onboarding_survey_gender_female">Female</string>
+    <string name="onboarding_survey_diet_macros">Macros</string>
+    <string name="onboarding_survey_diet_carbs">Carbs</string>
+    <string name="onboarding_survey_diet_protein">Protein</string>
+    <string name="onboarding_survey_diet_fat">Fat</string>
+    <string name="onboarding_survey_height_unit_cm">cm</string>
+    <string name="onboarding_survey_height_unit_ft">ft, in</string>
+    <string name="onboarding_survey_weight_unit_kg">kg</string>
+    <string name="onboarding_survey_weight_unit_lb">lb</string>
+    <string name="onboarding_survey_birthday_label">Date of birth</string>
+    <string name="onboarding_survey_birthday_placeholder">MM/DD/yyyy</string>
+    <string name="onboarding_survey_date_picker_button_confirm">OK</string>
+    <string name="onboarding_survey_date_picker_headline">Enter your birthday</string>
+</resources>
