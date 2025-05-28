@@ -1,0 +1,26 @@
+R_DEF: Internal format may change without notice
+local
+drawable ic_error
+drawable img_female
+drawable img_male
+drawable img_welcome
+string onboading_welcome_title
+string onboarding_survey_birthday_label
+string onboarding_survey_birthday_placeholder
+string onboarding_survey_date_picker_button_confirm
+string onboarding_survey_date_picker_headline
+string onboarding_survey_diet_carbs
+string onboarding_survey_diet_fat
+string onboarding_survey_diet_macros
+string onboarding_survey_diet_protein
+string onboarding_survey_gender_female
+string onboarding_survey_gender_male
+string onboarding_survey_height_unit_cm
+string onboarding_survey_height_unit_ft
+string onboarding_survey_next
+string onboarding_survey_previous
+string onboarding_survey_skip
+string onboarding_survey_weight_unit_kg
+string onboarding_survey_weight_unit_lb
+string onboarding_welcome_button
+string onboarding_welcome_text

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#ECECF5</color>
+    <string name="authentication_sign_in_option_email">Continue with Email</string>
+    <string name="authentication_sign_in_option_facebook">Continue with Facebook</string>
+    <string name="authentication_sign_in_option_google">Continue with Google</string>
+    <string name="authentication_sign_in_option_introduction">Cook new dishes, make your favorite foods, share them with friends!</string>
+    <string name="authentication_sign_in_option_term_and_policy">By creating account, you agree to simple Term of use and Privacy Policy</string>
+    <string name="authentication_sign_in_option_welcome">Welcome to Food Life</string>
+    <string name="sign_in_with_email_button_login_text">Login</string>
+    <string name="sign_in_with_email_enter_password_button_forgot_password">Forgot password</string>
+    <string name="sign_in_with_email_enter_password_button_send_login_link">Send login link</string>
+    <string name="sign_in_with_email_enter_password_divider">OR</string>
+    <string name="sign_in_with_email_enter_password_email_link_sent_failure_message">Something wrong</string>
+    <string name="sign_in_with_email_enter_password_email_link_sent_successful_message">Link sent to your email</string>
+    <string name="sign_in_with_email_enter_password_header">Enter your password</string>
+    <string name="sign_in_with_email_enter_password_input_password_placeholder">Your password</string>
+    <string name="sign_in_with_email_enter_password_instruction">Welcome back <b>%s</b>! Enter your password or send yourself a quick log in link.</string>
+    <string name="sign_in_with_email_input_email_placeholder">Your email</string>
+    <string name="sign_in_with_email_login_do_not_have_account">Don\'t have an account?</string>
+    <string name="sign_in_with_email_login_header">Welcome back!</string>
+    <string name="sign_in_with_email_supporting_text_validation_error">Check your email is right!</string>
+    <string name="sign_up_with_email_already_have_account_text">Already have an account?</string>
+    <string name="sign_up_with_email_dialog_confirmation_button_text">OK</string>
+    <string name="sign_up_with_email_dialog_dismiss_button_text">Go to login</string>
+    <string name="sign_up_with_email_dialog_error_title">Account could not be created</string>
+    <string name="sign_up_with_email_password_validation_error_text">8–30 characters, 1 uppercase &amp; 1 lowercase &amp; 1 digit</string>
+    <string name="sign_up_with_email_register_button_text">Register</string>
+    <string name="sign_up_with_email_text_field_email_placeholder">Email</string>
+    <string name="sign_up_with_email_text_field_first_name_placeholder">First name</string>
+    <string name="sign_up_with_email_text_field_last_name_placeholder">Last name</string>
+    <string name="sign_up_with_email_text_field_password_placeholder">Password</string>
+    <string name="sign_up_with_email_title">Create an Account</string>
+    <string name="sign_up_with_email_welcome">Hi there, let\'s start!</string>
+</resources>

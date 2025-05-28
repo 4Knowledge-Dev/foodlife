@@ -30,21 +30,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
 import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.feature.onboarding.R
-
-const val WELCOME_ROUTE = "onboarding/welcome"
-
-fun NavGraphBuilder.welcomeScreen(navController: NavController) {
-    composable(WELCOME_ROUTE) {
-        WelcomeScreen { navController.navigate(SURVEY_ROUTE) }
-    }
-}
 
 @Composable
 fun WelcomeScreen(

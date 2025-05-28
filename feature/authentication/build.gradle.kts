@@ -3,6 +3,7 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.hilt)
     kotlin("kapt")
@@ -11,13 +12,6 @@ plugins {
 android {
     namespace = "com.forknowledge.feature.authentication"
     compileSdk = 35
-
-    defaultConfig {
-        minSdk = 24
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
-    }
 
     buildTypes {
         release {
@@ -29,18 +23,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.10"
-    }
-    buildFeatures {
-        compose = true
-        buildConfig = true
+        jvmTarget = "11"
     }
 }
 
@@ -69,4 +56,5 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.facebook.login)
     implementation(libs.firebase.firestore)
+    implementation(libs.kotlinx.serialization.json)
 }

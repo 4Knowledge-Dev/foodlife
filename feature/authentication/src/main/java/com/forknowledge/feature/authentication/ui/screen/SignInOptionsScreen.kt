@@ -1,7 +1,6 @@
 package com.forknowledge.feature.authentication.ui.screen
 
 import android.app.Activity
-import android.net.Uri
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -47,7 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -57,32 +56,14 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
 import com.facebook.login.LoginManager
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.GreyA7A6A6
 import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.openSansFamily
-import com.forknowledge.feature.authentication.AUTHENTICATION_ROUTE
 import com.forknowledge.feature.authentication.R
 import com.forknowledge.feature.authentication.ui.AuthenticationViewModel
-
-const val SIGN_IN_OPTIONS_ROUTE = "authentication/signInOptions"
-
-fun NavGraphBuilder.signInOptionsScreen(navController: NavController) {
-    composable(SIGN_IN_OPTIONS_ROUTE) { backStackEntry ->
-        val parentEntry = remember(backStackEntry) {
-            navController.getBackStackEntry(AUTHENTICATION_ROUTE)
-        }
-        SignInOptionScreen(
-            viewModel = hiltViewModel<AuthenticationViewModel>(parentEntry),
-            signInWithEmailClicked = navController::navigateToSignInWithEmail
-        )
-    }
-}
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable
@@ -94,7 +75,7 @@ fun SignInOptionScreen(
     val context = LocalContext.current
     var exoPlayer: ExoPlayer? = null
     val videoUri =
-        Uri.parse("android.resource://" + context.packageName + "/" + R.raw.food_life_background_video)
+        ("android.resource://" + context.packageName + "/" + R.raw.food_life_background_video).toUri()
     var playbackPosition = 0L
 
     var lifecycleEvent by remember {

@@ -1,0 +1,1 @@
+-keep,allowobfuscation,allowshrinking class com.forknowledge.feature.onboarding.OnboardingViewModel

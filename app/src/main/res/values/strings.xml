@@ -3,8 +3,9 @@
     <string name="atlas_app_service_name">app-food-life</string>
     <string name="top_level_destination_planner_title">Planner</string>
     <string name="top_level_destination_workout_title">Workout</string>
-    <string name="top_level_destination_track_title">Track</string>
-    <string name="top_level_destination_profile_title">Profile</string>
+    <string name="top_level_destination_nutrient_title">Nutrient</string>
+    <string name="top_level_destination_explore_title">Explore</string>
+    <string name="internet_error_not_connected">⚠️ You aren’t connected to the internet</string>
 
     // Facebook Authentication
     <string name="facebook_app_id">1831959354291966</string>

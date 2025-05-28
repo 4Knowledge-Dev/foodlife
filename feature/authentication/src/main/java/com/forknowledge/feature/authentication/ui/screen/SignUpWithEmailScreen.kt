@@ -39,14 +39,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
-import androidx.navigation.navOptions
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.GreyA7A6A6
@@ -57,30 +52,12 @@ import com.forknowledge.core.ui.theme.component.AppButton
 import com.forknowledge.core.ui.theme.component.AppTextField
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.core.ui.theme.openSansFamily
-import com.forknowledge.feature.authentication.AUTHENTICATION_ROUTE
 import com.forknowledge.feature.authentication.R
+import com.forknowledge.feature.authentication.SignUpWithEmailRoute
 import com.forknowledge.feature.authentication.ui.AuthenticationViewModel
 
-const val SIGN_UP_ROUTE = "authentication/signUpWithEmail"
-
 fun NavController.navigateToSignUpWithEmail(navOptions: NavOptions? = null) =
-    navigate(SIGN_UP_ROUTE, navOptions)
-
-fun NavGraphBuilder.signUpWithEmailScreen(navController: NavController) {
-    composable(SIGN_UP_ROUTE) { backStackEntry ->
-        val navOptions = navOptions {
-            popUpTo(navController.graph.findStartDestination().id)
-        }
-        val parentEntry = remember(backStackEntry) {
-            navController.getBackStackEntry(AUTHENTICATION_ROUTE)
-        }
-        SignUpWithEmailScreen(
-            viewModel = hiltViewModel<AuthenticationViewModel>(parentEntry),
-            onBackClicked = navController::popBackStack,
-            onNavigateToLoginClicked = { navController.navigateToSignInWithEmail(navOptions) }
-        )
-    }
-}
+    navigate(SignUpWithEmailRoute, navOptions)
 
 @Composable
 internal fun SignUpWithEmailScreen(

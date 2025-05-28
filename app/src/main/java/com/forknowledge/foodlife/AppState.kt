@@ -1,47 +1,77 @@
 package com.forknowledge.foodlife
 
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
+import com.forknowledge.core.data.util.NetworkManager
+import com.forknowledge.feature.explore.navigateToExplore
+import com.forknowledge.feature.nutrient.navigateToNutrient
+import com.forknowledge.feature.planner.navigateToPlanner
+import com.forknowledge.foodlife.ui.TopLevelDestination
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 @Composable
 fun rememberAppState(
     navController: NavHostController = rememberNavController(),
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    networkManager: NetworkManager
 ): AppState {
     return remember {
         AppState(
             navController = navController,
-            snackbarHostState = snackbarHostState,
-            coroutineScope = coroutineScope
+            coroutineScope = coroutineScope,
+            networkManager = networkManager
         )
     }
 }
 
 class AppState(
     val navController: NavHostController,
-    val snackbarHostState: SnackbarHostState,
     val coroutineScope: CoroutineScope,
+    val networkManager: NetworkManager
 ) {
 
-    //val topLevelDestinationEntries = TopLevelDestination.entries
+    val isOffline = networkManager.isOnline
+        .map(Boolean::not)
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false,
+        )
 
+    val topLevelDestinations = TopLevelDestination.entries
+
+    private val previousDestination = mutableStateOf<NavDestination?>(null)
     val currentDestination: NavDestination?
-        @Composable get() = navController.currentBackStackEntryAsState().value?.destination
+        @Composable get() {
+            // Collect the currentBackStackEntryFlow as a state
+            val currentEntry = navController.currentBackStackEntryFlow
+                .collectAsState(initial = null)
 
-    /*val topLevelDestination: TopLevelDestination?
-        @Composable get() = when (currentDestination?.route) {
-            else -> null
-    }*/
+            // Fallback to previousDestination if currentEntry is null
+            return currentEntry.value?.destination.also { destination ->
+                if (destination != null) {
+                    previousDestination.value = destination
+                }
+            } ?: previousDestination.value
+        }
+
+    val currentTopLevelDestination: TopLevelDestination?
+        @Composable get() {
+            return TopLevelDestination.entries.firstOrNull { topLevelDestination ->
+                currentDestination?.hasRoute(route = topLevelDestination.route) == true
+            }
+        }
 
     /**
      * UI logic for navigating to a top level destination in the app. Top level destinations have
@@ -50,7 +80,7 @@ class AppState(
      *
      * @param topLevelDestination: The destination the app needs to navigate to.
      */
-    /*fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
+    fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         val navOptions = navOptions {
             popUpTo(navController.graph.startDestinationId) {
                 saveState = true
@@ -59,30 +89,10 @@ class AppState(
             restoreState = true
         }
 
-
-    }*/
-
-    /**
-     * Show an app snackbar
-     * @param [message] - text to be shown in the Snackbar
-     * @param [actionLabel] - optional action label to show as button in the Snackbar
-     * @param [dismissAction] - a boolean to show a dismiss action in the Snackbar.
-     * This is recommended to be set to true for better accessibility when a Snackbar is set with
-     * a SnackbarDuration.Indefinite
-     * @param [duration] - duration to control how long snackbar will be shown in SnackbarHost,
-     * either SnackbarDuration.Short, SnackbarDuration.Long or SnackbarDuration.Indefinite.
-     */
-    fun showSnackBar(
-        message: String,
-        actionLabel: String? = null,
-        dismissAction: Boolean = false,
-        duration: SnackbarDuration = SnackbarDuration.Short
-    ) = coroutineScope.launch {
-        snackbarHostState.showSnackbar(
-            message = message,
-            actionLabel = actionLabel,
-            withDismissAction = dismissAction,
-            duration = duration
-        )
+        when (topLevelDestination) {
+            TopLevelDestination.NUTRIENT -> navController.navigateToNutrient(navOptions)
+            TopLevelDestination.PLANNER -> navController.navigateToPlanner(navOptions)
+            TopLevelDestination.EXPLORE -> navController.navigateToExplore(navOptions)
+        }
     }
 }
