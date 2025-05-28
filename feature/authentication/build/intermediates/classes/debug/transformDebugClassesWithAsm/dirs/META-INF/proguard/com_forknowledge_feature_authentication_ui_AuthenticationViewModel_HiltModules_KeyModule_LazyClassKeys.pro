@@ -1,0 +1,1 @@
+-keep,allowobfuscation,allowshrinking class com.forknowledge.feature.authentication.ui.AuthenticationViewModel

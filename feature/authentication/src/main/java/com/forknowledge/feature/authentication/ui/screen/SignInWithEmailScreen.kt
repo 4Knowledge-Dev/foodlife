@@ -30,39 +30,21 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.GreyB7BDC4
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppButton
 import com.forknowledge.core.ui.theme.component.AppTextField
-import com.forknowledge.feature.authentication.AUTHENTICATION_ROUTE
 import com.forknowledge.feature.authentication.R
+import com.forknowledge.feature.authentication.SignInWithEmailRoute
 import com.forknowledge.feature.authentication.ui.AuthenticationViewModel
 
-private const val SIGN_IN_WITH_EMAIL_ROUTE = "authentication/signInWithEmail"
-
 fun NavController.navigateToSignInWithEmail(navOptions: NavOptions? = null) =
-    navigate(SIGN_IN_WITH_EMAIL_ROUTE, navOptions)
-
-fun NavGraphBuilder.signInWithEmailScreen(navController: NavController) {
-    composable(SIGN_IN_WITH_EMAIL_ROUTE) { backStackEntry ->
-        val parentEntry = remember(backStackEntry) {
-            navController.getBackStackEntry(AUTHENTICATION_ROUTE)
-        }
-        SignInWithEmailScreen(
-            viewModel = hiltViewModel<AuthenticationViewModel>(parentEntry),
-            onBackClicked = navController::popBackStack,
-            onNavigateToRegisterClicked = navController::navigateToSignUpWithEmail,
-        )
-    }
-}
+    navigate(SignInWithEmailRoute, navOptions)
 
 @Composable
 internal fun SignInWithEmailScreen(

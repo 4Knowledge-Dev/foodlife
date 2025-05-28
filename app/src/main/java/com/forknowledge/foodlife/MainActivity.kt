@@ -12,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.facebook.CallbackManager
+import com.forknowledge.core.data.util.NetworkManager
 import com.forknowledge.core.ui.theme.FoodLifeTheme
 import com.forknowledge.foodlife.ui.AppScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,6 +20,9 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var networkManager: NetworkManager
 
     @Inject
     lateinit var facebookCallbackManager: CallbackManager
@@ -43,7 +47,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    AppScreen()
+                    AppScreen(rememberAppState(networkManager = networkManager))
                 }
             }
         }

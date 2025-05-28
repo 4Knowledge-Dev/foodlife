@@ -29,9 +29,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import com.forknowledge.core.common.healthtype.SurveyQuestionType
+import com.forknowledge.core.common.healthtype.questions
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.Grey7F000000
@@ -51,14 +50,6 @@ import com.forknowledge.feature.onboarding.ui.surveyscreen.GenderSection
 import com.forknowledge.feature.onboarding.ui.surveyscreen.GoalSection
 import com.forknowledge.feature.onboarding.ui.surveyscreen.HeightSection
 import com.forknowledge.feature.onboarding.ui.surveyscreen.WeightSection
-import com.forknowledge.core.common.healthtype.SurveyQuestionType
-import com.forknowledge.core.common.healthtype.questions
-
-const val SURVEY_ROUTE = "onboarding/survey"
-
-fun NavGraphBuilder.surveyScreen(navController: NavController) {
-    composable(SURVEY_ROUTE) { SurveyScreen() }
-}
 
 @Composable
 fun SurveyScreen(viewModel: OnboardingViewModel = viewModel()) {
