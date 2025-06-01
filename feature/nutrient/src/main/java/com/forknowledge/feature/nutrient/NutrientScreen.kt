@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -354,7 +355,7 @@ fun MealSection() {
             label = stringResource(R.string.nutrient_meal_label_breakfast),
             calories = 450,
             totalCalories = 500,
-            image = R.drawable.img_breakfast
+            image = R.drawable.ic_breakfast
         )
 
         HorizontalDivider(
@@ -369,7 +370,7 @@ fun MealSection() {
             label = stringResource(R.string.nutrient_meal_label_lunch),
             calories = 450,
             totalCalories = 500,
-            image = R.drawable.img_lunch
+            image = R.drawable.ic_lunch
         )
 
         HorizontalDivider(
@@ -384,7 +385,7 @@ fun MealSection() {
             label = stringResource(R.string.nutrient_meal_label_dinner),
             calories = 450,
             totalCalories = 500,
-            image = R.drawable.img_breakfast
+            image = R.drawable.ic_dinner
         )
 
         HorizontalDivider(
@@ -399,7 +400,7 @@ fun MealSection() {
             label = stringResource(R.string.nutrient_meal_label_snack),
             calories = 450,
             totalCalories = 500,
-            image = R.drawable.img_breakfast
+            image = R.drawable.ic_snack
         )
     }
 }
@@ -560,9 +561,9 @@ fun MealCard(
     ) {
         val (mealImage, icon, textLabel, textCalories, progressIndicator) = createRefs()
 
-        Icon(
+        Image(
             modifier = Modifier
-                .size(56.dp)
+                .size(60.dp)
                 .constrainAs(mealImage) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -575,7 +576,7 @@ fun MealCard(
         AppText(
             modifier = Modifier.constrainAs(textLabel) {
                 top.linkTo(mealImage.top, margin = 4.dp)
-                start.linkTo(mealImage.end, margin = 12.dp)
+                start.linkTo(mealImage.end, margin = 16.dp)
             },
             text = label,
             textStyle = Typography.labelLarge
@@ -588,7 +589,7 @@ fun MealCard(
                 .constrainAs(progressIndicator) {
                     top.linkTo(textCalories.top)
                     bottom.linkTo(textCalories.bottom)
-                    start.linkTo(mealImage.end, margin = 12.dp)
+                    start.linkTo(mealImage.end, margin = 16.dp)
                 },
             color = GreenA1CE50,
             trackColor = GreyDADADA,
@@ -684,6 +685,6 @@ fun MealCardPreview() {
         label = "Breakfast",
         calories = 1500,
         totalCalories = 2000,
-        image = R.drawable.img_dinner
+        image = R.drawable.ic_snack
     )
 }
