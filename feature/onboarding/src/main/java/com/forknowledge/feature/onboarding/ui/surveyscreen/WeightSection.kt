@@ -34,7 +34,7 @@ import com.forknowledge.core.common.extension.toKilograms
 import com.forknowledge.core.common.extension.toPounds
 import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.GreyB7BDC4
-import com.forknowledge.core.ui.theme.RedFE4950
+import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.WheelColumn
@@ -217,14 +217,14 @@ fun WeightSection(
             Icon(
                 painter = painterResource(id = R.drawable.ic_error),
                 contentDescription = null,
-                tint = RedFE4950
+                tint = RedFF4950
             )
 
             AppText(
                 modifier = Modifier.padding(start = 8.dp),
                 text = targetWeightError?.error ?: "",
                 textStyle = Typography.bodyLarge,
-                color = RedFE4950
+                color = RedFF4950
             )
         }
     }

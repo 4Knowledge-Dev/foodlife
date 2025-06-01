@@ -19,6 +19,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:ui"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -31,4 +32,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.navigation.component)
+    implementation(libs.androidx.constraint.layout)
 }

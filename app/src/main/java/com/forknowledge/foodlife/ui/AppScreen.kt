@@ -73,7 +73,7 @@ fun AppScreen(appState: AppState) {
         NavHost(
             modifier = Modifier.padding(padding),
             navController = appState.navController,
-            startDestination = AuthenticationRoute,
+            startDestination = NutrientRoute,
         ) {
 
             authenticationNavGraph(navController = appState.navController)

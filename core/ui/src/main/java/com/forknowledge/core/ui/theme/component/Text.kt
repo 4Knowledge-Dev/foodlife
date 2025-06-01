@@ -1,6 +1,7 @@
 package com.forknowledge.core.ui.theme.component
 
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,7 +22,7 @@ fun AppText(
 ) {
 
     Text(
-        modifier = modifier.wrapContentHeight(Alignment.CenterVertically),
+        modifier = modifier.wrapContentHeight(),
         fontFamily = openSansFamily,
         text = text,
         color = color,
