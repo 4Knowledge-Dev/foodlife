@@ -41,7 +41,7 @@ import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black05172C
 import com.forknowledge.core.ui.theme.Green9AAD01
 import com.forknowledge.core.ui.theme.GreyB7BDC4
-import com.forknowledge.core.ui.theme.RedFE4950
+import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.YellowFFAE01
 import com.forknowledge.core.ui.theme.component.AppText
@@ -184,7 +184,7 @@ fun BottomSheetDetail(diet: Diet) {
                     .padding(start = 2.dp),
                 nutrition = stringResource(R.string.onboarding_survey_diet_protein),
                 ratio = (diet.macro.protein * 100).roundToInt(),
-                color = RedFE4950
+                color = RedFF4950
             )
 
             Macros(

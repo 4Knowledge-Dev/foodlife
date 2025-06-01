@@ -22,9 +22,9 @@ facebook = "18.0.2"
 coroutine = "1.10.1"
 appcompat = "1.7.0"
 appStartUp = "1.2.0"
-material = "1.12.0"
 splash = "1.0.1"
 kotlinxSerializationJson = "1.8.1"
+constraintLayout = "1.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -64,6 +64,7 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 androidx-app-startup = { group = "androidx.startup", name = "startup-runtime", version.ref = "appStartUp" }
 androidx-splash-screen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splash" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+androidx-constraint-layout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintLayout"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nutrient_activity_calories_label_eaten">Eaten</string>
+    <string name="nutrient_activity_calories_label_burn">Burned</string>
+    <string name="nutrient_activity_label_walking">Walking</string>
+    <string name="nutrient_activity_label_activity">Activity</string>
+    <string name="nutrient_activity_calories_unit">kcal</string>
+    <string name="nutrient_activity_calories_left">kcal left</string>
+    <string name="nutrient_activity_walking_unit">steps</string>
+    <string name="nutrient_meal_progress_calories">%1$d / %2$d kcal</string>
+    <string name="nutrient_meal_label_breakfast">Breakfast</string>
+    <string name="nutrient_meal_label_lunch">Lunch</string>
+    <string name="nutrient_meal_label_dinner">Dinner</string>
+    <string name="nutrient_meal_label_snack">Snack</string>
+</resources>
