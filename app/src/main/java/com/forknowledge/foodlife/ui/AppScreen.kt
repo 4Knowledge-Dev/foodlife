@@ -1,11 +1,13 @@
 package com.forknowledge.foodlife.ui
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -29,7 +31,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
-import com.forknowledge.feature.authentication.AuthenticationRoute
 import com.forknowledge.feature.authentication.authenticationNavGraph
 import com.forknowledge.feature.explore.ExploreRoute
 import com.forknowledge.feature.explore.ExploreScreen
@@ -47,6 +48,12 @@ fun AppScreen(appState: AppState) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        contentWindowInsets =
+            if (appState.currentTopLevelDestination != null) {
+                WindowInsets(0, 0, 0, 0)
+            } else {
+                ScaffoldDefaults.contentWindowInsets
+            },
         bottomBar = {
             if (appState.currentTopLevelDestination != null) {
                 AppBottomBar(
@@ -69,9 +76,9 @@ fun AppScreen(appState: AppState) {
                 )
             }
         }
-
+padding
         NavHost(
-            modifier = Modifier.padding(padding),
+            //modifier = Modifier.padding(padding),
             navController = appState.navController,
             startDestination = NutrientRoute,
         ) {

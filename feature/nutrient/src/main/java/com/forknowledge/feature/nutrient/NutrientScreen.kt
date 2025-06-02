@@ -27,6 +27,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.ProgressIndicatorDefaults.drawStopIndicator
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -68,79 +71,86 @@ import com.forknowledge.core.ui.theme.component.AppText
 
 @Composable
 fun NutrientScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = GreyFAFAFA)
-            .verticalScroll(rememberScrollState())
-    ) {
-        DateSelector()
-
-        NutrientSection()
-
-        MealSection()
-    }
-}
-
-@Composable
-fun DateSelector() {
-    Row(
-        modifier = Modifier
-            .background(White)
-            .padding(vertical = 12.dp)
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        IconButton(
-            onClick = { /* Handle previous date selection */ }
-        ) {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(drawable.ic_back),
-                tint = Grey8A949F,
-                contentDescription = null
-            )
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        AppText(
-            text = "Today, April 30",
-            textStyle = Typography.labelMedium
-        )
-
-        Icon(
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = { AppBarDateSelector() }
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .size(28.dp)
-                .padding(start = 8.dp),
-            painter = painterResource(drawable.ic_calendar),
-            tint = Black374957,
-            contentDescription = null
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        IconButton(
-            onClick = { /* Handle previous date selection */ }
+                .fillMaxSize()
+                .background(color = GreyFAFAFA)
+                .verticalScroll(rememberScrollState())
+                .padding(innerPadding)
         ) {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(drawable.ic_forward),
-                tint = Grey8A949F,
-                contentDescription = null
-            )
+            NutrientSection()
+
+            MealSection()
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NutrientSection() {
+fun AppBarDateSelector() {
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(),
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                IconButton(
+                    onClick = { }
+                ) {
+                    Icon(
+                        modifier = Modifier.size(20.dp),
+                        painter = painterResource(drawable.ic_back),
+                        tint = Grey8A949F,
+                        contentDescription = null
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                AppText(
+                    text = "Today, April 30",
+                    textStyle = Typography.labelMedium
+                )
+
+                Icon(
+                    modifier = Modifier
+                        .size(28.dp)
+                        .padding(start = 8.dp),
+                    painter = painterResource(drawable.ic_calendar),
+                    tint = Black374957,
+                    contentDescription = null
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                IconButton(
+                    onClick = { }
+                ) {
+                    Icon(
+                        modifier = Modifier.size(20.dp),
+                        painter = painterResource(drawable.ic_forward),
+                        tint = Grey8A949F,
+                        contentDescription = null
+                    )
+                }
+            }
+        }
+    )
+
+}
+
+@Composable
+fun NutrientSection(modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(
-                top = 16.dp,
+                top = 24.dp,
                 start = 16.dp,
                 end = 16.dp
             )
@@ -315,13 +325,14 @@ fun NutrientSection() {
 }
 
 @Composable
-fun MealSection() {
+fun MealSection(modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(
-                vertical = 24.dp,
-                horizontal = 16.dp
+                top = 24.dp,
+                start = 16.dp,
+                end = 16.dp
             )
             .graphicsLayer {
                 shape = RoundedCornerShape(
@@ -641,7 +652,7 @@ fun MealCard(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun DateSelectorPreview() {
-    DateSelector()
+    AppBarDateSelector()
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
