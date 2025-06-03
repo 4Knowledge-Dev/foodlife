@@ -5,15 +5,15 @@ import androidx.startup.Initializer
 import com.forknowledge.foodlife.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
 
-const val AUTH_EMULATOR_HOST = "10.0.2.2"
-const val AUTH_EMULATOR_PORT = 9099
-
-class FirebaseAuthInitializer: Initializer<FirebaseAuth> {
+class FirebaseAuthInitializer : Initializer<FirebaseAuth> {
 
     override fun create(context: Context): FirebaseAuth {
         val firebaseAuth = FirebaseAuth.getInstance()
         if (BuildConfig.DEBUG) {
-            firebaseAuth.useEmulator(AUTH_EMULATOR_HOST, AUTH_EMULATOR_PORT)
+            firebaseAuth.useEmulator(
+                EmulatorDebug.EMULATOR_HOST,
+                EmulatorDebug.AUTH_EMULATOR_PORT
+            )
         }
         return firebaseAuth
     }

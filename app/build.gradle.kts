@@ -93,5 +93,6 @@ dependencies {
     implementation(libs.androidx.navigation.component)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
     implementation(libs.facebook.login)
 }
