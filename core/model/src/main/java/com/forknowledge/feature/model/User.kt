@@ -1,6 +1,6 @@
 package com.forknowledge.feature.model
 
 data class User(
-    val nutrition: Nutrition,
-    val records: List<Record>
+    val targetNutrition: TargetNutrition = TargetNutrition(),
+    val mealRecords: List<IntakeNutrition> = emptyList()
 )

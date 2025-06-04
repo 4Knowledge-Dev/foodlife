@@ -70,8 +70,9 @@ import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.YellowFB880C
 import com.forknowledge.core.ui.theme.component.AppText
-import com.forknowledge.feature.model.Nutrition
-import com.forknowledge.feature.model.Record
+import com.forknowledge.feature.model.IntakeNutrition
+import com.forknowledge.feature.model.TargetNutrition
+import kotlin.math.abs
 
 @Composable
 fun NutrientScreen(
@@ -99,7 +100,10 @@ fun NutrientScreen(
                     intakeNutrition = intakeNutrition
                 )
 
-                MealSection()
+                MealSection(
+                    targetNutrition = nutrition,
+                    intakeNutrition = intakeNutrition
+                )
             }
         }
     }
@@ -162,8 +166,8 @@ fun AppBarDateSelector() {
 
 @Composable
 fun NutrientSection(
-    targetNutrition: Nutrition,
-    intakeNutrition: Record
+    targetNutrition: TargetNutrition,
+    intakeNutrition: IntakeNutrition
 ) {
     Column(
         modifier = Modifier
@@ -210,17 +214,17 @@ fun NutrientSection(
             // Eaten
             ActivityCard(
                 activityLabel = stringResource(R.string.nutrient_activity_calories_label_eaten),
-                activityValue = intakeNutrition.intakeCalories,
+                activityValue = intakeNutrition.calories,
                 activityUnit = stringResource(R.string.nutrient_activity_calories_unit)
             )
 
             NutrientProgress(
                 modifier = Modifier.size(130.dp),
-                isCaloriesLeft = true,
+                isDailyCalories = true,
                 progressBarWidth = 9.dp,
                 progressIndicatorColor = GreenA1CE50,
-                progress = intakeNutrition.intakeCalories,
-                totalNutrients = targetNutrition.targetCalories
+                progress = intakeNutrition.calories,
+                totalNutrients = targetNutrition.calories
             )
 
             // Burned
@@ -269,8 +273,8 @@ fun NutrientSection(
                 modifier = Modifier.size(90.dp),
                 progressBarWidth = 7.dp,
                 progressIndicatorColor = RedFF4950,
-                progress = intakeNutrition.intakeCarbs,
-                totalNutrients = targetNutrition.targetCarbs
+                progress = intakeNutrition.carbs,
+                totalNutrients = targetNutrition.carbs
             )
 
             // Protein
@@ -278,8 +282,8 @@ fun NutrientSection(
                 modifier = Modifier.size(90.dp),
                 progressBarWidth = 7.dp,
                 progressIndicatorColor = YellowFB880C,
-                progress = intakeNutrition.intakeProteins,
-                totalNutrients = targetNutrition.targetProteins
+                progress = intakeNutrition.proteins,
+                totalNutrients = targetNutrition.proteins
             )
 
             // Fat
@@ -287,8 +291,8 @@ fun NutrientSection(
                 modifier = Modifier.size(90.dp),
                 progressBarWidth = 7.dp,
                 progressIndicatorColor = Blue05A6F1,
-                progress = intakeNutrition.intakeFats,
-                totalNutrients = targetNutrition.targetFats
+                progress = intakeNutrition.fats,
+                totalNutrients = targetNutrition.fats
             )
         }
 
@@ -303,7 +307,7 @@ fun NutrientSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AppText(
-                text = stringResource(R.string.nutrient_activity_calories_label_eaten),
+                text = stringResource(R.string.nutrient_activity_calories_label_burn),
                 textStyle = Typography.labelSmall,
                 color = Grey8A949F
             )
@@ -344,9 +348,12 @@ fun NutrientSection(
 }
 
 @Composable
-fun MealSection(modifier: Modifier = Modifier) {
+fun MealSection(
+    targetNutrition: TargetNutrition,
+    intakeNutrition: IntakeNutrition
+) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(
                 top = 24.dp,
@@ -383,8 +390,8 @@ fun MealSection(modifier: Modifier = Modifier) {
         // Breakfast
         MealCard(
             label = stringResource(R.string.nutrient_meal_label_breakfast),
-            calories = 450,
-            totalCalories = 500,
+            calories = intakeNutrition.breakfast.calories,
+            totalCalories = targetNutrition.breakfastCalories,
             image = R.drawable.ic_breakfast
         )
 
@@ -398,8 +405,8 @@ fun MealSection(modifier: Modifier = Modifier) {
         // Lunch
         MealCard(
             label = stringResource(R.string.nutrient_meal_label_lunch),
-            calories = 450,
-            totalCalories = 500,
+            calories = intakeNutrition.lunch.calories,
+            totalCalories = targetNutrition.lunchCalories,
             image = R.drawable.ic_lunch
         )
 
@@ -413,8 +420,8 @@ fun MealSection(modifier: Modifier = Modifier) {
         // Dinner
         MealCard(
             label = stringResource(R.string.nutrient_meal_label_dinner),
-            calories = 450,
-            totalCalories = 500,
+            calories = intakeNutrition.dinner.calories,
+            totalCalories = targetNutrition.dinnerCalories,
             image = R.drawable.ic_dinner
         )
 
@@ -428,8 +435,8 @@ fun MealSection(modifier: Modifier = Modifier) {
         // Snack
         MealCard(
             label = stringResource(R.string.nutrient_meal_label_snack),
-            calories = 450,
-            totalCalories = 500,
+            calories = intakeNutrition.snack.calories,
+            totalCalories = targetNutrition.snackCalories,
             image = R.drawable.ic_snack
         )
     }
@@ -438,7 +445,7 @@ fun MealSection(modifier: Modifier = Modifier) {
 @Composable
 fun NutrientProgress(
     modifier: Modifier = Modifier,
-    isCaloriesLeft: Boolean = false,
+    isDailyCalories: Boolean = false,
     progressBarWidth: Dp = 7.dp,
     progressIndicatorColor: Color,
     progress: Long,
@@ -460,19 +467,19 @@ fun NutrientProgress(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppText(
-                text = if (isCaloriesLeft) {
-                    (totalNutrients - progress).toString()
+                text = if (isDailyCalories) {
+                    abs(totalNutrients - progress).toString()
                 } else {
                     progress.toString()
                 },
-                textStyle = if (isCaloriesLeft) Typography.headlineSmall else Typography.titleSmall
+                textStyle = if (isDailyCalories) Typography.headlineSmall else Typography.titleSmall
             )
 
             AppText(
-                text = if (isCaloriesLeft) {
-                    stringResource(R.string.nutrient_activity_calories_left)
-                } else {
-                    "/ $totalNutrients g"
+                text = when {
+                    isDailyCalories && progress <= totalNutrients -> stringResource(R.string.nutrient_activity_calories_left)
+                    isDailyCalories && progress > totalNutrients -> stringResource(R.string.nutrient_activity_calories_over)
+                    else -> stringResource(R.string.nutrient_eaten_total_nutrient, totalNutrients)
                 },
                 textStyle = Typography.bodySmall,
                 color = Grey8A949F
@@ -571,8 +578,8 @@ fun ActivityCard(
 @Composable
 fun MealCard(
     label: String,
-    calories: Int,
-    totalCalories: Int,
+    calories: Long,
+    totalCalories: Long,
     @DrawableRes image: Int,
 ) {
     var targetProgress by remember { mutableFloatStateOf(0F) }
@@ -581,7 +588,7 @@ fun MealCard(
         animationSpec = tween(durationMillis = 800)
     )
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(calories) {
         targetProgress = calories.toFloat() / totalCalories
     }
 
@@ -633,7 +640,7 @@ fun MealCard(
                 drawStopIndicator(
                     drawScope = this,
                     stopSize = ProgressIndicatorDefaults.LinearTrackStopIndicatorSize,
-                    color = GreyDADADA,
+                    color = if (calories >= totalCalories) GreenA1CE50 else GreyDADADA,
                     strokeCap = StrokeCap.Round
                 )
             }
@@ -682,17 +689,17 @@ fun DateSelectorPreview() {
 @Composable
 fun NutrientSectionPreview() {
     NutrientSection(
-        targetNutrition = Nutrition(
-            targetCalories = 2000,
-            targetCarbs = 200,
-            targetProteins = 200,
-            targetFats = 200
+        targetNutrition = TargetNutrition(
+            calories = 2000,
+            carbs = 200,
+            proteins = 200,
+            fats = 200
         ),
-        intakeNutrition = Record(
-            intakeCalories = 1500,
-            intakeCarbs = 150,
-            intakeProteins = 150,
-            intakeFats = 150
+        intakeNutrition = IntakeNutrition(
+            calories = 1500,
+            carbs = 150,
+            proteins = 150,
+            fats = 150
         )
     )
 }
@@ -700,7 +707,20 @@ fun NutrientSectionPreview() {
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun MealSectionPreview() {
-    MealSection()
+    MealSection(
+        targetNutrition = TargetNutrition(
+            calories = 2000,
+            carbs = 200,
+            proteins = 200,
+            fats = 200
+        ),
+        intakeNutrition = IntakeNutrition(
+            calories = 1500,
+            carbs = 150,
+            proteins = 150,
+            fats = 150
+        )
+    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
