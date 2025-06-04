@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -58,6 +60,9 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.forknowledge.core.common.extension.nextDate
+import com.forknowledge.core.common.extension.previousDate
+import com.forknowledge.core.common.extension.toDayMonthDateString
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
 import com.forknowledge.core.ui.theme.Black374957
@@ -70,20 +75,28 @@ import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.YellowFB880C
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.core.ui.theme.component.DatePickerModal
 import com.forknowledge.feature.model.IntakeNutrition
 import com.forknowledge.feature.model.TargetNutrition
+import java.util.Date
 import kotlin.math.abs
 
 @Composable
 fun NutrientScreen(
     viewModel: NutritionViewModel = hiltViewModel()
 ) {
+    val date = viewModel.date
     val targetNutrition by viewModel.targetNutrition.collectAsStateWithLifecycle()
     val intakeNutrition by viewModel.intakeNutrition.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { AppBarDateSelector() }
+        topBar = {
+            AppBarDateSelector(
+                date = date,
+                onDateChanged = viewModel::updateDate
+            )
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -111,8 +124,26 @@ fun NutrientScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBarDateSelector() {
+fun AppBarDateSelector(
+    date: Date,
+    onDateChanged: (Date) -> Unit
+) {
+    var showDatePickerModal by remember { mutableStateOf(false) }
+
+    if (showDatePickerModal) {
+        DatePickerModal(
+            headline = stringResource(R.string.nutrient_date_picker_headline),
+            confirmText = stringResource(R.string.nutrient_date_picker_button_confirm_text),
+            date = date.time,
+            onDateSelected = { date ->
+                date?.let { onDateChanged(Date(it)) }
+            },
+            onDismiss = { showDatePickerModal = false }
+        )
+    }
+
     TopAppBar(
+        modifier = Modifier.padding(top = 12.dp),
         colors = TopAppBarDefaults.topAppBarColors(),
         title = {
             Row(
@@ -120,7 +151,7 @@ fun AppBarDateSelector() {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(
-                    onClick = { }
+                    onClick = { onDateChanged(date.previousDate()) }
                 ) {
                     Icon(
                         modifier = Modifier.size(20.dp),
@@ -133,14 +164,16 @@ fun AppBarDateSelector() {
                 Spacer(modifier = Modifier.weight(1f))
 
                 AppText(
-                    text = "Today, April 30",
+                    modifier = Modifier.clickable { showDatePickerModal = true },
+                    text = date.toDayMonthDateString(),
                     textStyle = Typography.labelMedium
                 )
 
                 Icon(
                     modifier = Modifier
                         .size(28.dp)
-                        .padding(start = 8.dp),
+                        .padding(start = 8.dp)
+                        .clickable { showDatePickerModal = true },
                     painter = painterResource(drawable.ic_calendar),
                     tint = Black374957,
                     contentDescription = null
@@ -149,7 +182,7 @@ fun AppBarDateSelector() {
                 Spacer(modifier = Modifier.weight(1f))
 
                 IconButton(
-                    onClick = { }
+                    onClick = { onDateChanged(date.nextDate()) }
                 ) {
                     Icon(
                         modifier = Modifier.size(20.dp),
@@ -668,7 +701,7 @@ fun MealCard(
                     bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end, margin = 16.dp)
                 },
-            onClick = {}
+            onClick = { }
         ) {
             Icon(
                 painter = painterResource(drawable.ic_forward),
@@ -682,7 +715,7 @@ fun MealCard(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun DateSelectorPreview() {
-    AppBarDateSelector()
+    AppBarDateSelector(Date()) {}
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)

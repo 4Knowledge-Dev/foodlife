@@ -19,7 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.forknowledge.core.common.extension.convertMillisToDate
 import com.forknowledge.core.ui.theme.component.AppOutlinedTextField
-import com.forknowledge.core.ui.theme.component.DatePickerModalInput
+import com.forknowledge.core.ui.theme.component.DatePickerModal
 import com.forknowledge.feature.onboarding.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,7 +54,7 @@ fun BirthdaySection(
     )
 
     if (showModal) {
-        DatePickerModalInput(
+        DatePickerModal(
             headline = stringResource(R.string.onboarding_survey_date_picker_headline),
             confirmText = stringResource(R.string.onboarding_survey_date_picker_button_confirm),
             date = selectedDate,

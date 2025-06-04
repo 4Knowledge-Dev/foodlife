@@ -51,4 +51,8 @@ class NutritionViewModel @Inject constructor(
             }
         }
     }
+
+    fun updateDate(newDate: Date) {
+        date = newDate
+    }
 }
