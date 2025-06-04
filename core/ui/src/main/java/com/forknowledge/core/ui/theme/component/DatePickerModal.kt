@@ -16,7 +16,7 @@ import com.forknowledge.core.ui.theme.Typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerModalInput(
+fun DatePickerModal(
     modifier: Modifier = Modifier,
     title: String? = null,
     headline: String? = null,
@@ -28,7 +28,7 @@ fun DatePickerModalInput(
 ) {
 
     val datePickerState = rememberDatePickerState(
-        initialDisplayMode = DisplayMode.Input,
+        initialDisplayMode = DisplayMode.Picker,
         initialSelectedDateMillis = date,
     )
 
@@ -82,7 +82,7 @@ fun DatePickerModalInput(
 @Preview
 @Composable
 fun ModalDateInputPreview() {
-    DatePickerModalInput(
+    DatePickerModal(
         title = "Birthday",
         headline = "Enter your birthday",
         confirmText = "OK",

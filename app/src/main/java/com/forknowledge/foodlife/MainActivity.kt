@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-       installSplashScreen()
+        installSplashScreen()
 
         enableEdgeToEdge(
             navigationBarStyle = SystemBarStyle.light(
@@ -40,10 +40,7 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            FoodLifeTheme(
-                darkTheme = false,
-                dynamicColor = false
-            ) {
+            FoodLifeTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {

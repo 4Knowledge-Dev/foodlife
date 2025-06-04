@@ -38,6 +38,8 @@
             tools:node="merge">
             <meta-data  android:name="com.forknowledge.foodlife.initializer.FirebaseAuthInitializer"
                 android:value="androidx.startup" />
+            <meta-data  android:name="com.forknowledge.foodlife.initializer.FirestoreInitializer"
+                android:value="androidx.startup" />
         </provider>
 
         <meta-data
