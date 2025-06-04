@@ -3,8 +3,8 @@ package com.forknowledge.core.data
 import android.util.Log
 import com.forknowledge.core.common.extension.endOfDay
 import com.forknowledge.core.common.extension.startOfDay
-import com.forknowledge.feature.model.Nutrition
-import com.forknowledge.feature.model.Record
+import com.forknowledge.feature.model.IntakeNutrition
+import com.forknowledge.feature.model.User
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -16,13 +16,10 @@ import javax.inject.Inject
 
 const val USER_COLLECTION = "User"
 const val USER_RECORD_SUB_COLLECTION = "record"
-const val USER_TARGET_CALORIES_FIELD = "targetCalories"
-const val USER_TARGET_CARBS_FIELD = "targetCarbs"
-const val USER_TARGET_PROTEINS_FIELD = "targetProteins"
-const val USER_TARGET_FATS_FIELD = "targetFats"
 const val USER_RECORD_DATE_FIELD = "date"
 
 const val FIREBASE_EXCEPTION = "FirebaseException"
+const val FIREBASE_GET_DATA_EXCEPTION = "FirebaseDataException"
 
 class UserRepositoryImpl @Inject constructor(
     firestore: FirebaseFirestore
@@ -39,18 +36,10 @@ class UserRepositoryImpl @Inject constructor(
                     return@addSnapshotListener
                 } else {
                     if (snapshot != null && snapshot.exists()) {
-                        channel.trySend(
-                            snapshot.data?.let { data ->
-                                Nutrition(
-                                    targetCalories = data[USER_TARGET_CALORIES_FIELD] as Long,
-                                    targetCarbs = data[USER_TARGET_CARBS_FIELD] as Long,
-                                    targetProteins = data[USER_TARGET_PROTEINS_FIELD] as Long,
-                                    targetFats = data[USER_TARGET_FATS_FIELD] as Long
-                                )
-                            }
-                        )
+                        val user = snapshot.toObject(User::class.java) ?: User()
+                        channel.trySend(user.targetNutrition)
                     } else {
-                        Log.d("Firebase", "No data found.")
+                        Log.d(FIREBASE_GET_DATA_EXCEPTION, "No data found.")
                         channel.trySend(null)
                     }
                 }
@@ -70,16 +59,22 @@ class UserRepositoryImpl @Inject constructor(
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     Log.e(FIREBASE_EXCEPTION, "Get data failed with ", error)
-                    channel.trySend(Record())
+                    channel.trySend(IntakeNutrition())
                     return@addSnapshotListener
                 }
                 if (snapshot != null && !snapshot.isEmpty) {
-                    val record = snapshot.documents[0].toObject(Record::class.java)
-                    channel.trySend(record ?: Record())
-
+                    try {
+                        channel.trySend(
+                            snapshot.documents[0].toObject(IntakeNutrition::class.java)
+                                ?: IntakeNutrition()
+                        )
+                    } catch (e: Exception) {
+                        Log.e(FIREBASE_EXCEPTION, "Get data failed with ", e)
+                        channel.trySend(IntakeNutrition())
+                    }
                 } else {
-                    Log.d("Firebase", "No record found at date $date (real-time).")
-                    channel.trySend(Record())
+                    Log.d(FIREBASE_GET_DATA_EXCEPTION, "No record found at date $date (real-time).")
+                    channel.trySend(IntakeNutrition())
                 }
             }
 
