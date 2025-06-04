@@ -23,3 +23,17 @@ fun Long.toAge(): Int {
 
     return age
 }
+
+fun Date.startOfDay(): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = this
+    calendar.set(Calendar.HOUR_OF_DAY, 0)
+    return calendar.time
+}
+
+fun Date.endOfDay(): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = this
+    calendar.set(Calendar.HOUR_OF_DAY, 24)
+    return calendar.time
+}
