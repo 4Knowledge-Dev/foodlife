@@ -14,4 +14,6 @@
     <string name="nutrient_meal_label_lunch">Lunch</string>
     <string name="nutrient_meal_label_dinner">Dinner</string>
     <string name="nutrient_meal_label_snack">Snack</string>
+    <string name="nutrient_date_picker_headline">Select date</string>
+    <string name="nutrient_date_picker_button_confirm_text">OK</string>
 </resources>

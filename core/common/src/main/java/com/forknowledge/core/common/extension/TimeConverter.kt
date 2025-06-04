@@ -37,3 +37,22 @@ fun Date.endOfDay(): Date {
     calendar.set(Calendar.HOUR_OF_DAY, 24)
     return calendar.time
 }
+
+fun Date.toDayMonthDateString(): String {
+    val formatter = SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault())
+    return formatter.format(this)
+}
+
+fun Date.nextDate(): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = this
+    calendar.add(Calendar.DAY_OF_YEAR, 1)
+    return calendar.time
+}
+
+fun Date.previousDate(): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = this
+    calendar.add(Calendar.DAY_OF_YEAR, -1)
+    return calendar.time
+}
