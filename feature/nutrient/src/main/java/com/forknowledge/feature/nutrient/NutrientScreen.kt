@@ -56,6 +56,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
 import com.forknowledge.core.ui.theme.Black374957
@@ -68,9 +70,16 @@ import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.YellowFB880C
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.feature.model.Nutrition
+import com.forknowledge.feature.model.Record
 
 @Composable
-fun NutrientScreen() {
+fun NutrientScreen(
+    viewModel: NutritionViewModel = hiltViewModel()
+) {
+    val targetNutrition by viewModel.targetNutrition.collectAsStateWithLifecycle()
+    val intakeNutrition by viewModel.intakeNutrition.collectAsStateWithLifecycle()
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = { AppBarDateSelector() }
@@ -82,9 +91,16 @@ fun NutrientScreen() {
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
         ) {
-            NutrientSection()
+            targetNutrition?.let { nutrition ->
+                viewModel.getIntakeNutritionByDate()
 
-            MealSection()
+                NutrientSection(
+                    targetNutrition = nutrition,
+                    intakeNutrition = intakeNutrition
+                )
+
+                MealSection()
+            }
         }
     }
 }
@@ -145,9 +161,12 @@ fun AppBarDateSelector() {
 }
 
 @Composable
-fun NutrientSection(modifier: Modifier = Modifier) {
+fun NutrientSection(
+    targetNutrition: Nutrition,
+    intakeNutrition: Record
+) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(
                 top = 24.dp,
@@ -191,7 +210,7 @@ fun NutrientSection(modifier: Modifier = Modifier) {
             // Eaten
             ActivityCard(
                 activityLabel = stringResource(R.string.nutrient_activity_calories_label_eaten),
-                activityValue = 550,
+                activityValue = intakeNutrition.intakeCalories,
                 activityUnit = stringResource(R.string.nutrient_activity_calories_unit)
             )
 
@@ -200,14 +219,14 @@ fun NutrientSection(modifier: Modifier = Modifier) {
                 isCaloriesLeft = true,
                 progressBarWidth = 9.dp,
                 progressIndicatorColor = GreenA1CE50,
-                progress = 1200,
-                totalNutrients = 2000
+                progress = intakeNutrition.intakeCalories,
+                totalNutrients = targetNutrition.targetCalories
             )
 
             // Burned
             ActivityCard(
                 activityLabel = stringResource(R.string.nutrient_activity_calories_label_burn),
-                activityValue = 500,
+                activityValue = 0,
                 activityUnit = stringResource(R.string.nutrient_activity_calories_unit)
             )
         }
@@ -250,8 +269,8 @@ fun NutrientSection(modifier: Modifier = Modifier) {
                 modifier = Modifier.size(90.dp),
                 progressBarWidth = 7.dp,
                 progressIndicatorColor = RedFF4950,
-                progress = 158,
-                totalNutrients = 224
+                progress = intakeNutrition.intakeCarbs,
+                totalNutrients = targetNutrition.targetCarbs
             )
 
             // Protein
@@ -259,8 +278,8 @@ fun NutrientSection(modifier: Modifier = Modifier) {
                 modifier = Modifier.size(90.dp),
                 progressBarWidth = 7.dp,
                 progressIndicatorColor = YellowFB880C,
-                progress = 158,
-                totalNutrients = 224
+                progress = intakeNutrition.intakeProteins,
+                totalNutrients = targetNutrition.targetProteins
             )
 
             // Fat
@@ -268,8 +287,8 @@ fun NutrientSection(modifier: Modifier = Modifier) {
                 modifier = Modifier.size(90.dp),
                 progressBarWidth = 7.dp,
                 progressIndicatorColor = Blue05A6F1,
-                progress = 158,
-                totalNutrients = 224
+                progress = intakeNutrition.intakeFats,
+                totalNutrients = targetNutrition.targetFats
             )
         }
 
@@ -422,8 +441,8 @@ fun NutrientProgress(
     isCaloriesLeft: Boolean = false,
     progressBarWidth: Dp = 7.dp,
     progressIndicatorColor: Color,
-    progress: Int,
-    totalNutrients: Int,
+    progress: Long,
+    totalNutrients: Long,
 ) {
     var targetSweepAngle by remember { mutableFloatStateOf(0F) }
     val animatedSweepAngle by animateFloatAsState(
@@ -431,7 +450,7 @@ fun NutrientProgress(
         animationSpec = tween(durationMillis = 800)
     )
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(progress) {
         targetSweepAngle = progress * 360F / totalNutrients
     }
 
@@ -441,7 +460,11 @@ fun NutrientProgress(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AppText(
-                text = progress.toString(),
+                text = if (isCaloriesLeft) {
+                    (totalNutrients - progress).toString()
+                } else {
+                    progress.toString()
+                },
                 textStyle = if (isCaloriesLeft) Typography.headlineSmall else Typography.titleSmall
             )
 
@@ -519,7 +542,7 @@ fun NutrientProgress(
 @Composable
 fun ActivityCard(
     activityLabel: String,
-    activityValue: Int,
+    activityValue: Long,
     activityUnit: String = stringResource(R.string.nutrient_activity_calories_unit),
     style: TextStyle = Typography.headlineSmall
 ) {
@@ -658,7 +681,20 @@ fun DateSelectorPreview() {
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun NutrientSectionPreview() {
-    NutrientSection()
+    NutrientSection(
+        targetNutrition = Nutrition(
+            targetCalories = 2000,
+            targetCarbs = 200,
+            targetProteins = 200,
+            targetFats = 200
+        ),
+        intakeNutrition = Record(
+            intakeCalories = 1500,
+            intakeCarbs = 150,
+            intakeProteins = 150,
+            intakeFats = 150
+        )
+    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)

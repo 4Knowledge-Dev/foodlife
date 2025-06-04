@@ -76,9 +76,9 @@ fun AppScreen(appState: AppState) {
                 )
             }
         }
-padding
+
         NavHost(
-            //modifier = Modifier.padding(padding),
+            modifier = Modifier.padding(padding),
             navController = appState.navController,
             startDestination = NutrientRoute,
         ) {
