@@ -38,6 +38,8 @@ import com.forknowledge.feature.nutrient.NutrientRoute
 import com.forknowledge.feature.nutrient.ui.LogFoodRoute
 import com.forknowledge.feature.nutrient.ui.LogFoodScreen
 import com.forknowledge.feature.nutrient.ui.NutrientScreen
+import com.forknowledge.feature.nutrient.ui.SearchRoute
+import com.forknowledge.feature.nutrient.ui.SearchScreen
 import com.forknowledge.feature.onboarding.onboardingNavGraph
 import com.forknowledge.feature.planner.PlannerRoute
 import com.forknowledge.feature.planner.PlannerScreen
@@ -96,9 +98,11 @@ fun AppScreen(appState: AppState) {
                 val meal = backStackEntry.toRoute<LogFoodRoute>()
                 LogFoodScreen(
                     meal = meal.mealName,
+                    onNavigateToSearch = { appState.navController.navigate(SearchRoute) },
                     onNavigateBack = { appState.navController.popBackStack() }
                 )
             }
+            composable<SearchRoute> { SearchScreen() }
         }
     }
 }

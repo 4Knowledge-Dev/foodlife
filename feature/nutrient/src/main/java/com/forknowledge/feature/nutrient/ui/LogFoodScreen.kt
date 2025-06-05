@@ -18,7 +18,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.PrimaryTabRow
@@ -50,8 +49,6 @@ import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Green86BF3E
 import com.forknowledge.core.ui.theme.GreenA1CE50
 import com.forknowledge.core.ui.theme.Grey808993
-import com.forknowledge.core.ui.theme.GreyDADADA
-import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.GreyF4F5F5
 import com.forknowledge.core.ui.theme.GreyFAFAFA
 import com.forknowledge.core.ui.theme.Typography
@@ -70,6 +67,7 @@ data class LogFoodRoute(val mealName: String)
 @Composable
 fun LogFoodScreen(
     meal: String,
+    onNavigateToSearch: () -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     var selectedTabIndex by remember {
@@ -96,6 +94,7 @@ fun LogFoodScreen(
                         pagerState.animateScrollToPage(it)
                     }
                 },
+                onNavigateToSearch = onNavigateToSearch,
                 onNavigateBack = onNavigateBack
             )
         },
@@ -122,6 +121,7 @@ fun LogFoodTopAppBar(
     meal: String,
     selectedTabIndex: Int,
     onTabChanged: (Int) -> Unit,
+    onNavigateToSearch: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     Column(
@@ -153,6 +153,7 @@ fun LogFoodTopAppBar(
             )
         }
 
+        // SearchBar
         Row(
             modifier = Modifier
                 .padding(top = 24.dp)
@@ -162,6 +163,7 @@ fun LogFoodTopAppBar(
                     shape = RoundedCornerShape(32.dp)
                 )
                 .clip(RoundedCornerShape(32.dp))
+                .clickable { onNavigateToSearch() }
                 .padding(
                     vertical = 16.dp,
                     horizontal = 21.dp
@@ -331,6 +333,7 @@ fun LogFoodTopAppBarPreview() {
         meal = "Breakfast",
         selectedTabIndex = 0,
         onTabChanged = {},
+        onNavigateToSearch = {},
         onNavigateBack = {}
     )
 }
