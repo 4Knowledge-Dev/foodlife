@@ -18,8 +18,10 @@ val Black374957 = Color(0xFF374957) // Icon
 val WhiteF9F9F9 = Color(0xFFF5F5F5)
 
 val GreyFAFAFA = Color(0xFFFAFAFA)
+val GreyF4F5F5 = Color(0xFFF4F5F5)
 val GreyDADADA = Color(0xFFDADADA)
 val GreyEBEBEB = Color(0xFFEBEBEB)
+val Grey808993 = Color(0xFF808993)
 val GreyB7BDC4 = Color(0xFFB7BDC4) // Border
 val GreyA7A6A6 = Color(0xFFA7A6A6)
 val Grey8A949F = Color(0xFF8A949F)
@@ -28,6 +30,7 @@ val Grey7F000000 = Color(0x7F000000)
 val Green91C747 = Color(0xFF91C747)
 val Green9AAD01 = Color(0xFF9AAD01)
 val GreenA1CE50 = Color(0xFFA1CE50)
+val Green86BF3E = Color(0xFF86BF3E)
 
 val RedFF4950 = Color(0xFFFF4950)
 

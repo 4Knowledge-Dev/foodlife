@@ -1,4 +1,4 @@
-package com.forknowledge.feature.nutrient
+package com.forknowledge.feature.nutrient.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateFloatAsState
@@ -78,11 +78,14 @@ import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.DatePickerModal
 import com.forknowledge.feature.model.IntakeNutrition
 import com.forknowledge.feature.model.TargetNutrition
+import com.forknowledge.feature.nutrient.NutritionViewModel
+import com.forknowledge.feature.nutrient.R
 import java.util.Date
 import kotlin.math.abs
 
 @Composable
 fun NutrientScreen(
+    onNavigateToLogFood: (String) -> Unit,
     viewModel: NutritionViewModel = hiltViewModel()
 ) {
     val date = viewModel.date
@@ -115,7 +118,8 @@ fun NutrientScreen(
 
                 MealSection(
                     targetNutrition = nutrition,
-                    intakeNutrition = intakeNutrition
+                    intakeNutrition = intakeNutrition,
+                    onNavigateToLogFood = { onNavigateToLogFood(it) }
                 )
             }
         }
@@ -143,8 +147,9 @@ fun AppBarDateSelector(
     }
 
     TopAppBar(
-        modifier = Modifier.padding(top = 12.dp),
-        colors = TopAppBarDefaults.topAppBarColors(),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = White
+        ),
         title = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -383,15 +388,15 @@ fun NutrientSection(
 @Composable
 fun MealSection(
     targetNutrition: TargetNutrition,
-    intakeNutrition: IntakeNutrition
+    intakeNutrition: IntakeNutrition,
+    onNavigateToLogFood: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                top = 24.dp,
-                start = 16.dp,
-                end = 16.dp
+                vertical = 24.dp,
+                horizontal = 16.dp
             )
             .graphicsLayer {
                 shape = RoundedCornerShape(
@@ -425,7 +430,8 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_breakfast),
             calories = intakeNutrition.breakfast.calories,
             totalCalories = targetNutrition.breakfastCalories,
-            image = R.drawable.ic_breakfast
+            image = R.drawable.ic_breakfast,
+            onNavigateToLogFood = { onNavigateToLogFood(it) }
         )
 
         HorizontalDivider(
@@ -440,7 +446,8 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_lunch),
             calories = intakeNutrition.lunch.calories,
             totalCalories = targetNutrition.lunchCalories,
-            image = R.drawable.ic_lunch
+            image = R.drawable.ic_lunch,
+            onNavigateToLogFood = { onNavigateToLogFood(it) }
         )
 
         HorizontalDivider(
@@ -455,7 +462,8 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_dinner),
             calories = intakeNutrition.dinner.calories,
             totalCalories = targetNutrition.dinnerCalories,
-            image = R.drawable.ic_dinner
+            image = R.drawable.ic_dinner,
+            onNavigateToLogFood = { onNavigateToLogFood(it) }
         )
 
         HorizontalDivider(
@@ -470,7 +478,8 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_snack),
             calories = intakeNutrition.snack.calories,
             totalCalories = targetNutrition.snackCalories,
-            image = R.drawable.ic_snack
+            image = R.drawable.ic_snack,
+            onNavigateToLogFood = { onNavigateToLogFood(it) }
         )
     }
 }
@@ -614,6 +623,7 @@ fun MealCard(
     calories: Long,
     totalCalories: Long,
     @DrawableRes image: Int,
+    onNavigateToLogFood: (String) -> Unit
 ) {
     var targetProgress by remember { mutableFloatStateOf(0F) }
     val animatedProgress by animateFloatAsState(
@@ -695,16 +705,15 @@ fun MealCard(
 
         IconButton(
             modifier = Modifier
-                .size(20.dp)
                 .constrainAs(icon) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end, margin = 16.dp)
                 },
-            onClick = { }
+            onClick = { onNavigateToLogFood(label) }
         ) {
             Icon(
-                painter = painterResource(drawable.ic_forward),
+                painter = painterResource(R.drawable.ic_add_solid),
                 tint = Black374957,
                 contentDescription = null
             )
@@ -752,7 +761,8 @@ fun MealSectionPreview() {
             carbs = 150,
             proteins = 150,
             fats = 150
-        )
+        ),
+        onNavigateToLogFood = {}
     )
 }
 
@@ -785,6 +795,7 @@ fun MealCardPreview() {
         label = "Breakfast",
         calories = 1500,
         totalCalories = 2000,
-        image = R.drawable.ic_snack
+        image = R.drawable.ic_snack,
+        onNavigateToLogFood = {}
     )
 }
