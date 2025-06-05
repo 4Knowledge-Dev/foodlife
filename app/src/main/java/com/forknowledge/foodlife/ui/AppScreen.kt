@@ -1,13 +1,12 @@
 package com.forknowledge.foodlife.ui
 
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -29,13 +28,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.feature.authentication.authenticationNavGraph
 import com.forknowledge.feature.explore.ExploreRoute
 import com.forknowledge.feature.explore.ExploreScreen
 import com.forknowledge.feature.nutrient.NutrientRoute
-import com.forknowledge.feature.nutrient.NutrientScreen
+import com.forknowledge.feature.nutrient.ui.LogFoodRoute
+import com.forknowledge.feature.nutrient.ui.LogFoodScreen
+import com.forknowledge.feature.nutrient.ui.NutrientScreen
 import com.forknowledge.feature.onboarding.onboardingNavGraph
 import com.forknowledge.feature.planner.PlannerRoute
 import com.forknowledge.feature.planner.PlannerScreen
@@ -48,12 +50,6 @@ fun AppScreen(appState: AppState) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        contentWindowInsets =
-            if (appState.currentTopLevelDestination != null) {
-                WindowInsets(0, 0, 0, 0)
-            } else {
-                ScaffoldDefaults.contentWindowInsets
-            },
         bottomBar = {
             if (appState.currentTopLevelDestination != null) {
                 AppBottomBar(
@@ -63,7 +59,7 @@ fun AppScreen(appState: AppState) {
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { padding ->
+    ) { innerPadding ->
 
         val isOffline by appState.isOffline.collectAsStateWithLifecycle()
         val internetErrorMessage = stringResource(id = R.string.internet_error_not_connected)
@@ -78,16 +74,31 @@ fun AppScreen(appState: AppState) {
         }
 
         NavHost(
-            modifier = Modifier.padding(padding),
+            modifier = Modifier
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding),
             navController = appState.navController,
             startDestination = NutrientRoute,
         ) {
 
             authenticationNavGraph(navController = appState.navController)
             onboardingNavGraph(navController = appState.navController)
-            composable<NutrientRoute> { NutrientScreen() }
+            composable<NutrientRoute> {
+                NutrientScreen(
+                    onNavigateToLogFood = { mealName ->
+                        appState.navController.navigate(LogFoodRoute(mealName))
+                    }
+                )
+            }
             composable<PlannerRoute> { PlannerScreen() }
             composable<ExploreRoute> { ExploreScreen() }
+            composable<LogFoodRoute> { backStackEntry ->
+                val meal = backStackEntry.toRoute<LogFoodRoute>()
+                LogFoodScreen(
+                    meal = meal.mealName,
+                    onNavigateBack = { appState.navController.popBackStack() }
+                )
+            }
         }
     }
 }

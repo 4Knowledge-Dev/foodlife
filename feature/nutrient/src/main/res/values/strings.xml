@@ -16,4 +16,10 @@
     <string name="nutrient_meal_label_snack">Snack</string>
     <string name="nutrient_date_picker_headline">Select date</string>
     <string name="nutrient_date_picker_button_confirm_text">OK</string>
+
+    <string name="nutrient_log_food_search_bar_label">What did you eat?</string>
+    <string name="nutrient_log_food_tab_label_frequent">Frequent</string>
+    <string name="nutrient_log_food_tab_label_plan">Plan</string>
+    <string name="nutrient_log_food_tab_label_saved">Saved</string>
+    <string name="nutrient_log_food_food_item_amount">%1$d kcal, %2$d gram</string>
 </resources>
