@@ -39,7 +39,7 @@ import com.forknowledge.feature.nutrient.ui.LogFoodRoute
 import com.forknowledge.feature.nutrient.ui.LogFoodScreen
 import com.forknowledge.feature.nutrient.ui.NutrientScreen
 import com.forknowledge.feature.nutrient.ui.SearchRoute
-import com.forknowledge.feature.nutrient.ui.SearchScreen
+import com.forknowledge.feature.nutrient.ui.SearchBarSection
 import com.forknowledge.feature.onboarding.onboardingNavGraph
 import com.forknowledge.feature.planner.PlannerRoute
 import com.forknowledge.feature.planner.PlannerScreen
@@ -80,7 +80,7 @@ fun AppScreen(appState: AppState) {
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding),
             navController = appState.navController,
-            startDestination = NutrientRoute,
+            startDestination = LogFoodRoute("Breakfast"),
         ) {
 
             authenticationNavGraph(navController = appState.navController)
@@ -102,7 +102,9 @@ fun AppScreen(appState: AppState) {
                     onNavigateBack = { appState.navController.popBackStack() }
                 )
             }
-            composable<SearchRoute> { SearchScreen() }
+            composable<SearchRoute> { SearchBarSection(
+                onNavigateBack = { appState.navController.popBackStack() }
+            ) }
         }
     }
 }

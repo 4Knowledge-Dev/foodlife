@@ -18,6 +18,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.PrimaryTabRow
@@ -49,8 +50,8 @@ import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Green86BF3E
 import com.forknowledge.core.ui.theme.GreenA1CE50
 import com.forknowledge.core.ui.theme.Grey808993
+import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.GreyF4F5F5
-import com.forknowledge.core.ui.theme.GreyFAFAFA
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.feature.model.LoggedRecipe
@@ -230,17 +231,22 @@ fun LogFoodTopAppBar(
 
 @Composable
 fun ContentSection(
-    modifier: Modifier = Modifier,
     recipes: List<LoggedRecipe>
 ) {
     LazyColumn(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
-            .background(color = GreyFAFAFA),
-        contentPadding = PaddingValues(16.dp)
+            .background(White),
+        contentPadding = PaddingValues(vertical = 16.dp)
     ) {
         itemsIndexed(recipes) { index, recipe ->
             RecipeItem(recipe = recipe)
+            if (index < logRecipes.lastIndex) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    color = GreyEBEBEB
+                )
+            }
         }
     }
 }
@@ -249,13 +255,8 @@ fun ContentSection(
 fun RecipeItem(recipe: LoggedRecipe) {
     ConstraintLayout(
         modifier = Modifier
-            .padding(top = 4.dp)
             .fillMaxWidth()
-            .background(
-                color = White,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .clip(RoundedCornerShape(8.dp))
+            .background(color = White)
             .clickable {}
             .padding(
                 vertical = 12.dp,
@@ -342,10 +343,16 @@ fun LogFoodTopAppBarPreview() {
 @Composable
 fun RecipeItemPreview() {
     RecipeItem(
-        LoggedRecipe(
+        recipe = LoggedRecipe(
             recipeName = "Spaghetti Bolognese",
             calories = 500.0,
             amount = 100.0
         )
     )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+fun ContentSectionPreview() {
+    ContentSection(recipes = logRecipes)
 }
