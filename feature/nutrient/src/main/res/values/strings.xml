@@ -22,4 +22,5 @@
     <string name="nutrient_log_food_tab_label_plan">Plan</string>
     <string name="nutrient_log_food_tab_label_saved">Saved</string>
     <string name="nutrient_log_food_food_item_amount">%1$d kcal, %2$d gram</string>
+    <string name="nutrient_log_food_search_screen_search_bar_label">Enter your food</string>
 </resources>

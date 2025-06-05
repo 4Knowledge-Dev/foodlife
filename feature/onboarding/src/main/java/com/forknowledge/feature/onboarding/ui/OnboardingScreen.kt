@@ -249,7 +249,7 @@ fun SurveyBottomBar(
             buttonColor = Green91C747,
             buttonText = stringResource(R.string.onboarding_survey_next),
             textStyle = Typography.labelSmall,
-            icon = drawable.ic_arrow_forward,
+            icon = drawable.ic_arrow_next,
             enabled = isNextEnabled,
             onClicked = onNextClicked
         )
