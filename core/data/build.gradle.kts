@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt)
     kotlin("kapt")
 }
@@ -23,6 +24,7 @@ dependencies {
 
     implementation(libs.androidx.hilt)
     kapt(libs.androidx.hilt.compiler)
-    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
+    implementation(libs.com.squareup.retrofit2)
+    implementation(libs.converter.kotlinx.serialization)
 }

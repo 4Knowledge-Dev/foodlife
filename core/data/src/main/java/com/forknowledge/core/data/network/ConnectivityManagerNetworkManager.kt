@@ -1,4 +1,4 @@
-package com.forknowledge.core.data.util
+package com.forknowledge.core.data.network
 
 import android.content.Context
 import android.net.ConnectivityManager

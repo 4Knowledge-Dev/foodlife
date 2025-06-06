@@ -39,7 +39,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.navigation.component)
     implementation(libs.androidx.constraint.layout)
-    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
     implementation(libs.androidx.hilt)
     kapt(libs.androidx.hilt.compiler)

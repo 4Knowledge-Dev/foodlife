@@ -9,7 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.facebook.CallbackManager
-import com.forknowledge.core.data.util.NetworkManager
+import com.forknowledge.core.data.network.NetworkManager
 import com.forknowledge.core.ui.theme.FoodLifeTheme
 import com.forknowledge.foodlife.ui.AppScreen
 import dagger.hilt.android.AndroidEntryPoint

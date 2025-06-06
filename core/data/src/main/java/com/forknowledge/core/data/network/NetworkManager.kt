@@ -1,4 +1,4 @@
-package com.forknowledge.core.data.util
+package com.forknowledge.core.data.network
 
 import kotlinx.coroutines.flow.Flow
 
