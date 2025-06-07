@@ -30,8 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.ProgressIndicatorDefaults.drawStopIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,6 +62,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.forknowledge.core.common.extension.nextDate
 import com.forknowledge.core.common.extension.previousDate
 import com.forknowledge.core.common.extension.toDayMonthDateString
+import com.forknowledge.core.common.getCurrentDate
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
 import com.forknowledge.core.ui.theme.Black374957
@@ -146,60 +145,56 @@ fun AppBarDateSelector(
         )
     }
 
-    TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background
-        ),
-        title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                IconButton(
-                    onClick = { onDateChanged(date.previousDate()) }
-                ) {
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        painter = painterResource(drawable.ic_back),
-                        tint = Grey8A949F,
-                        contentDescription = null
-                    )
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                AppText(
-                    modifier = Modifier.clickable { showDatePickerModal = true },
-                    text = date.toDayMonthDateString(),
-                    textStyle = Typography.labelMedium
-                )
-
-                Icon(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .padding(start = 8.dp)
-                        .clickable { showDatePickerModal = true },
-                    painter = painterResource(drawable.ic_calendar),
-                    tint = Black374957,
-                    contentDescription = null
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                IconButton(
-                    onClick = { onDateChanged(date.nextDate()) }
-                ) {
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        painter = painterResource(drawable.ic_forward),
-                        tint = Grey8A949F,
-                        contentDescription = null
-                    )
-                }
-            }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(
+                horizontal = 8.dp,
+                vertical = 4.dp
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconButton(
+            onClick = { onDateChanged(date.previousDate()) }
+        ) {
+            Icon(
+                painter = painterResource(drawable.ic_back),
+                tint = Grey8A949F,
+                contentDescription = null
+            )
         }
-    )
 
+        Spacer(modifier = Modifier.weight(1f))
+
+        AppText(
+            modifier = Modifier.clickable { showDatePickerModal = true },
+            text = date.toDayMonthDateString(),
+            textStyle = MaterialTheme.typography.labelLarge
+        )
+
+        Icon(
+            modifier = Modifier
+                .padding(start = 12.dp)
+                .size(28.dp)
+                .clickable { onDateChanged(getCurrentDate()) },
+            painter = painterResource(drawable.ic_calendar),
+            tint = Black374957,
+            contentDescription = null
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        IconButton(
+            onClick = { onDateChanged(date.nextDate()) }
+        ) {
+            Icon(
+                painter = painterResource(drawable.ic_forward),
+                tint = Grey8A949F,
+                contentDescription = null
+            )
+        }
+    }
 }
 
 @Composable

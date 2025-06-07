@@ -33,7 +33,7 @@ fun DatePickerModal(
     )
 
     DatePickerDialog(
-        modifier = modifier,
+        modifier = modifier.padding(horizontal = 24.dp),
         confirmButton = {
             TextButton(onClick = {
                 onDateSelected(datePickerState.selectedDateMillis)
@@ -79,7 +79,7 @@ fun DatePickerModal(
     }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun ModalDateInputPreview() {
     DatePickerModal(
