@@ -12,6 +12,7 @@ import com.facebook.CallbackManager
 import com.forknowledge.core.data.network.NetworkManager
 import com.forknowledge.core.ui.theme.FoodLifeTheme
 import com.forknowledge.foodlife.ui.AppScreen
+import com.forknowledge.foodlife.ui.rememberAppState
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

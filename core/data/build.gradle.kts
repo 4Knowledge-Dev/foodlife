@@ -21,10 +21,13 @@ android {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
+    implementation(project(":core:api"))
 
     implementation(libs.androidx.hilt)
     kapt(libs.androidx.hilt.compiler)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
     implementation(libs.com.squareup.retrofit2)
     implementation(libs.converter.kotlinx.serialization)
+    implementation(libs.androidx.paging)
 }

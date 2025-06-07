@@ -8,7 +8,7 @@ val Black26000000 = Color(0x26000000)
 val Black063336 = Color(0xFF063336) // Shadow
 val Black374957 = Color(0xFF374957) // Icon
 
-val WhiteFAFAF5 = Color(0xFFFAFAF5)
+val WhiteFDFDFC = Color(0xFFFDFDFC)
 val WhiteF9F9F9 = Color(0xFFF5F5F5)
 
 val GreyFAFAFA = Color(0xFFFAFAFA)

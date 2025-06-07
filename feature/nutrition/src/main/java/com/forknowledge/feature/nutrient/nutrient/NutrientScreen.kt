@@ -1,4 +1,4 @@
-package com.forknowledge.feature.nutrient.ui
+package com.forknowledge.feature.nutrient.nutrient
 
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateFloatAsState
@@ -26,6 +26,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.ProgressIndicatorDefaults.drawStopIndicator
 import androidx.compose.material3.Scaffold
@@ -78,7 +79,6 @@ import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.DatePickerModal
 import com.forknowledge.feature.model.IntakeNutrition
 import com.forknowledge.feature.model.TargetNutrition
-import com.forknowledge.feature.nutrient.NutritionViewModel
 import com.forknowledge.feature.nutrient.R
 import java.util.Date
 import kotlin.math.abs
@@ -148,7 +148,7 @@ fun AppBarDateSelector(
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = White
+            containerColor = MaterialTheme.colorScheme.background
         ),
         title = {
             Row(

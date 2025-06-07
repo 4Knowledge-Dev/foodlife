@@ -1,4 +1,4 @@
-package com.forknowledge.feature.nutrient
+package com.forknowledge.feature.nutrient.nutrient
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

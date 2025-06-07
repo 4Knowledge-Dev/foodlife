@@ -54,9 +54,10 @@ import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.GreyF4F5F5
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
-import com.forknowledge.feature.model.LoggedRecipe
+import com.forknowledge.feature.model.Recipe
 import com.forknowledge.feature.model.logRecipes
 import com.forknowledge.feature.nutrient.R
+import com.forknowledge.feature.nutrient.RecipeItem
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlin.math.roundToInt
@@ -231,7 +232,7 @@ fun LogFoodTopAppBar(
 
 @Composable
 fun ContentSection(
-    recipes: List<LoggedRecipe>
+    recipes: List<Recipe>
 ) {
     LazyColumn(
         modifier = Modifier
@@ -251,81 +252,6 @@ fun ContentSection(
     }
 }
 
-@Composable
-fun RecipeItem(recipe: LoggedRecipe) {
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = White)
-            .clickable {}
-            .padding(
-                vertical = 12.dp,
-                horizontal = 16.dp
-            )
-    ) {
-        val (recipeImage, icon, recipeName, recipeAmount) = createRefs()
-
-        Image(
-            modifier = Modifier
-                .size(60.dp)
-                .background(
-                    color = Color.Unspecified,
-                    shape = CircleShape
-                )
-                .clip(CircleShape)
-                .constrainAs(recipeImage) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                },
-            painter = painterResource(R.drawable.img_sample),
-            contentScale = ContentScale.Crop,
-            contentDescription = null
-        )
-
-        AppText(
-            modifier = Modifier.constrainAs(recipeName) {
-                top.linkTo(recipeImage.top, margin = 4.dp)
-                bottom.linkTo(recipeAmount.top)
-                start.linkTo(recipeImage.end, margin = 16.dp)
-            },
-            text = recipe.recipeName,
-            textStyle = Typography.labelMedium
-        )
-
-        AppText(
-            modifier = Modifier.constrainAs(recipeAmount) {
-                top.linkTo(recipeName.bottom)
-                bottom.linkTo(recipeImage.bottom, margin = 4.dp)
-                start.linkTo(recipeImage.end, margin = 16.dp)
-            },
-            text = stringResource(
-                R.string.nutrient_log_food_food_item_amount,
-                recipe.calories.roundToInt(),
-                recipe.amount.roundToInt()
-            ),
-            textStyle = Typography.bodySmall,
-            color = Grey808993
-        )
-
-        IconButton(
-            modifier = Modifier
-                .constrainAs(icon) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end, margin = 16.dp)
-                },
-            onClick = { }
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_add_solid),
-                tint = Black374957,
-                contentDescription = null
-            )
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
@@ -336,18 +262,6 @@ fun LogFoodTopAppBarPreview() {
         onTabChanged = {},
         onNavigateToSearch = {},
         onNavigateBack = {}
-    )
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
-@Composable
-fun RecipeItemPreview() {
-    RecipeItem(
-        recipe = LoggedRecipe(
-            recipeName = "Spaghetti Bolognese",
-            calories = 500.0,
-            amount = 100.0
-        )
     )
 }
 

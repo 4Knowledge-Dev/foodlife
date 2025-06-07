@@ -35,15 +35,14 @@ import com.forknowledge.feature.authentication.authenticationNavGraph
 import com.forknowledge.feature.explore.ExploreRoute
 import com.forknowledge.feature.explore.ExploreScreen
 import com.forknowledge.feature.nutrient.NutrientRoute
+import com.forknowledge.feature.nutrient.nutrient.NutrientScreen
+import com.forknowledge.feature.nutrient.search.SearchRoute
+import com.forknowledge.feature.nutrient.search.SearchScreen
 import com.forknowledge.feature.nutrient.ui.LogFoodRoute
 import com.forknowledge.feature.nutrient.ui.LogFoodScreen
-import com.forknowledge.feature.nutrient.ui.NutrientScreen
-import com.forknowledge.feature.nutrient.ui.SearchRoute
-import com.forknowledge.feature.nutrient.ui.SearchBarSection
 import com.forknowledge.feature.onboarding.onboardingNavGraph
 import com.forknowledge.feature.planner.PlannerRoute
 import com.forknowledge.feature.planner.PlannerScreen
-import com.forknowledge.foodlife.AppState
 import com.forknowledge.foodlife.R
 
 @Composable
@@ -102,9 +101,11 @@ fun AppScreen(appState: AppState) {
                     onNavigateBack = { appState.navController.popBackStack() }
                 )
             }
-            composable<SearchRoute> { SearchBarSection(
-                onNavigateBack = { appState.navController.popBackStack() }
-            ) }
+            composable<SearchRoute> {
+                SearchScreen(
+                    onNavigateBack = { appState.navController.popBackStack() }
+                )
+            }
         }
     }
 }

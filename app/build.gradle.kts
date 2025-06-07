@@ -72,7 +72,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":feature:authentication"))
     implementation(project(":feature:onboarding"))
-    implementation(project(":feature:nutrient"))
+    implementation(project(":feature:nutrition"))
     implementation(project(":feature:planner"))
     implementation(project(":feature:explore"))
 
@@ -91,6 +91,7 @@ dependencies {
     implementation(libs.androidx.splash.screen)
     implementation(libs.androidx.app.startup)
     implementation(libs.androidx.navigation.component)
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.facebook.login)

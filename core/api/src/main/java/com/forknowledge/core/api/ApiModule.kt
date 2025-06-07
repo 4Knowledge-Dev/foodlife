@@ -1,8 +1,10 @@
 package com.forknowledge.core.api
 
 import android.content.Context
+import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.Cache
@@ -18,11 +20,12 @@ import javax.inject.Singleton
 const val CONNECTION_TIME_OUT = 30L
 
 @InstallIn(SingletonComponent::class)
+@Module
 object ApiModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(applicationContext: Context): OkHttpClient {
+    fun provideOkHttpClient(@ApplicationContext applicationContext: Context): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.BODY
@@ -39,7 +42,7 @@ object ApiModule {
             .addInterceptor { chain ->
                 val originalRequest = chain.request()
                 val newRequest = originalRequest.newBuilder()
-                    .header("Api-Key", BuildConfig.API_KEY)
+                    .header("x-api-key", BuildConfig.API_KEY)
                     .build()
                 chain.proceed(newRequest)
             }

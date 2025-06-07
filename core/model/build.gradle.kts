@@ -18,6 +18,5 @@ android {
 }
 
 dependencies {
-    implementation(libs.firebase.firestore)
     implementation(libs.kotlinx.serialization.json)
 }

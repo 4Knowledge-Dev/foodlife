@@ -1,4 +1,4 @@
-package com.forknowledge.foodlife
+package com.forknowledge.foodlife.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -15,7 +15,6 @@ import com.forknowledge.core.data.network.NetworkManager
 import com.forknowledge.feature.explore.navigateToExplore
 import com.forknowledge.feature.nutrient.navigateToNutrient
 import com.forknowledge.feature.planner.navigateToPlanner
-import com.forknowledge.foodlife.ui.TopLevelDestination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
