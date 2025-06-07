@@ -72,7 +72,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":feature:authentication"))
     implementation(project(":feature:onboarding"))
-    implementation(project(":feature:nutrient"))
+    implementation(project(":feature:nutrition"))
     implementation(project(":feature:planner"))
     implementation(project(":feature:explore"))
 
