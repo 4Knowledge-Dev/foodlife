@@ -25,6 +25,7 @@ import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Grey808993
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.feature.model.Nutrient
 import com.forknowledge.feature.model.Recipe
 
 @Composable
@@ -84,7 +85,7 @@ fun RecipeItem(recipe: Recipe) {
             text = stringResource(
                 R.string.nutrient_log_food_food_item_amount,
                 recipe.healthScore,
-                recipe.calories
+                recipe.nutrients[0]
             ),
             textStyle = Typography.bodySmall,
             color = Grey808993
@@ -115,8 +116,14 @@ fun RecipeItemPreview() {
     RecipeItem(
         recipe = Recipe(
             name = "Spaghetti Bolognese",
-            calories = 500,
-            healthScore = 100
+            healthScore = 100,
+            nutrients = listOf(
+                Nutrient(
+                    name = "Calories",
+                    amount = 1200.0,
+                    unit = "kcal",
+                )
+            )
         )
     )
 }
