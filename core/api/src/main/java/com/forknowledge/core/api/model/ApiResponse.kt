@@ -1,5 +1,6 @@
 package com.forknowledge.core.api.model
 
+import com.forknowledge.feature.model.Nutrient
 import com.forknowledge.feature.model.Recipe
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerialName
@@ -32,8 +33,8 @@ data class RecipeResponse(
         id = id,
         name = title,
         imageUrl = image,
-        calories = (nutrition.nutrients[0].amount / servings).roundToLong(),
-        healthScore = healthScore.roundToLong()
+        healthScore = healthScore.roundToLong(),
+        nutrients = nutrition.nutrients.map { it.toNutrient() }
     )
 }
 
@@ -46,5 +47,16 @@ data class NutritionResponse(
 @InternalSerializationApi
 @Serializable
 data class NutrientResponse(
-    val amount: Double
-)
+    val name: String,
+    val amount: Double,
+    val unit: String,
+    val percentOfDailyNeeds: Long
+) {
+
+    fun toNutrient() = Nutrient(
+        name = name,
+        amount = amount,
+        unit = unit,
+        percentOfDailyNeeds = percentOfDailyNeeds
+    )
+}

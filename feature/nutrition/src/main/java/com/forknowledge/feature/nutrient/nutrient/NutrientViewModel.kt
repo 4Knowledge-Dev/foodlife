@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.forknowledge.core.data.UserRepository
-import com.forknowledge.feature.model.IntakeNutrition
+import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.feature.model.TargetNutrition
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,8 +27,8 @@ class NutritionViewModel @Inject constructor(
     private val _targetNutrition = MutableStateFlow<TargetNutrition?>(null)
     val targetNutrition: StateFlow<TargetNutrition?> = _targetNutrition
 
-    private val _intakeNutrition = MutableStateFlow<IntakeNutrition>(IntakeNutrition())
-    val intakeNutrition: StateFlow<IntakeNutrition> = _intakeNutrition
+    private val _intakeNutrition = MutableStateFlow(NutritionDisplayData())
+    val intakeNutrition: StateFlow<NutritionDisplayData> = _intakeNutrition
 
     init {
         getUserNutrition()

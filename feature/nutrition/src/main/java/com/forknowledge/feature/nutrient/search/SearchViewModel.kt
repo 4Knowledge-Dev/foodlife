@@ -39,6 +39,7 @@ class SearchViewModel @Inject constructor(
     val recipes: StateFlow<PagingData<Recipe>> = _recipes
 
     var isLoading by mutableStateOf(false)
+        private set
 
     init {
         viewModelScope.launch { observeQueryChanges() }

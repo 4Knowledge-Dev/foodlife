@@ -62,44 +62,44 @@ fun SearchScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        if (isLoading) {
-            LoadingIndicator()
-        } else {
-            SearchBar(
-                modifier = Modifier.align(Alignment.TopCenter),
-                inputField = {
-                    SearchBarDefaults.InputField(
-                        modifier = Modifier.focusRequester(focusRequester),
-                        query = searchQuery,
-                        onQueryChange = { viewModel.updateSearchQuery(it) },
-                        onSearch = {
-                            focusManager.clearFocus()
-                            viewModel.search(it)
-                        },
-                        expanded = true,
-                        onExpandedChange = { },
-                        placeholder = {
-                            AppText(
-                                text = stringResource(R.string.nutrient_log_food_search_screen_search_bar_label),
-                                color = Grey8A949F
-                            )
-                        },
-                        leadingIcon = {
-                            Icon(
-                                modifier = Modifier.clickable { onNavigateBack() },
-                                painter = painterResource(id = drawable.ic_arrow_previous),
-                                tint = Black374957,
-                                contentDescription = null
-                            )
-                        }
-                    )
-                },
-                expanded = true,
-                colors = SearchBarDefaults.colors(
-                    containerColor = White
-                ),
-                onExpandedChange = { },
-            ) {
+        SearchBar(
+            modifier = Modifier.align(Alignment.TopCenter),
+            inputField = {
+                SearchBarDefaults.InputField(
+                    modifier = Modifier.focusRequester(focusRequester),
+                    query = searchQuery,
+                    onQueryChange = { viewModel.updateSearchQuery(it) },
+                    onSearch = {
+                        focusManager.clearFocus()
+                        viewModel.search(it)
+                    },
+                    expanded = true,
+                    onExpandedChange = { },
+                    placeholder = {
+                        AppText(
+                            text = stringResource(R.string.nutrient_log_food_search_screen_search_bar_label),
+                            color = Grey8A949F
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            modifier = Modifier.clickable { onNavigateBack() },
+                            painter = painterResource(id = drawable.ic_arrow_previous),
+                            tint = Black374957,
+                            contentDescription = null
+                        )
+                    }
+                )
+            },
+            expanded = true,
+            colors = SearchBarDefaults.colors(
+                containerColor = White
+            ),
+            onExpandedChange = { },
+        ) {
+            if (isLoading) {
+                LoadingIndicator()
+            } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(horizontal = 16.dp)

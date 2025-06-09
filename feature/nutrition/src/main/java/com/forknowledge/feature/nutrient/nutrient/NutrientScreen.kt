@@ -30,8 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.ProgressIndicatorDefaults.drawStopIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,6 +62,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.forknowledge.core.common.extension.nextDate
 import com.forknowledge.core.common.extension.previousDate
 import com.forknowledge.core.common.extension.toDayMonthDateString
+import com.forknowledge.core.common.getCurrentDate
+import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
 import com.forknowledge.core.ui.theme.Black374957
@@ -77,7 +77,6 @@ import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.YellowFB880C
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.DatePickerModal
-import com.forknowledge.feature.model.IntakeNutrition
 import com.forknowledge.feature.model.TargetNutrition
 import com.forknowledge.feature.nutrient.R
 import java.util.Date
@@ -146,66 +145,61 @@ fun AppBarDateSelector(
         )
     }
 
-    TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background
-        ),
-        title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                IconButton(
-                    onClick = { onDateChanged(date.previousDate()) }
-                ) {
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        painter = painterResource(drawable.ic_back),
-                        tint = Grey8A949F,
-                        contentDescription = null
-                    )
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                AppText(
-                    modifier = Modifier.clickable { showDatePickerModal = true },
-                    text = date.toDayMonthDateString(),
-                    textStyle = Typography.labelMedium
-                )
-
-                Icon(
-                    modifier = Modifier
-                        .size(28.dp)
-                        .padding(start = 8.dp)
-                        .clickable { showDatePickerModal = true },
-                    painter = painterResource(drawable.ic_calendar),
-                    tint = Black374957,
-                    contentDescription = null
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                IconButton(
-                    onClick = { onDateChanged(date.nextDate()) }
-                ) {
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        painter = painterResource(drawable.ic_forward),
-                        tint = Grey8A949F,
-                        contentDescription = null
-                    )
-                }
-            }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(
+                horizontal = 8.dp,
+                vertical = 4.dp
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconButton(
+            onClick = { onDateChanged(date.previousDate()) }
+        ) {
+            Icon(
+                painter = painterResource(drawable.ic_back),
+                tint = Grey8A949F,
+                contentDescription = null
+            )
         }
-    )
 
+        Spacer(modifier = Modifier.weight(1f))
+
+        AppText(
+            modifier = Modifier.clickable { showDatePickerModal = true },
+            text = date.toDayMonthDateString(),
+            textStyle = MaterialTheme.typography.labelLarge
+        )
+
+        Icon(
+            modifier = Modifier
+                .padding(start = 12.dp)
+                .clickable { onDateChanged(getCurrentDate()) },
+            painter = painterResource(drawable.ic_calendar),
+            tint = Black374957,
+            contentDescription = null
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        IconButton(
+            onClick = { onDateChanged(date.nextDate()) }
+        ) {
+            Icon(
+                painter = painterResource(drawable.ic_forward),
+                tint = Grey8A949F,
+                contentDescription = null
+            )
+        }
+    }
 }
 
 @Composable
 fun NutrientSection(
     targetNutrition: TargetNutrition,
-    intakeNutrition: IntakeNutrition
+    intakeNutrition: NutritionDisplayData
 ) {
     Column(
         modifier = Modifier
@@ -388,7 +382,7 @@ fun NutrientSection(
 @Composable
 fun MealSection(
     targetNutrition: TargetNutrition,
-    intakeNutrition: IntakeNutrition,
+    intakeNutrition: NutritionDisplayData,
     onNavigateToLogFood: (String) -> Unit
 ) {
     Column(
@@ -428,7 +422,7 @@ fun MealSection(
         // Breakfast
         MealCard(
             label = stringResource(R.string.nutrient_meal_label_breakfast),
-            calories = intakeNutrition.breakfast.calories,
+            calories = intakeNutrition.mealCalories[0],
             totalCalories = targetNutrition.breakfastCalories,
             image = R.drawable.ic_breakfast,
             onNavigateToLogFood = { onNavigateToLogFood(it) }
@@ -444,7 +438,7 @@ fun MealSection(
         // Lunch
         MealCard(
             label = stringResource(R.string.nutrient_meal_label_lunch),
-            calories = intakeNutrition.lunch.calories,
+            calories = intakeNutrition.mealCalories[1],
             totalCalories = targetNutrition.lunchCalories,
             image = R.drawable.ic_lunch,
             onNavigateToLogFood = { onNavigateToLogFood(it) }
@@ -460,7 +454,7 @@ fun MealSection(
         // Dinner
         MealCard(
             label = stringResource(R.string.nutrient_meal_label_dinner),
-            calories = intakeNutrition.dinner.calories,
+            calories = intakeNutrition.mealCalories[2],
             totalCalories = targetNutrition.dinnerCalories,
             image = R.drawable.ic_dinner,
             onNavigateToLogFood = { onNavigateToLogFood(it) }
@@ -476,7 +470,7 @@ fun MealSection(
         // Snack
         MealCard(
             label = stringResource(R.string.nutrient_meal_label_snack),
-            calories = intakeNutrition.snack.calories,
+            calories = intakeNutrition.mealCalories[3],
             totalCalories = targetNutrition.snackCalories,
             image = R.drawable.ic_snack,
             onNavigateToLogFood = { onNavigateToLogFood(it) }
@@ -628,7 +622,7 @@ fun MealCard(
     var targetProgress by remember { mutableFloatStateOf(0F) }
     val animatedProgress by animateFloatAsState(
         targetValue = targetProgress,
-        animationSpec = tween(durationMillis = 800)
+        animationSpec = tween(durationMillis = 1000)
     )
 
     LaunchedEffect(calories) {
@@ -737,12 +731,7 @@ fun NutrientSectionPreview() {
             proteins = 200,
             fats = 200
         ),
-        intakeNutrition = IntakeNutrition(
-            calories = 1500,
-            carbs = 150,
-            proteins = 150,
-            fats = 150
-        )
+        intakeNutrition = NutritionDisplayData()
     )
 }
 
@@ -756,12 +745,7 @@ fun MealSectionPreview() {
             proteins = 200,
             fats = 200
         ),
-        intakeNutrition = IntakeNutrition(
-            calories = 1500,
-            carbs = 150,
-            proteins = 150,
-            fats = 150
-        ),
+        intakeNutrition = NutritionDisplayData(),
         onNavigateToLogFood = {}
     )
 }
