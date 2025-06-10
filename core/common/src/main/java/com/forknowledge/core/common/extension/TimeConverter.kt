@@ -56,3 +56,17 @@ fun Date.previousDate(): Date {
     calendar.add(Calendar.DAY_OF_MONTH, -1)
     return calendar.time
 }
+
+/**
+ * Get firestore document id by getting date in millis.
+ * @return firestore document id.
+ */
+fun Date.toFirestoreDocumentIdByDate(): String {
+    val calendar = Calendar.getInstance()
+    calendar.time = this
+    calendar.set(Calendar.HOUR_OF_DAY, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+    return calendar.timeInMillis.toString()
+}

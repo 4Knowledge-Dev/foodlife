@@ -72,6 +72,7 @@ import com.forknowledge.core.ui.theme.GreenA1CE50
 import com.forknowledge.core.ui.theme.Grey8A949F
 import com.forknowledge.core.ui.theme.GreyDADADA
 import com.forknowledge.core.ui.theme.GreyFAFAFA
+import com.forknowledge.core.ui.theme.RedFF3939
 import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.YellowFB880C
@@ -84,7 +85,7 @@ import kotlin.math.abs
 
 @Composable
 fun NutrientScreen(
-    onNavigateToLogFood: (String) -> Unit,
+    onNavigateToLogFood: (Long, Boolean, Long) -> Unit,
     viewModel: NutritionViewModel = hiltViewModel()
 ) {
     val date = viewModel.date
@@ -118,7 +119,9 @@ fun NutrientScreen(
                 MealSection(
                     targetNutrition = nutrition,
                     intakeNutrition = intakeNutrition,
-                    onNavigateToLogFood = { onNavigateToLogFood(it) }
+                    onNavigateToLogFood = {
+                        onNavigateToLogFood(it, intakeNutrition.calories != 0L, date.time)
+                    }
                 )
             }
         }
@@ -254,7 +257,11 @@ fun NutrientSection(
                 modifier = Modifier.size(130.dp),
                 isDailyCalories = true,
                 progressBarWidth = 9.dp,
-                progressIndicatorColor = GreenA1CE50,
+                progressIndicatorColor = if (intakeNutrition.calories <= targetNutrition.calories) {
+                    GreenA1CE50
+                } else {
+                    RedFF3939
+                },
                 progress = intakeNutrition.calories,
                 totalNutrients = targetNutrition.calories
             )
@@ -383,7 +390,7 @@ fun NutrientSection(
 fun MealSection(
     targetNutrition: TargetNutrition,
     intakeNutrition: NutritionDisplayData,
-    onNavigateToLogFood: (String) -> Unit
+    onNavigateToLogFood: (Long) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -425,7 +432,7 @@ fun MealSection(
             calories = intakeNutrition.mealCalories[0],
             totalCalories = targetNutrition.breakfastCalories,
             image = R.drawable.ic_breakfast,
-            onNavigateToLogFood = { onNavigateToLogFood(it) }
+            onNavigateToLogFood = { onNavigateToLogFood(0) }
         )
 
         HorizontalDivider(
@@ -441,7 +448,7 @@ fun MealSection(
             calories = intakeNutrition.mealCalories[1],
             totalCalories = targetNutrition.lunchCalories,
             image = R.drawable.ic_lunch,
-            onNavigateToLogFood = { onNavigateToLogFood(it) }
+            onNavigateToLogFood = { onNavigateToLogFood(1) }
         )
 
         HorizontalDivider(
@@ -457,7 +464,7 @@ fun MealSection(
             calories = intakeNutrition.mealCalories[2],
             totalCalories = targetNutrition.dinnerCalories,
             image = R.drawable.ic_dinner,
-            onNavigateToLogFood = { onNavigateToLogFood(it) }
+            onNavigateToLogFood = { onNavigateToLogFood(2) }
         )
 
         HorizontalDivider(
@@ -473,7 +480,7 @@ fun MealSection(
             calories = intakeNutrition.mealCalories[3],
             totalCalories = targetNutrition.snackCalories,
             image = R.drawable.ic_snack,
-            onNavigateToLogFood = { onNavigateToLogFood(it) }
+            onNavigateToLogFood = { onNavigateToLogFood(3) }
         )
     }
 }

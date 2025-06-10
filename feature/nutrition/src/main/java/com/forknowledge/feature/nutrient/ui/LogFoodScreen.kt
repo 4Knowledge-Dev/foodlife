@@ -1,6 +1,5 @@
 package com.forknowledge.feature.nutrient.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -15,12 +14,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -36,20 +33,16 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Green86BF3E
 import com.forknowledge.core.ui.theme.GreenA1CE50
-import com.forknowledge.core.ui.theme.Grey808993
 import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.GreyF4F5F5
 import com.forknowledge.core.ui.theme.Typography
@@ -58,18 +51,24 @@ import com.forknowledge.feature.model.Recipe
 import com.forknowledge.feature.model.logRecipes
 import com.forknowledge.feature.nutrient.R
 import com.forknowledge.feature.nutrient.RecipeItem
+import com.forknowledge.feature.nutrient.toMealName
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import kotlin.math.roundToInt
 
 @Serializable
-data class LogFoodRoute(val mealName: String)
+data class LogFoodRoute(
+    val meal: Long,
+    val hasLoggedRecipe: Boolean,
+    val dateInMillis: Long
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogFoodScreen(
-    meal: String,
-    onNavigateToSearch: () -> Unit,
+    meal: Long,
+    hasLoggedFood: Boolean,
+    dateInMillis: Long,
+    onNavigateToSearch: (Long, Boolean, Long) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     var selectedTabIndex by remember {
@@ -88,7 +87,7 @@ fun LogFoodScreen(
     Scaffold(
         topBar = {
             LogFoodTopAppBar(
-                meal = meal,
+                meal = stringResource(meal.toMealName()),
                 selectedTabIndex = selectedTabIndex,
                 onTabChanged = {
                     selectedTabIndex = it
@@ -96,7 +95,7 @@ fun LogFoodScreen(
                         pagerState.animateScrollToPage(it)
                     }
                 },
-                onNavigateToSearch = onNavigateToSearch,
+                onNavigateToSearch = { onNavigateToSearch(meal, hasLoggedFood, dateInMillis) },
                 onNavigateBack = onNavigateBack
             )
         },
@@ -234,14 +233,14 @@ fun LogFoodTopAppBar(
 fun ContentSection(
     recipes: List<Recipe>
 ) {
-    LazyColumn(
+    /*LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .background(White),
         contentPadding = PaddingValues(vertical = 16.dp)
     ) {
         itemsIndexed(recipes) { index, recipe ->
-            RecipeItem(recipe = recipe)
+            RecipeItem(false, recipe = recipe) {}
             if (index < logRecipes.lastIndex) {
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 24.dp),
@@ -249,7 +248,7 @@ fun ContentSection(
                 )
             }
         }
-    }
+    }*/
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
