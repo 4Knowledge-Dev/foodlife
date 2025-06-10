@@ -9,6 +9,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -20,6 +26,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.forknowledge.core.common.Result
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Grey808993
 import com.forknowledge.core.ui.theme.Typography
@@ -27,11 +38,17 @@ import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.feature.model.Nutrient
 import com.forknowledge.feature.model.Recipe
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlin.math.roundToInt
+
+const val ANIMATION_DURATION = 1000L
 
 @Composable
 fun RecipeItem(
-    isLoading: Boolean,
+    result: Result<Unit>?,
+    logRecipeId: Long?,
     recipe: Recipe,
     onLogRecipe: () -> Unit
 ) {
@@ -97,20 +114,27 @@ fun RecipeItem(
             color = Grey808993
         )
 
+        val successComposition by rememberLottieComposition(
+            LottieCompositionSpec.RawRes(R.raw.anim_success)
+        )
+        val failComposition by rememberLottieComposition(
+            LottieCompositionSpec.RawRes(R.raw.anim_fail)
+        )
+        val progress by animateLottieCompositionAsState(failComposition)
+        var isAnimatedVisible by remember { mutableStateOf(false) }
 
+        LaunchedEffect(result) {
+            snapshotFlow { result }
+                .map { it !is Result.Loading }
+                .distinctUntilChanged()
+                .collect {
+                    isAnimatedVisible = true
+                    delay(ANIMATION_DURATION)
+                    isAnimatedVisible = false
+                }
+        }
 
-        if (isLoading) {
-            LoadingIndicator(
-                modifier = Modifier
-                    .constrainAs(loading) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        end.linkTo(endGuideLine)
-                    },
-                size = 28.dp,
-                strokeWidth = 2.dp
-            )
-        } else {
+        if (result !is Result.Loading && !isAnimatedVisible) {
             Icon(
                 modifier = Modifier
                     .size(28.dp)
@@ -125,6 +149,57 @@ fun RecipeItem(
                 contentDescription = null
             )
         }
+
+        if (recipe.id == logRecipeId) {
+            when (result) {
+                is Result.Loading -> {
+                    LoadingIndicator(
+                        modifier = Modifier
+                            .constrainAs(loading) {
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                                end.linkTo(endGuideLine)
+                            },
+                        size = 28.dp,
+                        strokeWidth = 2.dp
+                    )
+                }
+
+                is Result.Success -> {
+                    if (isAnimatedVisible) {
+                        LottieAnimation(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .constrainAs(loading) {
+                                    top.linkTo(parent.top)
+                                    bottom.linkTo(parent.bottom)
+                                    end.linkTo(endGuideLine)
+                                },
+                            composition = successComposition,
+                            progress = { progress },
+                        )
+                    }
+                }
+
+                is Result.Error -> {
+                    if (isAnimatedVisible) {
+                        LottieAnimation(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .constrainAs(loading) {
+                                    top.linkTo(parent.top)
+                                    bottom.linkTo(parent.bottom)
+                                    end.linkTo(endGuideLine)
+                                },
+                            composition = failComposition,
+                            progress = { progress },
+                        )
+                    }
+                }
+
+                else -> Unit
+            }
+        }
     }
 }
 
@@ -132,7 +207,8 @@ fun RecipeItem(
 @Composable
 fun RecipeItemPreview() {
     RecipeItem(
-        isLoading = false,
+        result = Result.Loading,
+        logRecipeId = 1L,
         recipe = Recipe(
             name = "Spaghetti Bolognese",
             healthScore = 100,

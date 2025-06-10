@@ -15,6 +15,7 @@ import com.forknowledge.feature.model.Recipe
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
@@ -124,10 +125,13 @@ class SearchViewModel @Inject constructor(
                     is Result.Loading -> Unit
                     is Result.Success -> {
                         logRecipeResult = Result.Success(Unit)
+                        delay(1000L)
                         loggedRecipeId = null
                     }
+
                     is Result.Error -> {
                         logRecipeResult = Result.Error(result.exception)
+                        delay(1000L)
                         loggedRecipeId = null
                     }
                 }
@@ -139,15 +143,16 @@ class SearchViewModel @Inject constructor(
                 )) {
                     is Result.Loading -> Unit
                     is Result.Success -> {
+                        hasLoggedFood = true
                         logRecipeResult = Result.Success(Unit)
                         loggedRecipeId = null
                     }
+
                     is Result.Error -> {
                         logRecipeResult = Result.Error(result.exception)
                         loggedRecipeId = null
                     }
                 }
-                hasLoggedFood = true
             }
         }
     }

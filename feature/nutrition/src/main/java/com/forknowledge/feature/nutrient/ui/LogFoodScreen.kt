@@ -233,7 +233,7 @@ fun LogFoodTopAppBar(
 fun ContentSection(
     recipes: List<Recipe>
 ) {
-    LazyColumn(
+    /*LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .background(White),
@@ -248,7 +248,7 @@ fun ContentSection(
                 )
             }
         }
-    }
+    }*/
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

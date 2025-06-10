@@ -28,7 +28,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import com.forknowledge.core.common.Result
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Grey8A949F
@@ -122,7 +121,8 @@ fun SearchScreen(
                     ) { index ->
                         recipes[index]?.let {
                             RecipeItem(
-                                isLoading = logRecipeResult is Result.Loading && loggedRecipeId == it.id,
+                                result = logRecipeResult,
+                                logRecipeId = loggedRecipeId,
                                 recipe = it,
                                 onLogRecipe = {
                                     viewModel.logRecipe(

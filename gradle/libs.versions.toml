@@ -28,6 +28,7 @@ constraintLayout = "1.1.1"
 retrofit = "3.0.0"
 okhttp = "4.12.0"
 paging = "3.3.6"
+lottie = "6.6.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -74,6 +75,7 @@ com-squareup-okhttp3-okhttp = { group = "com.squareup.okhttp3", name = "okhttp",
 com-squareup-okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 androidx-paging = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+com-airbnb-android-lottie = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

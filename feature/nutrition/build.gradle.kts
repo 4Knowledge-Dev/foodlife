@@ -47,4 +47,5 @@ dependencies {
     implementation(libs.androidx.lifecycle.compose)
     implementation(libs.androidx.paging)
     implementation(libs.androidx.paging.compose)
+    implementation(libs.com.airbnb.android.lottie)
 }
