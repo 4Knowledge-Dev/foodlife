@@ -50,7 +50,7 @@ data class NutrientResponse(
     val name: String,
     val amount: Double,
     val unit: String,
-    val percentOfDailyNeeds: Long
+    val percentOfDailyNeeds: Double
 ) {
 
     fun toNutrient() = Nutrient(

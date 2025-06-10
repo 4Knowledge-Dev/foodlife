@@ -28,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.forknowledge.core.common.Result
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Grey8A949F
@@ -37,24 +38,35 @@ import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.feature.nutrient.R
 import com.forknowledge.feature.nutrient.RecipeItem
 import kotlinx.serialization.Serializable
+import java.util.Date
 
 @Serializable
-object SearchRoute
+data class SearchRoute(
+    val meal: Long,
+    val hasLoggedFood: Boolean,
+    val dateInMillis: Long
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
+    meal: Long,
+    hasLoggedFood: Boolean,
+    dateInMillis: Long,
     onNavigateBack: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
     val isLoading = viewModel.isLoading
+    val logRecipeResult = viewModel.logRecipeResult
+    val loggedRecipeId = viewModel.loggedRecipeId
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val recipes = viewModel.recipes.collectAsLazyPagingItems()
 
     LaunchedEffect(Unit) {
+        viewModel.updateHasLoggedFood(hasLoggedFood)
         focusRequester.requestFocus()
     }
 
@@ -109,7 +121,17 @@ fun SearchScreen(
                         key = recipes.itemKey { it.id }
                     ) { index ->
                         recipes[index]?.let {
-                            RecipeItem(recipe = it)
+                            RecipeItem(
+                                isLoading = logRecipeResult is Result.Loading && loggedRecipeId == it.id,
+                                recipe = it,
+                                onLogRecipe = {
+                                    viewModel.logRecipe(
+                                        meal = meal,
+                                        date = Date(dateInMillis),
+                                        recipe = it
+                                    )
+                                }
+                            )
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 24.dp),
                                 color = GreyEBEBEB
