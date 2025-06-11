@@ -54,7 +54,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
-    implementation(libs.facebook.login)
     implementation(libs.firebase.firestore)
+    implementation(libs.facebook.login)
     implementation(libs.kotlinx.serialization.json)
 }

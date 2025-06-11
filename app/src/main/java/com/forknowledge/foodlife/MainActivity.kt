@@ -7,14 +7,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.facebook.CallbackManager
-import com.forknowledge.core.data.util.NetworkManager
+import com.forknowledge.core.data.network.NetworkManager
 import com.forknowledge.core.ui.theme.FoodLifeTheme
 import com.forknowledge.foodlife.ui.AppScreen
+import com.forknowledge.foodlife.ui.rememberAppState
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -41,11 +39,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             FoodLifeTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    AppScreen(rememberAppState(networkManager = networkManager))
-                }
+                AppScreen(rememberAppState(networkManager = networkManager))
             }
         }
     }

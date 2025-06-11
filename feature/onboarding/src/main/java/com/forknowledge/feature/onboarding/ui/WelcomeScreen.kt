@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
@@ -120,7 +121,7 @@ fun WelcomeScreen(
 
                 Icon(
                     modifier = Modifier.padding(start = 10.dp),
-                    painter = painterResource(id = com.forknowledge.core.ui.R.drawable.ic_arrow_forward),
+                    painter = painterResource(id = drawable.ic_arrow_next),
                     contentDescription = null
                 )
             }

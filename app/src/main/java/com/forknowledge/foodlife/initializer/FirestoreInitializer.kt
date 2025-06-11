@@ -11,7 +11,6 @@ import com.google.firebase.ktx.Firebase
 class FirestoreInitializer : Initializer<FirebaseFirestore> {
 
     override fun create(context: Context): FirebaseFirestore {
-        FirebaseFirestore.setLoggingEnabled(true)
         val firestore = Firebase.firestore
         if (BuildConfig.DEBUG) {
             /*firestore.useEmulator(

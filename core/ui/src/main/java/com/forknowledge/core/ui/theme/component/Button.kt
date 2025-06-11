@@ -121,7 +121,7 @@ fun AppButtonPreview() {
             fontFamily = openSansFamily,
             fontWeight = FontWeight.SemiBold
         ),
-        icon = com.forknowledge.core.ui.R.drawable.ic_arrow_forward,
+        icon = com.forknowledge.core.ui.R.drawable.ic_arrow_next,
         onClicked = { }
     )
 }
