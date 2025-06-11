@@ -1,6 +1,10 @@
 package com.forknowledge.core.common.extension
 
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -69,4 +73,19 @@ fun Date.toFirestoreDocumentIdByDate(): String {
     calendar.set(Calendar.SECOND, 0)
     calendar.set(Calendar.MILLISECOND, 0)
     return calendar.timeInMillis.toString()
+}
+
+/**
+ * Get local date from Epoch time.
+ * @return [LocalDate] object.
+ */
+fun Long.toLocalDate(): LocalDate {
+    return Instant.ofEpochSecond(this)
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate()
+}
+
+fun LocalDate.toDayAndDateString(): String {
+    val formatter = DateTimeFormatter.ofPattern("dd EEE", Locale.getDefault())
+    return formatter.format(this)
 }

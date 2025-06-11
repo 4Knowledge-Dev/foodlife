@@ -714,7 +714,7 @@ fun MealCard(
             onClick = { onNavigateToLogFood(label) }
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_add_solid),
+                painter = painterResource(drawable.ic_add_solid),
                 tint = Black374957,
                 contentDescription = null
             )

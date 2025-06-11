@@ -3,23 +3,19 @@ package com.forknowledge.feature.nutrient.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.runtime.Composable
@@ -43,14 +39,12 @@ import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Green86BF3E
 import com.forknowledge.core.ui.theme.GreenA1CE50
-import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.GreyF4F5F5
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.feature.model.Recipe
 import com.forknowledge.feature.model.logRecipes
 import com.forknowledge.feature.nutrient.R
-import com.forknowledge.feature.nutrient.RecipeItem
 import com.forknowledge.feature.nutrient.toMealName
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -195,19 +189,19 @@ fun LogFoodTopAppBar(
             )
         }
 
-        PrimaryTabRow(
+        SecondaryTabRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 24.dp),
             selectedTabIndex = selectedTabIndex,
             containerColor = White,
             indicator = {
-                TabRowDefaults.PrimaryIndicator(
+                TabRowDefaults.SecondaryIndicator(
                     modifier = Modifier.tabIndicatorOffset(
                         selectedTabIndex,
                         matchContentSize = true
                     ),
-                    width = 70.dp,
+                    height = 2.dp,
                     color = GreenA1CE50,
                 )
             }

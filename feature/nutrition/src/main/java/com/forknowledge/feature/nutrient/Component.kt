@@ -42,6 +42,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlin.math.roundToInt
+import com.forknowledge.core.ui.R.drawable
 
 const val ANIMATION_DURATION = 1000L
 
@@ -78,7 +79,7 @@ fun RecipeItem(
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
                 },
-            painter = painterResource(R.drawable.img_sample),
+            painter = painterResource(drawable.img_sample),
             contentScale = ContentScale.Crop,
             contentDescription = null
         )
@@ -144,7 +145,7 @@ fun RecipeItem(
                         bottom.linkTo(parent.bottom)
                         end.linkTo(endGuideLine)
                     },
-                painter = painterResource(R.drawable.ic_add_solid),
+                painter = painterResource(drawable.ic_add_solid),
                 tint = Black374957,
                 contentDescription = null
             )
