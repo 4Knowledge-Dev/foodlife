@@ -79,7 +79,7 @@ fun AppScreen(appState: AppState) {
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding),
             navController = appState.navController,
-            startDestination = NutrientRoute,
+            startDestination = PlannerRoute,
         ) {
 
             authenticationNavGraph(navController = appState.navController)
