@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="meal_planner_bottom_sheet_add_recipe_label">Add</string>
+    <string name="meal_planner_bottom_sheet_swap_recipe_label">Swap</string>
+    <string name="meal_planner_bottom_sheet_delete_recipe_label">Delete</string>
+</resources>

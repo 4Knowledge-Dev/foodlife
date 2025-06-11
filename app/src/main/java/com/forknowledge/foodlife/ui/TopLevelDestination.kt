@@ -14,18 +14,18 @@ enum class TopLevelDestination(
     val route: KClass<*>,
 ) {
 
-    NUTRIENT(
-        unselectedIcon = R.drawable.ic_unselected_nutrient,
-        selectedIcon = R.drawable.ic_selected_nutrient,
-        titleText = R.string.top_level_destination_nutrient_title,
-        route = NutrientRoute::class
-    ),
-
     PLANNER(
         unselectedIcon = R.drawable.ic_unselected_planner,
         selectedIcon = R.drawable.ic_selected_planner,
         titleText = R.string.top_level_destination_planner_title,
         route = PlannerRoute::class
+    ),
+
+    NUTRIENT(
+        unselectedIcon = R.drawable.ic_unselected_nutrient,
+        selectedIcon = R.drawable.ic_selected_nutrient,
+        titleText = R.string.top_level_destination_nutrient_title,
+        route = NutrientRoute::class
     ),
 
     EXPLORE(
