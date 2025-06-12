@@ -1,18 +1,17 @@
 package com.forknowledge.core.domain.component
 
 import android.content.Context
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
+import android.util.Log
 import com.forknowledge.core.common.Result
-import com.google.firebase.auth.FacebookAuthProvider
+import com.forknowledge.core.data.FirebaseException.FIREBASE_EXCEPTION
+import com.forknowledge.core.data.FirebaseException.FIREBASE_GET_DATA_EXCEPTION
+import com.forknowledge.core.data.FirestoreReference.USER_COLLECTION
+import com.forknowledge.core.data.FirestoreReference.USER_DOCUMENT_IS_NEW_USER_FIELD
+import com.forknowledge.core.domain.LoginResultType
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.GoogleAuthProvider
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.callbackFlow
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -20,72 +19,37 @@ import javax.inject.Inject
 class AuthenticationManagerImpl @Inject constructor(
     private val auth: FirebaseAuth,
     private val credentialManager: CredentialsManager,
-    private val facebookCallbackManager: CallbackManager,
+    private val firestore: FirebaseFirestore
 ) : AuthenticationManager {
 
     override fun signInWithGoogleCredential(context: Context) = flow {
         try {
             val token = credentialManager.googleSignInCredentials(context)
             val credential = GoogleAuthProvider.getCredential(token, null)
-            auth
+            val userInfo = auth
                 .signInWithCredential(credential)
                 .await()
-            emit(Result.Success(Unit))
 
-        } catch (e: FirebaseAuthException) {
-            emit(
-                Result.Error(Exception("Failed to log user in: ${e.message}", e))
-            )
-        } catch (e: Exception) {
-            emit(
-                Result.Error(Exception("Unexpected error occurred: ${e.message}", e))
-            )
-        }
-    }
-
-    override fun signInWithFacebookCredential() = callbackFlow {
-        LoginManager.getInstance().registerCallback(
-            facebookCallbackManager,
-            object : FacebookCallback<LoginResult> {
-                override fun onCancel() {
-                    trySend(
-                        Result.Error(Exception("Canceled by user!"))
-                    )
-                }
-
-                override fun onError(error: FacebookException) {
-                    trySend(
-                        Result.Error(
-                            Exception("Failed to log user in: ${error.message}", error)
-                        )
-                    )
-                }
-
-                override fun onSuccess(result: LoginResult) {
-                    val credential = FacebookAuthProvider.getCredential(result.accessToken.token)
-                    auth.signInWithCredential(credential)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                trySend(Result.Success(Unit))
-                            } else {
-                                task.exception?.let { e ->
-                                    trySend(
-                                        Result.Error(
-                                            Exception("Failed to log user in: ${e.message}", e)
-                                        )
-                                    )
-                                } ?: trySend(
-                                    Result.Error(
-                                        Exception("Failed to log user in")
-                                    )
-                                )
-                            }
-                        }
-                }
+            if (userInfo.user != null && userInfo.additionalUserInfo != null) {
+                emit(
+                    if (userInfo.additionalUserInfo!!.isNewUser) {
+                        createUserData(userInfo.user!!.uid)
+                    } else {
+                        LoginResultType.SUCCESS_OLD_USER
+                    }
+                )
+            } else {
+                Log.e(FIREBASE_GET_DATA_EXCEPTION, "No user information founded!")
+                auth.signOut()
+                emit(LoginResultType.FAIL)
             }
-        )
-
-        awaitClose { LoginManager.getInstance().unregisterCallback(facebookCallbackManager) }
+        } catch (e: FirebaseAuthException) {
+            Log.e(FIREBASE_EXCEPTION, "Failed to log user in: ${e.message}", e)
+            emit(LoginResultType.FAIL)
+        } catch (e: Exception) {
+            Log.e(FIREBASE_EXCEPTION, "Unexpected error occurred: ${e.message}", e)
+            emit(LoginResultType.FAIL)
+        }
     }
 
     override fun signUpWithEmail(
@@ -93,18 +57,22 @@ class AuthenticationManagerImpl @Inject constructor(
         password: String,
     ) = flow {
         try {
-            auth
+            val userInfo = auth
                 .createUserWithEmailAndPassword(email, password)
                 .await()
-            emit(Result.Success(Unit))
+            if (userInfo.user != null && userInfo.additionalUserInfo != null) {
+                emit(createUserData(userInfo.user!!.uid))
+            } else {
+                Log.e(FIREBASE_GET_DATA_EXCEPTION, "No user information founded!")
+                auth.signOut()
+                emit(LoginResultType.FAIL)
+            }
         } catch (e: FirebaseAuthException) {
-            emit(
-                Result.Error(Exception("Failed to create user: ${e.message}", e))
-            )
+            Log.e(FIREBASE_EXCEPTION, "Failed to create user: ${e.message}", e)
+            emit(LoginResultType.FAIL)
         } catch (e: Exception) {
-            emit(
-                Result.Error(Exception("Unexpected error occurred: ${e.message}", e))
-            )
+            Log.e(FIREBASE_EXCEPTION, "Unexpected error occurred: ${e.message}", e)
+            emit(LoginResultType.FAIL)
         }
     }
 
@@ -125,6 +93,19 @@ class AuthenticationManagerImpl @Inject constructor(
             emit(
                 Result.Error(Exception("Unexpected error occurred: ${e.message}", e))
             )
+        }
+    }
+
+    private suspend fun createUserData(userId: String): LoginResultType {
+        return try {
+            firestore.collection(USER_COLLECTION).document(userId)
+                .set(hashMapOf(USER_DOCUMENT_IS_NEW_USER_FIELD to true))
+                .await()
+            LoginResultType.SUCCESS_NEW_USER
+        } catch (e: Exception) {
+            Log.e(FIREBASE_EXCEPTION, "Failed to create user data", e)
+            auth.currentUser!!.delete()
+            LoginResultType.FAIL
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.forknowledge.feature.authentication.ui.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
+import com.forknowledge.core.domain.LoginResultType
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.GreyA7A6A6
@@ -50,7 +53,7 @@ import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppAlertDialog
 import com.forknowledge.core.ui.theme.component.AppButton
 import com.forknowledge.core.ui.theme.component.AppTextField
-import com.forknowledge.core.ui.theme.component.LoadingIndicator
+import com.forknowledge.core.ui.theme.component.LoadingIndicatorBox
 import com.forknowledge.core.ui.theme.openSansFamily
 import com.forknowledge.feature.authentication.R
 import com.forknowledge.feature.authentication.SignUpWithEmailRoute
@@ -64,15 +67,32 @@ internal fun SignUpWithEmailScreen(
     viewModel: AuthenticationViewModel,
     onBackClicked: () -> Unit,
     onNavigateToLoginClicked: () -> Unit,
+    onNavigateToOnboarding: () -> Unit
 ) {
+    val context = LocalContext.current
+
     val email by viewModel.email.collectAsStateWithLifecycle()
     val password by viewModel.password.collectAsStateWithLifecycle()
     val shouldShowEmailError by viewModel.shouldShowEmailError
     val shouldShowPasswordError by viewModel.shouldShowSignUpPasswordError
     val isRegisterButtonEnabled by viewModel.isRegisterButtonEnabled
+    val isLoading = viewModel.shouldShowLoading
+    val dialogError = viewModel.alertDialogError
+    val signUpState by viewModel.signUpState.collectAsStateWithLifecycle()
 
-    val isLoading by viewModel.shouldShowLoading
-    val dialogError by viewModel.alertDialogError
+    when (signUpState) {
+        LoginResultType.SUCCESS_NEW_USER -> onNavigateToOnboarding()
+        LoginResultType.FAIL -> {
+            Toast.makeText(
+                context,
+                stringResource(R.string.authentication_sign_in_fail),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        else -> { /* Do nothing */
+        }
+    }
 
     Box(contentAlignment = Alignment.Center) {
         SignUpSection(
@@ -95,7 +115,7 @@ internal fun SignUpWithEmailScreen(
         )
 
         if (isLoading) {
-            LoadingIndicator()
+            LoadingIndicatorBox()
         }
 
         dialogError?.let { message ->
@@ -141,7 +161,7 @@ internal fun SignUpSection(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 16.dp)
+            .padding(vertical = 24.dp)
             .imePadding()
     ) {
 
@@ -280,17 +300,13 @@ internal fun SignUpSection(
         Spacer(modifier = Modifier.weight(1F))
 
         HorizontalDivider(
-            modifier = Modifier.padding(top = 48.dp),
+            modifier = Modifier.padding(bottom = 24.dp),
             color = GreyB7BDC4
         )
 
         AppButton(
             modifier = Modifier
-                .padding(
-                    top = 24.dp,
-                    start = 16.dp,
-                    end = 16.dp
-                )
+                .padding(horizontal = 24.dp)
                 .height(50.dp)
                 .fillMaxWidth(),
             enabled = isButtonEnabled,

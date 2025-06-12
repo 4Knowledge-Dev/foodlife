@@ -104,7 +104,7 @@ internal fun SignInSection(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 16.dp)
+            .padding(vertical = 24.dp)
             .imePadding()
     ) {
 
@@ -204,15 +204,14 @@ internal fun SignInSection(
 
         Spacer(modifier = Modifier.weight(1F))
 
-        HorizontalDivider(color = GreyB7BDC4)
+        HorizontalDivider(
+            modifier = Modifier.padding(bottom = 24.dp),
+            color = GreyB7BDC4
+        )
 
         AppButton(
             modifier = Modifier
-                .padding(
-                    top = 24.dp,
-                    start = 16.dp,
-                    end = 16.dp
-                )
+                .padding(horizontal = 24.dp)
                 .height(50.dp)
                 .fillMaxWidth(),
             enabled = isButtonEnabled,

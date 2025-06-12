@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.androidx.hilt)
     kapt(libs.androidx.hilt.compiler)
     implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.com.squareup.retrofit2)
     implementation(libs.converter.kotlinx.serialization)

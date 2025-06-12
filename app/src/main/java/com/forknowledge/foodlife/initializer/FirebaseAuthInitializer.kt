@@ -10,10 +10,10 @@ class FirebaseAuthInitializer : Initializer<FirebaseAuth> {
     override fun create(context: Context): FirebaseAuth {
         val firebaseAuth = FirebaseAuth.getInstance()
         if (BuildConfig.DEBUG) {
-            firebaseAuth.useEmulator(
+            /*firebaseAuth.useEmulator(
                 EmulatorDebug.EMULATOR_HOST,
                 EmulatorDebug.AUTH_EMULATOR_PORT
-            )
+            )*/
         }
         return firebaseAuth
     }

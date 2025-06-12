@@ -1,6 +1,7 @@
 package com.forknowledge.feature.onboarding
 
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
@@ -16,6 +17,12 @@ data object WelcomeRoute
 
 @Serializable
 data object SurveyRoute
+
+fun NavController.navigateToOnboarding() = navigate(OnboardingRoute) {
+    popUpTo(graph.findStartDestination().id) {
+        inclusive = true
+    }
+}
 
 fun NavGraphBuilder.onboardingNavGraph(navController: NavController) {
     navigation<OnboardingRoute>(startDestination = WelcomeRoute) {
