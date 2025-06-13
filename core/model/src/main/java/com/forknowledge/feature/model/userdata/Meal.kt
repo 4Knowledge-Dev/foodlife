@@ -1,4 +1,4 @@
-package com.forknowledge.feature.model
+package com.forknowledge.feature.model.userdata
 
 data class Meal(
     val calories: Long = 0,

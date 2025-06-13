@@ -1,13 +1,9 @@
-package com.forknowledge.core.domain.component
+package com.forknowledge.core.data
 
 import android.content.Context
 import android.util.Log
-import com.forknowledge.core.data.FirebaseException.FIREBASE_EXCEPTION
-import com.forknowledge.core.data.FirebaseException.FIREBASE_GET_DATA_EXCEPTION
-import com.forknowledge.core.data.FirestoreReference.USER_COLLECTION
-import com.forknowledge.core.data.FirestoreReference.USER_DOCUMENT_IS_NEW_USER_FIELD
-import com.forknowledge.core.domain.LoginResultType
-import com.forknowledge.feature.model.User
+import com.forknowledge.core.data.datatype.LoginResultType
+import com.forknowledge.feature.model.userdata.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.GoogleAuthProvider
@@ -33,21 +29,28 @@ class AuthenticationManagerImpl @Inject constructor(
             if (userInfo.user != null && userInfo.additionalUserInfo != null) {
                 emit(
                     if (userInfo.additionalUserInfo!!.isNewUser) {
-                        createUserData(userInfo.user!!.uid)
+                        createUserData(
+                            userId = userInfo.user!!.uid,
+                            email = userInfo.user!!.email!!
+                        )
                     } else {
                         getUserState(userInfo.user!!.uid)
                     }
                 )
             } else {
-                Log.e(FIREBASE_GET_DATA_EXCEPTION, "No user information founded!")
+                Log.e(FirebaseException.FIREBASE_GET_DATA_EXCEPTION, "No user information founded!")
                 auth.signOut()
                 emit(LoginResultType.FAIL)
             }
         } catch (e: FirebaseAuthException) {
-            Log.e(FIREBASE_EXCEPTION, "Failed to log user in: ${e.message}", e)
+            Log.e(FirebaseException.FIREBASE_EXCEPTION, "Failed to log user in: ${e.message}", e)
             emit(LoginResultType.FAIL)
         } catch (e: Exception) {
-            Log.e(FIREBASE_EXCEPTION, "Unexpected error occurred: ${e.message}", e)
+            Log.e(
+                FirebaseException.FIREBASE_EXCEPTION,
+                "Unexpected error occurred: ${e.message}",
+                e
+            )
             emit(LoginResultType.FAIL)
         }
     }
@@ -61,17 +64,26 @@ class AuthenticationManagerImpl @Inject constructor(
                 .createUserWithEmailAndPassword(email, password)
                 .await()
             if (userInfo.user != null && userInfo.additionalUserInfo != null) {
-                emit(createUserData(userInfo.user!!.uid))
+                emit(
+                    createUserData(
+                        userId = userInfo.user!!.uid,
+                        email = userInfo.user!!.email!!
+                    )
+                )
             } else {
-                Log.e(FIREBASE_GET_DATA_EXCEPTION, "No user information founded!")
+                Log.e(FirebaseException.FIREBASE_GET_DATA_EXCEPTION, "No user information founded!")
                 auth.signOut()
                 emit(LoginResultType.FAIL)
             }
         } catch (e: FirebaseAuthException) {
-            Log.e(FIREBASE_EXCEPTION, "Failed to create user: ${e.message}", e)
+            Log.e(FirebaseException.FIREBASE_EXCEPTION, "Failed to create user: ${e.message}", e)
             emit(LoginResultType.FAIL)
         } catch (e: Exception) {
-            Log.e(FIREBASE_EXCEPTION, "Unexpected error occurred: ${e.message}", e)
+            Log.e(
+                FirebaseException.FIREBASE_EXCEPTION,
+                "Unexpected error occurred: ${e.message}",
+                e
+            )
             emit(LoginResultType.FAIL)
         }
     }
@@ -86,22 +98,33 @@ class AuthenticationManagerImpl @Inject constructor(
                 .await()
             emit(LoginResultType.SUCCESS_OLD_USER)
         } catch (e: FirebaseAuthException) {
-            Log.e(FIREBASE_EXCEPTION, "Failed to log user in: ${e.message}", e)
+            Log.e(FirebaseException.FIREBASE_EXCEPTION, "Failed to log user in: ${e.message}", e)
             emit(LoginResultType.FAIL)
         } catch (e: Exception) {
-            Log.e(FIREBASE_EXCEPTION, "Unexpected error occurred: ${e.message}", e)
+            Log.e(
+                FirebaseException.FIREBASE_EXCEPTION,
+                "Unexpected error occurred: ${e.message}",
+                e
+            )
             emit(LoginResultType.FAIL)
         }
     }
 
-    private suspend fun createUserData(userId: String): LoginResultType {
+    private suspend fun createUserData(
+        userId: String,
+        email: String
+    ): LoginResultType {
+        val user = hashMapOf(
+            FirestoreReference.USER_DOCUMENT_IS_NEW_USER_FIELD to true,
+            FirestoreReference.USER_DOCUMENT_EMAIL_FIELD to email
+        )
         return try {
-            firestore.collection(USER_COLLECTION).document(userId)
-                .set(hashMapOf(USER_DOCUMENT_IS_NEW_USER_FIELD to true))
+            firestore.collection(FirestoreReference.USER_COLLECTION).document(userId)
+                .set(user)
                 .await()
             LoginResultType.SUCCESS_NEW_USER
         } catch (e: Exception) {
-            Log.e(FIREBASE_EXCEPTION, "Failed to create user data", e)
+            Log.e(FirebaseException.FIREBASE_EXCEPTION, "Failed to create user data", e)
             auth.currentUser!!.delete()
             LoginResultType.FAIL
         }
@@ -109,7 +132,7 @@ class AuthenticationManagerImpl @Inject constructor(
 
     private suspend fun getUserState(userId: String): LoginResultType {
         return try {
-            val user = firestore.collection(USER_COLLECTION).document(userId)
+            val user = firestore.collection(FirestoreReference.USER_COLLECTION).document(userId)
                 .get()
                 .await()
                 .toObject(User::class.java)
@@ -121,7 +144,7 @@ class AuthenticationManagerImpl @Inject constructor(
                 }
             } ?: LoginResultType.FAIL
         } catch (e: Exception) {
-            Log.e(FIREBASE_GET_DATA_EXCEPTION, "Failed to get user data", e)
+            Log.e(FirebaseException.FIREBASE_GET_DATA_EXCEPTION, "Failed to get user data", e)
             LoginResultType.FAIL
         }
     }

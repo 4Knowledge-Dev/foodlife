@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.forknowledge.core.api.FoodApiService
 import com.forknowledge.core.data.SEARCH_PAGE_SIZE
-import com.forknowledge.feature.model.Recipe
+import com.forknowledge.feature.model.userdata.Recipe
 import kotlinx.serialization.InternalSerializationApi
 import okio.IOException
 import retrofit2.HttpException

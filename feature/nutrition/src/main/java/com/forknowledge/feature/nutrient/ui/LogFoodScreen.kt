@@ -42,8 +42,8 @@ import com.forknowledge.core.ui.theme.GreenA1CE50
 import com.forknowledge.core.ui.theme.GreyF4F5F5
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
-import com.forknowledge.feature.model.Recipe
-import com.forknowledge.feature.model.logRecipes
+import com.forknowledge.feature.model.userdata.Recipe
+import com.forknowledge.feature.model.userdata.logRecipes
 import com.forknowledge.feature.nutrient.R
 import com.forknowledge.feature.nutrient.toMealName
 import kotlinx.coroutines.launch

@@ -11,7 +11,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.forknowledge.core.data.network.NetworkManager
+import com.forknowledge.core.data.NetworkManager
 import com.forknowledge.feature.explore.navigateToExplore
 import com.forknowledge.feature.nutrient.navigateToNutrient
 import com.forknowledge.feature.planner.navigateToPlanner

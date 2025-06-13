@@ -3,7 +3,7 @@
 
     <application>
         <activity
-            android:name=".component.MainActivity"
+            android:name=".authentication.MainActivity"
             android:exported="false" />
     </application>
 

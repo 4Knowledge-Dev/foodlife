@@ -11,7 +11,7 @@ import com.forknowledge.core.common.asFlowResult
 import com.forknowledge.core.common.extension.toFirestoreDocumentIdByDate
 import com.forknowledge.core.data.FoodRepository
 import com.forknowledge.core.data.UserRepository
-import com.forknowledge.feature.model.Recipe
+import com.forknowledge.feature.model.userdata.Recipe
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview

@@ -1,4 +1,4 @@
-package com.forknowledge.feature.model
+package com.forknowledge.feature.model.userdata
 
 import java.util.Date
 

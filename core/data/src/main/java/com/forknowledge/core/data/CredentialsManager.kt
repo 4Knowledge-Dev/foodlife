@@ -1,7 +1,6 @@
-package com.forknowledge.core.domain.component
+package com.forknowledge.core.data
 
 import android.content.Context
-
 
 interface CredentialsManager {
 

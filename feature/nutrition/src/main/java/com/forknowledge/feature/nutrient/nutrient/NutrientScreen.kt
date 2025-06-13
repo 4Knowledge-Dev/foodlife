@@ -80,7 +80,7 @@ import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.YellowFB880C
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.DatePickerModal
-import com.forknowledge.feature.model.TargetNutrition
+import com.forknowledge.feature.model.userdata.TargetNutrition
 import com.forknowledge.feature.nutrient.R
 import java.util.Date
 import kotlin.math.abs

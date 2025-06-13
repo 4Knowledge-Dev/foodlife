@@ -1,4 +1,4 @@
-package com.forknowledge.core.domain.component
+package com.forknowledge.core.data
 
 import android.content.Context
 import android.util.Log
@@ -9,7 +9,6 @@ import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.credentials.exceptions.NoCredentialException
-import com.forknowledge.core.domain.BuildConfig
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -124,7 +123,7 @@ class CredentialsManagerImpl @Inject constructor(
     }
 
     /**
-     * Handle credential failure. If the exception is [GetCredentialCancellationException] then return null.
+     * Handle credential failure. If the exception is [androidx.credentials.exceptions.GetCredentialCancellationException] then return null.
      * Otherwise, try to get another credential.
      * @param [context] context of activity
      * @param [exception] credential exception.

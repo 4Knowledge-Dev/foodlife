@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.forknowledge.core.common.getCurrentDate
 import com.forknowledge.core.data.UserRepository
 import com.forknowledge.core.data.model.NutritionDisplayData
-import com.forknowledge.feature.model.TargetNutrition
+import com.forknowledge.feature.model.userdata.TargetNutrition
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
