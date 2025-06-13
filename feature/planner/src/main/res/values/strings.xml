@@ -13,6 +13,11 @@
     <string name="meal_planner_meal_plan_lunch_label">Lunch</string>
     <string name="meal_planner_meal_plan_dinner_label">Dinner</string>
     <string name="meal_planner_meal_plan_snack_label">Snack</string>
+    <string name="meal_planner_meal_plan_no_plan_today_text">You don’t have a meal plan today!</string>
+    <string name="meal_planner_meal_plan_internet_error_text">Fail to load meal plan!</string>
+    <string name="meal_planner_meal_plan_button_text_reload">Reload</string>
+
+    // Bottom sheet
     <string name="meal_planner_bottom_sheet_add_recipe_label">Add</string>
     <string name="meal_planner_bottom_sheet_swap_recipe_label">Swap</string>
     <string name="meal_planner_bottom_sheet_delete_recipe_label">Delete</string>

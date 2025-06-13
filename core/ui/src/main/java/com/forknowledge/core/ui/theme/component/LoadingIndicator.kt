@@ -30,9 +30,11 @@ fun LoadingIndicator(
 }
 
 @Composable
-fun LoadingIndicatorBox() {
+fun LoadingIndicatorBox(
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(100.dp)
             .background(
                 color = GreyB7BDC4.copy(alpha = 0.2f),

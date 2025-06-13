@@ -1,6 +1,5 @@
 package com.forknowledge.core.data
 
-import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -66,9 +65,6 @@ class FoodRepositoryImpl @Inject constructor(
                 )
             }
             emit(mealPlan)
-        } else {
-            Log.e(GET_MEAL_PLAN_EXCEPTION, "Fail on getMealPlan: ${response.errorBody()}")
-            emit(emptyList<MealPlanDisplayData>())
         }
     }
 

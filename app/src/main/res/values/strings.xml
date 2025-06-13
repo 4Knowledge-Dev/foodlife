@@ -6,9 +6,4 @@
     <string name="top_level_destination_nutrient_title">Nutrient</string>
     <string name="top_level_destination_explore_title">Explore</string>
     <string name="internet_error_not_connected">⚠️ You aren’t connected to the internet</string>
-
-    // Facebook Authentication
-    <string name="facebook_app_id">1831959354291966</string>
-    <string name="fb_login_protocol_scheme">fb1831959354291966</string>
-    <string name="facebook_client_token">b30f12e9d26e5c0408c815af938f961c</string>
 </resources>
