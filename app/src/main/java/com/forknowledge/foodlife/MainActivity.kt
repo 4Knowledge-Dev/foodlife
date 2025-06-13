@@ -8,18 +8,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
-import com.forknowledge.core.data.model.UserAuthState
 import com.forknowledge.core.data.network.NetworkManager
 import com.forknowledge.core.ui.theme.FoodLifeTheme
-import com.forknowledge.feature.authentication.AuthenticationRoute
-import com.forknowledge.feature.onboarding.OnboardingRoute
-import com.forknowledge.feature.planner.PlannerRoute
 import com.forknowledge.foodlife.ui.AppScreen
 import com.forknowledge.foodlife.ui.rememberAppState
-import com.forknowledge.foodlife.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint

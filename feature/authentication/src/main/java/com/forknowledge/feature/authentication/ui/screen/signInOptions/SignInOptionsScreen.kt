@@ -1,4 +1,4 @@
-package com.forknowledge.feature.authentication.ui.screen
+package com.forknowledge.feature.authentication.ui.screen.signInOptions
 
 import android.widget.Toast
 import androidx.annotation.ColorRes
@@ -64,12 +64,11 @@ import com.forknowledge.core.ui.theme.GreyA7A6A6
 import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.openSansFamily
 import com.forknowledge.feature.authentication.R
-import com.forknowledge.feature.authentication.ui.AuthenticationViewModel
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 fun SignInOptionScreen(
-    viewModel: AuthenticationViewModel,
+    viewModel: GoogleSignInViewModel,
     signInWithEmailClicked: () -> Unit,
     onNavigateToOnboarding: () -> Unit,
     onNavigateToPlanner: () -> Unit
@@ -149,7 +148,6 @@ fun SignInOptionScreen(
         )
 
         SignInUiSection(
-            onSignInWithAvailableCredentials = { viewModel.signInWithAvailableCredentials(context) },
             onSignInWithEmailClicked = signInWithEmailClicked,
             onSignInWithGoogleClicked = { viewModel.signInWithGoogle(context) }
         )
@@ -158,7 +156,6 @@ fun SignInOptionScreen(
 
 @Composable
 internal fun SignInUiSection(
-    onSignInWithAvailableCredentials: () -> Unit,
     onSignInWithEmailClicked: () -> Unit,
     onSignInWithGoogleClicked: () -> Unit
 ) {
@@ -336,7 +333,6 @@ fun SignInWithGoogleButtonPreview() {
 @Composable
 fun SignInUiSectionPreview() {
     SignInUiSection(
-        onSignInWithAvailableCredentials = { },
         onSignInWithEmailClicked = { },
         onSignInWithGoogleClicked = { }
     )

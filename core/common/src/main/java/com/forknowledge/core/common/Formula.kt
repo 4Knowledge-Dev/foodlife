@@ -1,6 +1,8 @@
 package com.forknowledge.core.common
 
 import com.forknowledge.core.common.healthtype.Goal
+import com.forknowledge.core.common.healthtype.Nutrient
+import kotlin.math.roundToLong
 
 /**
  * Calculate target calories per day to gain or loss [weightPerWeek].
@@ -32,3 +34,25 @@ fun calculateTargetCalories(
  * @return calories need deficiting or excessing per day loss/gain [weightPerWeek].
  */
 fun getDeficitOrExcessCaloriesPerDay(weightPerWeek: Double) = weightPerWeek / 0.1 * 100
+
+/**
+ * Calculate calories from nutrient amount.
+ * @param nutrient nutrient type.
+ * @param amount nutrient amount.
+ * @return calories from nutrient amount.
+ */
+fun nutrientAmountToCalories(
+    nutrient: Nutrient,
+    amount: Long
+): Long = amount * nutrient.kcal
+
+/**
+ * Calculate nutrient amount(g) from calories.
+ * @param nutrient nutrient type.
+ * @param calories calories.
+ * @return nutrient amount(g) from calories.
+ */
+fun caloriesToNutrientAmount(
+    nutrient: Nutrient,
+    calories: Double
+): Long = (calories / nutrient.kcal).roundToLong()

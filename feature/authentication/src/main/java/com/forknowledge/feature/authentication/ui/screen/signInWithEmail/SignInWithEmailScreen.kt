@@ -1,5 +1,6 @@
-package com.forknowledge.feature.authentication.ui.screen
+package com.forknowledge.feature.authentication.ui.screen.signInWithEmail
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
+import com.forknowledge.core.domain.LoginResultType
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.GreyB7BDC4
@@ -41,7 +44,6 @@ import com.forknowledge.core.ui.theme.component.AppButton
 import com.forknowledge.core.ui.theme.component.AppTextField
 import com.forknowledge.feature.authentication.R
 import com.forknowledge.feature.authentication.SignInWithEmailRoute
-import com.forknowledge.feature.authentication.ui.AuthenticationViewModel
 
 fun NavController.navigateToSignInWithEmail(navOptions: NavOptions? = null) =
     navigate(SignInWithEmailRoute, navOptions)
@@ -51,15 +53,31 @@ internal fun SignInWithEmailScreen(
     viewModel: AuthenticationViewModel,
     onBackClicked: () -> Unit,
     onNavigateToRegisterClicked: () -> Unit,
+    onNavigateToPlanner: () -> Unit
 ) {
+    val context = LocalContext.current
+
     val email by viewModel.email.collectAsStateWithLifecycle()
     val password by viewModel.password.collectAsStateWithLifecycle()
     val shouldShowEmailError by viewModel.shouldShowEmailError
     val isEmailValidated by viewModel.isEmailValidated
     val isButtonEnabled by viewModel.isLoginButtonEnabled
+    val signInState by viewModel.signInState.collectAsStateWithLifecycle()
+
+    when (signInState) {
+        LoginResultType.SUCCESS_OLD_USER -> onNavigateToPlanner()
+        LoginResultType.FAIL -> {
+            Toast.makeText(
+                context,
+                stringResource(R.string.authentication_sign_in_fail),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        else -> { /* Do nothing */ }
+    }
 
     if (isEmailValidated) {
-        /* Sign in logic */
+        viewModel.signInWithEmail(email)
     }
 
     SignInSection(

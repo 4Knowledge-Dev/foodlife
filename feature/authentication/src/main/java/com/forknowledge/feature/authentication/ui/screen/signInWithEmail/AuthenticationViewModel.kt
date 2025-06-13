@@ -1,13 +1,11 @@
-package com.forknowledge.feature.authentication.ui
+package com.forknowledge.feature.authentication.ui.screen.signInWithEmail
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.forknowledge.core.common.Result
 import com.forknowledge.core.domain.LoginResultType
 import com.forknowledge.core.domain.component.AuthenticationManager
 import com.forknowledge.feature.authentication.extension.isValidEmail
@@ -42,24 +40,11 @@ class AuthenticationViewModel @Inject constructor(
     internal var alertDialogError by mutableStateOf<String?>(null)
         private set
 
-    private val _loginState = MutableStateFlow<LoginResultType>(LoginResultType.NONE)
-    val loginState: StateFlow<LoginResultType> = _loginState
+    private val _signInState = MutableStateFlow<LoginResultType>(LoginResultType.NONE)
+    val signInState: StateFlow<LoginResultType> = _signInState
 
     private val _signUpState = MutableStateFlow<LoginResultType>(LoginResultType.NONE)
     val signUpState: StateFlow<LoginResultType> = _signUpState
-
-    fun signInWithAvailableCredentials(context: Context) {
-    }
-
-    fun signInWithGoogle(context: Context) {
-        viewModelScope.launch {
-            authenticationManager
-                .signInWithGoogleCredential(context)
-                .collect { resultType ->
-                    _loginState.update { resultType }
-                }
-        }
-    }
 
     fun updateEmail(email: String) {
         shouldShowEmailError.value = false
@@ -83,19 +68,8 @@ class AuthenticationViewModel @Inject constructor(
     fun signInWithEmail(email: String) {
         viewModelScope.launch {
             authenticationManager.signInWithEmail(email, password.value)
-                .collectLatest { result ->
-                    when (result) {
-                        is Result.Loading -> {}
-
-                        is Result.Success -> {
-                            shouldShowLoading = false
-                        }
-
-                        is Result.Error -> {
-                            shouldShowLoading = false
-                            alertDialogError = result.exception.message
-                        }
-                    }
+                .collectLatest { resultType ->
+                    _signInState.update { resultType }
                 }
         }
     }
@@ -106,9 +80,9 @@ class AuthenticationViewModel @Inject constructor(
             authenticationManager.signUpWithEmail(
                 email.value,
                 password.value
-            ).collect {
+            ).collect { resultType ->
                 shouldShowLoading = false
-                _signUpState.update { it }
+                _signUpState.update { resultType }
             }
         }
     }
@@ -126,5 +100,7 @@ class AuthenticationViewModel @Inject constructor(
         savedStateHandle[PASSWORD_KEY] = ""
         isLoginButtonEnabled.value = false
         isRegisterButtonEnabled.value = false
+        _signInState.update { LoginResultType.NONE }
+        _signUpState.update { LoginResultType.NONE }
     }
 }

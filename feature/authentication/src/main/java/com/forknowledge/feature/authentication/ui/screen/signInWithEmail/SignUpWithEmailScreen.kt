@@ -1,4 +1,4 @@
-package com.forknowledge.feature.authentication.ui.screen
+package com.forknowledge.feature.authentication.ui.screen.signInWithEmail
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -57,7 +57,6 @@ import com.forknowledge.core.ui.theme.component.LoadingIndicatorBox
 import com.forknowledge.core.ui.theme.openSansFamily
 import com.forknowledge.feature.authentication.R
 import com.forknowledge.feature.authentication.SignUpWithEmailRoute
-import com.forknowledge.feature.authentication.ui.AuthenticationViewModel
 
 fun NavController.navigateToSignUpWithEmail(navOptions: NavOptions? = null) =
     navigate(SignUpWithEmailRoute, navOptions)
@@ -85,7 +84,7 @@ internal fun SignUpWithEmailScreen(
         LoginResultType.FAIL -> {
             Toast.makeText(
                 context,
-                stringResource(R.string.authentication_sign_in_fail),
+                stringResource(R.string.authentication_sign_up_fail),
                 Toast.LENGTH_SHORT
             ).show()
         }

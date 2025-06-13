@@ -47,7 +47,7 @@ import com.forknowledge.feature.onboarding.onboardingNavGraph
 import com.forknowledge.feature.planner.PlannerRoute
 import com.forknowledge.feature.planner.PlannerScreen
 import com.forknowledge.foodlife.R
-import com.forknowledge.foodlife.viewmodel.MainViewModel
+import com.forknowledge.foodlife.MainViewModel
 import com.forknowledge.core.data.model.UserAuthState
 
 @Composable

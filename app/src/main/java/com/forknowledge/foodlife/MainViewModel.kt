@@ -1,4 +1,4 @@
-package com.forknowledge.foodlife.viewmodel
+package com.forknowledge.foodlife
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

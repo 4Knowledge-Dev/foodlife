@@ -13,9 +13,11 @@ import com.forknowledge.core.data.model.UserAuthState
 import com.forknowledge.feature.model.IntakeNutrition
 import com.forknowledge.feature.model.Recipe
 import com.forknowledge.feature.model.User
+import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
@@ -49,7 +51,8 @@ class UserRepositoryImpl @Inject constructor(
         } else {
             try {
                 val userDocument =
-                    firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid).get()
+                    firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+                        .get()
                         .await()
 
                 if (userDocument.exists()) {
@@ -69,6 +72,22 @@ class UserRepositoryImpl @Inject constructor(
                 Log.e(FIREBASE_EXCEPTION, "Get user data failed with ", e)
                 emit(UserAuthState.NONE)
             }
+        }
+    }
+
+    override suspend fun updateUserInfo(user: User): Result<Unit> {
+        return try {
+            firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+                .set(user, SetOptions.merge())
+                .await()
+            Result.Success(Unit)
+        } catch (e: FirebaseException) {
+            Log.e(FIREBASE_EXCEPTION, "Update data failed with ", e)
+            Result.Error(e)
+        }
+        catch (e: Exception) {
+            Log.e(FIREBASE_EXCEPTION, "Update data failed with ", e)
+            Result.Error(e)
         }
     }
 
