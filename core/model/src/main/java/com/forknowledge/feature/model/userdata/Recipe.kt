@@ -22,7 +22,6 @@ val logRecipes = listOf<Recipe>(
                 name = "Calories",
                 amount = 1200.0,
                 unit = "kcal",
-                percentOfDailyNeeds = 0.0
             )
         )
     ),
@@ -36,7 +35,6 @@ val logRecipes = listOf<Recipe>(
                 name = "Calories",
                 amount = 1200.0,
                 unit = "kcal",
-                percentOfDailyNeeds = 0.0
             )
         )
     ),
@@ -50,7 +48,6 @@ val logRecipes = listOf<Recipe>(
                 name = "Calories",
                 amount = 1200.0,
                 unit = "kcal",
-                percentOfDailyNeeds = 0.0
             )
         )
     ),

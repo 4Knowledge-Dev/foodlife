@@ -31,20 +31,24 @@ class FoodDataSource @Inject constructor(
 
     suspend fun getMealPlan(
         username: String,
+        hashKey: String,
         startDate: String
     ) = withContext(Dispatchers.IO) {
         apiService.getMealPlan(
             username = username,
+            hashKey = hashKey,
             startDate = startDate
         )
     }
 
     suspend fun addToMealPlan(
         username: String,
+        hashKey: String,
         mealPlan: MealPlanWeek
     ) = withContext(Dispatchers.IO) {
         apiService.addToMealPlan(
             username = username,
+            hashKey = hashKey,
             mealPlan = mealPlan
         )
     }

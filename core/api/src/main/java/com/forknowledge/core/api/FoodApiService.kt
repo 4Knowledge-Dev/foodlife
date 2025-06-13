@@ -22,29 +22,29 @@ const val API_HEADER_RECIPE = "recipes"
 interface FoodApiService {
 
     @POST("$API_HEADER_USER/connect")
-    fun connectUser(
+    suspend fun connectUser(
         @Body user: ConnectUser
     ): Response<UserResponse>
 
     @GET("$API_HEADER_MEAL_PLANNER/generate")
-    fun generateMealPlan(
+    suspend fun generateMealPlan(
         @Query("timeFrame") timeFrame: String = "week",
         @Query("targetCalories") targetCalories: String,
         @Query("diet") diet: String,
         @Query("exclude") excludeIngredients: String
     ): Response<GenerateMealPlanResponse>
 
-    @GET("$API_HEADER_MEAL_PLANNER/{username}/week/{startDate}")
-    fun getMealPlan(
+    @GET("$API_HEADER_MEAL_PLANNER/{username}/week/{start-date}")
+    suspend fun getMealPlan(
         @Path("username") username: String,
         @Path("start-date") startDate: String,
-        @Query("hash") hashKey: String = "41ac08626d05b82ff99fd3edc0a95cb9b428db75",
+        @Query("hash") hashKey: String,
     ): Response<MealPlanResponse>
 
     @POST("$API_HEADER_MEAL_PLANNER/{username}/items")
-    fun addToMealPlan(
-        @Path("username") username: String = "16c5330f-3e85-43d3-a8fd-30edf1f8b12a",
-        @Query("hash") hashKey: String = "41ac08626d05b82ff99fd3edc0a95cb9b428db75",
+    suspend fun addToMealPlan(
+        @Path("username") username: String,
+        @Query("hash") hashKey: String,
         @Body mealPlan: MealPlanWeek
     ): Response<Unit>
 

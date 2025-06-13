@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
-import com.forknowledge.core.domain.LoginResultType
+import com.forknowledge.core.data.datatype.LoginResultType
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.GreyA7A6A6

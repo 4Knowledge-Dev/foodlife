@@ -1,5 +1,7 @@
 package com.forknowledge.core.api.model
 
+import com.forknowledge.core.api.getImageUrl
+import com.forknowledge.feature.model.MealRecipe
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.Serializable
 
@@ -25,16 +27,31 @@ data class DayResponse(
 data class FoodResponse(
     val id: Int,
     val position: Int,
-    val slot: Int,
     val type: String,
     val value: ValueResponse
-)
+) {
+    fun toMealRecipe() = MealRecipe(
+        mealId = id,
+        recipeId = value.id,
+        imageUrl = getImageUrl(
+            id = value.id.toString(),
+            image = value.image ?: "",
+            mealType = type,
+            imageType = value.imageType ?: ""
+        ),
+        name = value.title,
+        servings = value.servings,
+        cookTime = value.readyInMinutes
+    )
+}
 
 @InternalSerializationApi
 @Serializable
 data class ValueResponse(
     val id: Int,
-    val image: String,
+    val title: String,
+    val image: String? = null,
+    val imageType: String? = null,
     val servings: Int,
-    val title: String
+    val readyInMinutes: Int
 )

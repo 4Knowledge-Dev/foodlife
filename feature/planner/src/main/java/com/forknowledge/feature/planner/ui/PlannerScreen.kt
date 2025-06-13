@@ -1,6 +1,5 @@
-package com.forknowledge.feature.planner
+package com.forknowledge.feature.planner.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,11 +34,15 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.forknowledge.core.common.extension.toDayAndDateString
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
@@ -50,14 +53,22 @@ import com.forknowledge.core.ui.theme.Grey808993
 import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.feature.model.MealRecipe
+import com.forknowledge.feature.planner.MealAction
+import com.forknowledge.feature.planner.R
+import com.forknowledge.feature.planner.getCurrentDate
+import com.forknowledge.feature.planner.getCurrentWeekDays
 import java.time.LocalDate
 
 @Composable
-fun PlannerScreen() {
+fun PlannerScreen(
+    viewModel: MealPlannerViewModel = hiltViewModel()
+) {
     val weekDays = getCurrentWeekDays()
     var selectedTab by remember {
         mutableIntStateOf(weekDays.indexOf(getCurrentDate()))
     }
+    val mealPlan by viewModel.mealPlan.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -83,8 +94,29 @@ fun PlannerScreen() {
                 .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
         ) {
-            repeat(3) {
-                MealSection("Lunch")
+            val mealDay = mealPlan.firstOrNull { it.date == weekDays[selectedTab] }
+            mealDay?.let { meal ->
+                if (meal.breakfast.isNotEmpty()) {
+                    MealSection(
+                        meal = stringResource(R.string.meal_planner_meal_plan_breakfast_label),
+                        calories = meal.breakfastCalories,
+                        recipes = meal.breakfast
+                    )
+                }
+                if (meal.lunch.isNotEmpty()) {
+                    MealSection(
+                        meal = stringResource(R.string.meal_planner_meal_plan_lunch_label),
+                        calories = meal.lunchCalories,
+                        recipes = meal.lunch
+                    )
+                }
+                if (meal.dinner.isNotEmpty()) {
+                    MealSection(
+                        meal = stringResource(R.string.meal_planner_meal_plan_dinner_label),
+                        calories = meal.dinnerCalories,
+                        recipes = meal.dinner
+                    )
+                }
             }
         }
     }
@@ -143,6 +175,8 @@ fun MealPlannerTopBar(
 @Composable
 fun MealSection(
     meal: String,
+    calories: Int,
+    recipes: List<MealRecipe>
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -165,7 +199,7 @@ fun MealSection(
                 top.linkTo(textMeal.bottom, margin = 12.dp)
                 start.linkTo(parent.start)
             },
-            text = "300 kcal",
+            text = stringResource(R.string.meal_planner_meal_plan_calories_text, calories),
             textStyle = Typography.labelLarge,
             color = Green86BF3E
         )
@@ -191,8 +225,8 @@ fun MealSection(
                     bottom.linkTo(parent.bottom)
                 }
         ) {
-            repeat(3) {
-                MealItem()
+            recipes.forEach { recipe ->
+                MealItem(recipe)
             }
         }
     }
@@ -200,7 +234,7 @@ fun MealSection(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MealItem() {
+fun MealItem(recipe: MealRecipe) {
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
@@ -233,11 +267,14 @@ fun MealItem() {
             .clickable {}
 
     ) {
-        val (recipeImage, recipeName, recipeInfo, actionIcon) = createRefs()
+        val (recipeImage, recipeName, cookTime, servings, actionIcon) = createRefs()
 
-        Image(
+        AsyncImage(
             modifier = Modifier
-                .size(100.dp)
+                .size(
+                    width = 130.dp,
+                    height = 110.dp
+                )
                 .background(
                     color = Color.Unspecified,
                     shape = RoundedCornerShape(8.dp)
@@ -248,7 +285,8 @@ fun MealItem() {
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
                 },
-            painter = painterResource(drawable.img_sample),
+            model = recipe.imageUrl,
+            error = painterResource(drawable.img_sample),
             contentScale = ContentScale.Crop,
             contentDescription = null
         )
@@ -256,14 +294,14 @@ fun MealItem() {
         AppText(
             modifier = Modifier
                 .padding(top = 4.dp)
-                .widthIn(max = 210.dp)
+                .widthIn(max = 190.dp)
                 .constrainAs(recipeName) {
                     top.linkTo(recipeImage.top, margin = 4.dp)
                     start.linkTo(recipeImage.end, margin = 16.dp)
                     end.linkTo(parent.end)
                     horizontalBias = 0F
                 },
-            text = "Spaghetti Bolognese ".repeat(3),
+            text = recipe.name,
             textStyle = Typography.labelMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
@@ -271,15 +309,37 @@ fun MealItem() {
 
         AppText(
             modifier = Modifier
-                .widthIn(max = 230.dp)
-                .constrainAs(recipeInfo) {
+                .constrainAs(cookTime) {
                     top.linkTo(recipeName.bottom)
                     bottom.linkTo(recipeImage.bottom, margin = 4.dp)
                     start.linkTo(recipeImage.end, margin = 16.dp)
                     end.linkTo(actionIcon.start)
                     horizontalBias = 0F
                 },
-            text = "23 min",
+            text = pluralStringResource(
+                R.plurals.meal_planner_recipe_cook_time_text,
+                recipe.cookTime,
+                recipe.cookTime
+            ),
+            textStyle = Typography.bodySmall,
+            color = Grey808993
+        )
+
+        AppText(
+            modifier = Modifier
+                .widthIn(max = 230.dp)
+                .constrainAs(servings) {
+                    top.linkTo(recipeName.bottom)
+                    bottom.linkTo(recipeImage.bottom, margin = 4.dp)
+                    start.linkTo(cookTime.end, margin = 24.dp)
+                    end.linkTo(actionIcon.start)
+                    horizontalBias = 0F
+                },
+            text = pluralStringResource(
+                R.plurals.meal_planner_recipe_serving_text,
+                recipe.servings,
+                recipe.servings
+            ),
             textStyle = Typography.bodySmall,
             color = Grey808993
         )
@@ -291,7 +351,7 @@ fun MealItem() {
                 .constrainAs(actionIcon) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end, margin = 8.dp)
+                    end.linkTo(parent.end, margin = 12.dp)
                 },
             painter = painterResource(R.drawable.ic_options),
             tint = Black374957,
@@ -336,12 +396,6 @@ fun ActionBottomSheet() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ActionBottomSheetPreview() {
-    ActionBottomSheet()
-}
-
 @Preview()
 @Composable
 fun MealPlannerTopBarPreview() {
@@ -355,11 +409,39 @@ fun MealPlannerTopBarPreview() {
 @Preview()
 @Composable
 fun MealItemPreview() {
-    MealItem()
+    MealItem(
+        MealRecipe(
+            mealId = 1,
+            recipeId = 1,
+            imageUrl = "",
+            name = "Spaghetti Bolognese ".repeat(3),
+            cookTime = 30,
+            servings = 4,
+        )
+    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun MealSectionPreview() {
-    MealSection(meal = "Breakfast")
+    MealSection(
+        meal = "Breakfast",
+        calories = 1000,
+        recipes = listOf(
+            MealRecipe(
+                mealId = 1,
+                recipeId = 1,
+                imageUrl = "",
+                name = "Spaghetti Bolognese ".repeat(3),
+                cookTime = 30,
+                servings = 4,
+            )
+        )
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ActionBottomSheetPreview() {
+    ActionBottomSheet()
 }
