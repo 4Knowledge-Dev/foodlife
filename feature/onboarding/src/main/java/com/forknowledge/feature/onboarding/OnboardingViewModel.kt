@@ -18,8 +18,8 @@ import com.forknowledge.core.common.healthtype.SurveyQuestionType
 import com.forknowledge.core.common.healthtype.TargetWeightError
 import com.forknowledge.core.common.healthtype.questions
 import com.forknowledge.core.data.UserRepository
-import com.forknowledge.feature.model.TargetNutrition
-import com.forknowledge.feature.model.User
+import com.forknowledge.feature.model.userdata.TargetNutrition
+import com.forknowledge.feature.model.userdata.User
 import com.forknowledge.feature.onboarding.ui.DataUnit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

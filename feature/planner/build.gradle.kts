@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
     implementation(project(":core:model"))
+    implementation(project(":core:domain"))
     implementation(project(":core:data"))
 
     implementation(libs.androidx.core.ktx)
@@ -48,4 +49,6 @@ dependencies {
     kapt(libs.androidx.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.compose)
+    implementation(libs.io.coil.compose)
+    implementation(libs.io.coil.network.okhttp)
 }

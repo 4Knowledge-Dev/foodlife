@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <plurals name="meal_planner_recipe_cook_time_text">
+        <item quantity="one">%1$d min</item>
+        <item quantity="other">%1$d mins</item>
+    </plurals>
+    <plurals name="meal_planner_recipe_serving_text">
+        <item quantity="one">%1$d serving</item>
+        <item quantity="other">%1$d servings</item>
+    </plurals>
+    <string name="meal_planner_meal_plan_calories_text">%1$d kcal</string>
+    <string name="meal_planner_meal_plan_breakfast_label">Breakfast</string>
+    <string name="meal_planner_meal_plan_lunch_label">Lunch</string>
+    <string name="meal_planner_meal_plan_dinner_label">Dinner</string>
+    <string name="meal_planner_meal_plan_snack_label">Snack</string>
     <string name="meal_planner_bottom_sheet_add_recipe_label">Add</string>
     <string name="meal_planner_bottom_sheet_swap_recipe_label">Swap</string>
     <string name="meal_planner_bottom_sheet_delete_recipe_label">Delete</string>

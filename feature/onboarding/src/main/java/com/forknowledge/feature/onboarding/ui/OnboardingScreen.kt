@@ -266,5 +266,5 @@ fun SurveyBottomBar(
 @Preview(showBackground = true)
 @Composable
 fun SurveyScreenPreview() {
-    SurveyScreen()
+    SurveyScreen {}
 }

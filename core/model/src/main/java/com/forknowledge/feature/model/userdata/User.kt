@@ -1,8 +1,9 @@
-package com.forknowledge.feature.model
+package com.forknowledge.feature.model.userdata
 
 import java.util.Date
 
 data class User(
+    val username: String = "",
     val hashKey: String = "",
     val isNewUser: Boolean = true,
     val birthday: Date? = null,

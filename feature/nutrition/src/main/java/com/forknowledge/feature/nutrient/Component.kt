@@ -36,8 +36,8 @@ import com.forknowledge.core.ui.theme.Grey808993
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
-import com.forknowledge.feature.model.Nutrient
-import com.forknowledge.feature.model.Recipe
+import com.forknowledge.feature.model.userdata.Nutrient
+import com.forknowledge.feature.model.userdata.Recipe
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map

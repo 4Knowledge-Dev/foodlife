@@ -2,10 +2,10 @@ package com.forknowledge.core.data
 
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.model.NutritionDisplayData
-import com.forknowledge.core.data.model.UserAuthState
-import com.forknowledge.feature.model.Recipe
-import com.forknowledge.feature.model.TargetNutrition
-import com.forknowledge.feature.model.User
+import com.forknowledge.core.data.datatype.UserAuthState
+import com.forknowledge.feature.model.userdata.Recipe
+import com.forknowledge.feature.model.userdata.TargetNutrition
+import com.forknowledge.feature.model.userdata.User
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
@@ -16,6 +16,12 @@ interface UserRepository {
      * @return [UserAuthState] of user in time app startup.
      */
     fun getUserFlow(): Flow<UserAuthState>
+
+    /**
+     * Get user's hash key.
+     * @return user's hash key.
+     */
+    fun getHashKey(): Flow<String>
 
     /**
      * Update user's information.

@@ -1,7 +1,7 @@
-package com.forknowledge.core.domain.component
+package com.forknowledge.core.data
 
 import android.content.Context
-import com.forknowledge.core.domain.LoginResultType
+import com.forknowledge.core.data.datatype.LoginResultType
 import kotlinx.coroutines.flow.Flow
 
 interface AuthenticationManager {
@@ -9,7 +9,7 @@ interface AuthenticationManager {
     /**
      * Sign in user using Google account.
      * @param [context] Activity context.
-     * @return [LoginResultType] result of sign in process.
+     * @return [com.forknowledge.core.data.datatype.LoginResultType] result of sign in process.
      */
     fun signInWithGoogleCredential(context: Context): Flow<LoginResultType>
 

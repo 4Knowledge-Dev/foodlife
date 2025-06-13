@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.forknowledge.core.data.UserRepository
-import com.forknowledge.core.data.model.UserAuthState
+import com.forknowledge.core.data.datatype.UserAuthState
 import com.forknowledge.feature.authentication.AuthenticationRoute
 import com.forknowledge.feature.onboarding.OnboardingRoute
 import com.forknowledge.feature.planner.PlannerRoute

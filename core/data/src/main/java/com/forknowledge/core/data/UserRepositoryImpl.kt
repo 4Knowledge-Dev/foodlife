@@ -9,10 +9,10 @@ import com.forknowledge.core.data.FirebaseException.FIREBASE_GET_DATA_EXCEPTION
 import com.forknowledge.core.data.FirestoreReference.USER_COLLECTION
 import com.forknowledge.core.data.FirestoreReference.USER_RECORD_SUB_COLLECTION
 import com.forknowledge.core.data.model.NutritionDisplayData
-import com.forknowledge.core.data.model.UserAuthState
-import com.forknowledge.feature.model.IntakeNutrition
-import com.forknowledge.feature.model.Recipe
-import com.forknowledge.feature.model.User
+import com.forknowledge.core.data.datatype.UserAuthState
+import com.forknowledge.feature.model.userdata.IntakeNutrition
+import com.forknowledge.feature.model.userdata.Recipe
+import com.forknowledge.feature.model.userdata.User
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -75,6 +75,14 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getHashKey() = flow {
+        val user = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+            .get()
+            .await()
+            .toObject(User::class.java)
+        emit(user?.hashKey ?: "")
+    }.flowOn(Dispatchers.IO)
+
     override suspend fun updateUserInfo(user: User): Result<Unit> {
         return try {
             firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
@@ -84,8 +92,7 @@ class UserRepositoryImpl @Inject constructor(
         } catch (e: FirebaseException) {
             Log.e(FIREBASE_EXCEPTION, "Update data failed with ", e)
             Result.Error(e)
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             Log.e(FIREBASE_EXCEPTION, "Update data failed with ", e)
             Result.Error(e)
         }
