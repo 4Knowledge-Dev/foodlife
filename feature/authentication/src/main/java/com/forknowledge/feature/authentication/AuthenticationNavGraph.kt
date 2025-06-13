@@ -8,12 +8,15 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import androidx.navigation.navigation
-import com.forknowledge.feature.authentication.ui.AuthenticationViewModel
-import com.forknowledge.feature.authentication.ui.screen.SignInOptionScreen
-import com.forknowledge.feature.authentication.ui.screen.SignInWithEmailScreen
-import com.forknowledge.feature.authentication.ui.screen.SignUpWithEmailScreen
-import com.forknowledge.feature.authentication.ui.screen.navigateToSignInWithEmail
-import com.forknowledge.feature.authentication.ui.screen.navigateToSignUpWithEmail
+import com.forknowledge.feature.authentication.ui.screen.signInOptions.GoogleSignInViewModel
+import com.forknowledge.feature.authentication.ui.screen.signInOptions.SignInOptionScreen
+import com.forknowledge.feature.authentication.ui.screen.signInWithEmail.AuthenticationViewModel
+import com.forknowledge.feature.authentication.ui.screen.signInWithEmail.SignInWithEmailScreen
+import com.forknowledge.feature.authentication.ui.screen.signInWithEmail.SignUpWithEmailScreen
+import com.forknowledge.feature.authentication.ui.screen.signInWithEmail.navigateToSignInWithEmail
+import com.forknowledge.feature.authentication.ui.screen.signInWithEmail.navigateToSignUpWithEmail
+import com.forknowledge.feature.onboarding.navigateToOnboarding
+import com.forknowledge.feature.planner.navigateToPlannerRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -27,6 +30,12 @@ data object SignInWithEmailRoute
 
 @Serializable
 data object SignUpWithEmailRoute
+
+fun NavController.navigateToAuthentication() = navigate(AuthenticationRoute) {
+    popUpTo(graph.findStartDestination().id) {
+        inclusive = true
+    }
+}
 
 fun NavGraphBuilder.authenticationNavGraph(
     navController: NavController
@@ -43,12 +52,11 @@ fun NavGraphBuilder.authenticationNavGraph(
 
 fun NavGraphBuilder.signInOptionsScreen(navController: NavController) {
     composable<SignInOptionsRoute> { backStackEntry ->
-        val parentEntry = remember(backStackEntry) {
-            navController.getBackStackEntry(AuthenticationRoute)
-        }
         SignInOptionScreen(
-            viewModel = hiltViewModel<AuthenticationViewModel>(parentEntry),
-            signInWithEmailClicked = navController::navigateToSignInWithEmail
+            viewModel = hiltViewModel<GoogleSignInViewModel>(),
+            signInWithEmailClicked = navController::navigateToSignInWithEmail,
+            onNavigateToOnboarding = { navController.navigateToOnboarding() },
+            onNavigateToPlanner = { navController.navigateToPlannerRoute() }
         )
     }
 }
@@ -62,6 +70,7 @@ fun NavGraphBuilder.signInWithEmailScreen(navController: NavController) {
             viewModel = hiltViewModel<AuthenticationViewModel>(parentEntry),
             onBackClicked = navController::popBackStack,
             onNavigateToRegisterClicked = navController::navigateToSignUpWithEmail,
+            onNavigateToPlanner = { navController.navigateToPlannerRoute() }
         )
     }
 }
@@ -77,7 +86,8 @@ fun NavGraphBuilder.signUpWithEmailScreen(navController: NavController) {
         SignUpWithEmailScreen(
             viewModel = hiltViewModel<AuthenticationViewModel>(parentEntry),
             onBackClicked = navController::popBackStack,
-            onNavigateToLoginClicked = { navController.navigateToSignInWithEmail(navOptions) }
+            onNavigateToLoginClicked = { navController.navigateToSignInWithEmail(navOptions) },
+            onNavigateToOnboarding = { navController.navigateToOnboarding() }
         )
     }
 }

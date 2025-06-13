@@ -1,6 +1,5 @@
 package com.forknowledge.core.domain.di
 
-import com.facebook.CallbackManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,10 +14,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
-    @Provides
-    @Singleton
-    fun provideFacebookCallbackManager(): CallbackManager = CallbackManager.Factory.create()
 
     @Provides
     @Singleton

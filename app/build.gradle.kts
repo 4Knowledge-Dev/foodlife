@@ -67,9 +67,11 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:common"))
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
     implementation(project(":core:domain"))
+    implementation(project(":core:model"))
     implementation(project(":feature:authentication"))
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:nutrition"))
@@ -88,11 +90,11 @@ dependencies {
 
     implementation(libs.androidx.hilt)
     kapt(libs.androidx.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.splash.screen)
     implementation(libs.androidx.app.startup)
     implementation(libs.androidx.navigation.component)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
-    implementation(libs.facebook.login)
 }

@@ -1,6 +1,6 @@
-package com.forknowledge.feature.authentication.ui.screen
+package com.forknowledge.feature.authentication.ui.screen.signInOptions
 
-import android.app.Activity
+import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -35,9 +35,9 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,26 +50,28 @@ import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
-import com.facebook.login.LoginManager
+import com.forknowledge.core.domain.LoginResultType
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.GreyA7A6A6
 import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.openSansFamily
 import com.forknowledge.feature.authentication.R
-import com.forknowledge.feature.authentication.ui.AuthenticationViewModel
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 fun SignInOptionScreen(
-    viewModel: AuthenticationViewModel,
+    viewModel: GoogleSignInViewModel,
     signInWithEmailClicked: () -> Unit,
+    onNavigateToOnboarding: () -> Unit,
+    onNavigateToPlanner: () -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -78,6 +80,7 @@ fun SignInOptionScreen(
         ("android.resource://" + context.packageName + "/" + R.raw.food_life_background_video).toUri()
     var playbackPosition = 0L
 
+    val loginState by viewModel.loginState.collectAsStateWithLifecycle()
     var lifecycleEvent by remember {
         mutableStateOf(Lifecycle.Event.ON_CREATE)
     }
@@ -90,6 +93,21 @@ fun SignInOptionScreen(
 
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    when (loginState) {
+        LoginResultType.SUCCESS_NEW_USER -> onNavigateToOnboarding()
+        LoginResultType.SUCCESS_OLD_USER -> onNavigateToPlanner()
+        LoginResultType.FAIL -> {
+            Toast.makeText(
+                context,
+                stringResource(R.string.authentication_sign_in_fail),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        LoginResultType.NONE -> { /* Do nothing */
         }
     }
 
@@ -130,22 +148,16 @@ fun SignInOptionScreen(
         )
 
         SignInUiSection(
-            context = context as Activity,
-            onSignInWithAvailableCredentials = { viewModel.signInWithAvailableCredentials(context) },
             onSignInWithEmailClicked = signInWithEmailClicked,
-            onSignInWithGoogleClicked = { viewModel.signInWithGoogle(context) },
-            onSignInWithFacebookClicked = viewModel::signInWithFacebook
+            onSignInWithGoogleClicked = { viewModel.signInWithGoogle(context) }
         )
     }
 }
 
 @Composable
 internal fun SignInUiSection(
-    context: Activity,
-    onSignInWithAvailableCredentials: () -> Unit,
     onSignInWithEmailClicked: () -> Unit,
-    onSignInWithGoogleClicked: () -> Unit,
-    onSignInWithFacebookClicked: () -> Unit,
+    onSignInWithGoogleClicked: () -> Unit
 ) {
     //onSignInWithAvailableCredentials()
 
@@ -194,17 +206,6 @@ internal fun SignInUiSection(
             buttonIcon = R.drawable.img_google_logo,
             buttonText = stringResource(id = R.string.authentication_sign_in_option_google),
             onClicked = { onSignInWithGoogleClicked() }
-        )
-
-        SignInOptionButton(
-            buttonBackground = GreyEBEBEB,
-            buttonIcon = R.drawable.img_facebook_logo,
-            buttonText = stringResource(id = R.string.authentication_sign_in_option_facebook),
-            onClicked = {
-                onSignInWithFacebookClicked()
-                LoginManager.getInstance()
-                    .logInWithReadPermissions(context, listOf("public_profile"))
-            }
         )
 
         //TermAndPolicyText()
@@ -277,13 +278,13 @@ fun TermAndPolicyText() {
             start = policyStartIndex,
             end = policyEndIndex
         )
-        addUrlAnnotation(
-            urlAnnotation = UrlAnnotation(""),
-            start = termStartIndex,
-            end = termEndIndex
+        addLink(
+            url = LinkAnnotation.Url(""),
+            termStartIndex,
+            termEndIndex
         )
-        addUrlAnnotation(
-            urlAnnotation = UrlAnnotation(""),
+        addLink(
+            url = LinkAnnotation.Url(""),
             start = policyStartIndex,
             end = policyEndIndex
         )
@@ -332,10 +333,7 @@ fun SignInWithGoogleButtonPreview() {
 @Composable
 fun SignInUiSectionPreview() {
     SignInUiSection(
-        context = Activity(),
-        onSignInWithAvailableCredentials = { },
         onSignInWithEmailClicked = { },
-        onSignInWithGoogleClicked = { },
-        onSignInWithFacebookClicked = { }
+        onSignInWithGoogleClicked = { }
     )
 }

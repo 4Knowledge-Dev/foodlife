@@ -1,16 +1,20 @@
-package com.forknowledge.feature.authentication.ui
+package com.forknowledge.feature.authentication.ui.screen.signInWithEmail
 
-import android.content.Context
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.forknowledge.core.common.Result
+import com.forknowledge.core.domain.LoginResultType
 import com.forknowledge.core.domain.component.AuthenticationManager
 import com.forknowledge.feature.authentication.extension.isValidEmail
 import com.forknowledge.feature.authentication.extension.isValidPassword
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,7 +25,7 @@ private const val PASSWORD_KEY = "password"
 class AuthenticationViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val authenticationManager: AuthenticationManager,
-): ViewModel() {
+) : ViewModel() {
 
     internal val email = savedStateHandle.getStateFlow(EMAIL_KEY, "")
     internal val password = savedStateHandle.getStateFlow(PASSWORD_KEY, "")
@@ -31,27 +35,16 @@ class AuthenticationViewModel @Inject constructor(
     internal var isRegisterButtonEnabled = mutableStateOf(false)
     internal var isLoginButtonEnabled = mutableStateOf(false)
     internal var isEmailValidated = mutableStateOf(false)
+    internal var shouldShowLoading by mutableStateOf(false)
+        private set
+    internal var alertDialogError by mutableStateOf<String?>(null)
+        private set
 
-    internal var shouldShowLoading = mutableStateOf(false)
-    internal var alertDialogError = mutableStateOf<String?>(null)
+    private val _signInState = MutableStateFlow<LoginResultType>(LoginResultType.NONE)
+    val signInState: StateFlow<LoginResultType> = _signInState
 
-    fun signInWithAvailableCredentials(context: Context) {
-    }
-
-    fun signInWithGoogle(context: Context) {
-        viewModelScope.launch {
-            authenticationManager.signInWithGoogleCredential(context).collect {
-            }
-        }
-    }
-
-    fun signInWithFacebook() {
-        viewModelScope.launch {
-            authenticationManager.signInWithFacebookCredential().collect {
-                
-            }
-        }
-    }
+    private val _signUpState = MutableStateFlow<LoginResultType>(LoginResultType.NONE)
+    val signUpState: StateFlow<LoginResultType> = _signUpState
 
     fun updateEmail(email: String) {
         shouldShowEmailError.value = false
@@ -75,49 +68,23 @@ class AuthenticationViewModel @Inject constructor(
     fun signInWithEmail(email: String) {
         viewModelScope.launch {
             authenticationManager.signInWithEmail(email, password.value)
-                .collectLatest { result ->
-                    when (result) {
-                        is Result.Loading -> {  }
-
-                            is Result.Success -> {
-                                shouldShowLoading.value = false
-                            }
-
-                            is Result.Error -> {
-                                shouldShowLoading.value = false
-                                alertDialogError.value = result.exception.message
-                            }
-                        }
+                .collectLatest { resultType ->
+                    _signInState.update { resultType }
                 }
         }
     }
 
     private fun signUpWithEmail() {
-        shouldShowLoading.value = true
+        shouldShowLoading = true
         viewModelScope.launch {
             authenticationManager.signUpWithEmail(
                 email.value,
                 password.value
-            ).collect { result ->
-                when (result) {
-                    is Result.Loading -> {  /* Do nothing */  }
-
-                    is Result.Success -> {
-                        shouldShowLoading.value = false
-                        createUserData()
-                    }
-
-                    is Result.Error -> {
-                        shouldShowLoading.value = false
-                        alertDialogError.value = result.exception.message
-                    }
-                }
+            ).collect { resultType ->
+                shouldShowLoading = false
+                _signUpState.update { resultType }
             }
         }
-    }
-
-    private fun createUserData() {
-        TODO("Not yet implemented")
     }
 
     fun validateUser() {
@@ -133,5 +100,7 @@ class AuthenticationViewModel @Inject constructor(
         savedStateHandle[PASSWORD_KEY] = ""
         isLoginButtonEnabled.value = false
         isRegisterButtonEnabled.value = false
+        _signInState.update { LoginResultType.NONE }
+        _signUpState.update { LoginResultType.NONE }
     }
 }

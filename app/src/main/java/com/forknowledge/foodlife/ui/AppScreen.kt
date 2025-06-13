@@ -25,12 +25,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.feature.authentication.AuthenticationRoute
 import com.forknowledge.feature.authentication.authenticationNavGraph
 import com.forknowledge.feature.explore.ExploreRoute
 import com.forknowledge.feature.explore.ExploreScreen
@@ -40,13 +42,19 @@ import com.forknowledge.feature.nutrient.search.SearchRoute
 import com.forknowledge.feature.nutrient.search.SearchScreen
 import com.forknowledge.feature.nutrient.ui.LogFoodRoute
 import com.forknowledge.feature.nutrient.ui.LogFoodScreen
+import com.forknowledge.feature.onboarding.OnboardingRoute
 import com.forknowledge.feature.onboarding.onboardingNavGraph
 import com.forknowledge.feature.planner.PlannerRoute
 import com.forknowledge.feature.planner.PlannerScreen
 import com.forknowledge.foodlife.R
+import com.forknowledge.foodlife.MainViewModel
+import com.forknowledge.core.data.model.UserAuthState
 
 @Composable
-fun AppScreen(appState: AppState) {
+fun AppScreen(
+    appState: AppState,
+    startDestinationRoute: Any,
+) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -79,7 +87,7 @@ fun AppScreen(appState: AppState) {
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding),
             navController = appState.navController,
-            startDestination = PlannerRoute,
+            startDestination = startDestinationRoute,
         ) {
 
             authenticationNavGraph(navController = appState.navController)

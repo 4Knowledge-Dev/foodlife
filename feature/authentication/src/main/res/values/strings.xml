@@ -6,6 +6,8 @@
     <string name="authentication_sign_in_option_google">Continue with Google</string>
     <string name="authentication_sign_in_option_facebook">Continue with Facebook</string>
     <string name="authentication_sign_in_option_term_and_policy">By creating account, you agree to simple Term of use and Privacy Policy</string>
+    <string name="authentication_sign_in_fail">Login fail!</string>"
+    <string name="authentication_sign_up_fail">Sign up fail!</string>"
 
     // Sign in
     <string name="sign_in_with_email_login_header">Welcome back!</string>

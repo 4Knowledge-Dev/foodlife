@@ -2,12 +2,27 @@ package com.forknowledge.core.data
 
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.model.NutritionDisplayData
+import com.forknowledge.core.data.model.UserAuthState
 import com.forknowledge.feature.model.Recipe
 import com.forknowledge.feature.model.TargetNutrition
+import com.forknowledge.feature.model.User
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 interface UserRepository {
+
+    /**
+     * Get user's flow from app startup.
+     * @return [UserAuthState] of user in time app startup.
+     */
+    fun getUserFlow(): Flow<UserAuthState>
+
+    /**
+     * Update user's information.
+     * @param [user] the user to update.
+     * @return [Result] of operation.
+     */
+    suspend fun updateUserInfo(user: User): Result<Unit>
 
     /**
      * Get user's target nutrition.

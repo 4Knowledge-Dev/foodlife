@@ -1,14 +1,13 @@
 package com.forknowledge.foodlife
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.facebook.CallbackManager
 import com.forknowledge.core.data.network.NetworkManager
 import com.forknowledge.core.ui.theme.FoodLifeTheme
 import com.forknowledge.foodlife.ui.AppScreen
@@ -22,13 +21,15 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var networkManager: NetworkManager
 
-    @Inject
-    lateinit var facebookCallbackManager: CallbackManager
+    private val viewModel by viewModels<MainViewModel>()
+
+    private var isLoading = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        installSplashScreen()
+        val splash = installSplashScreen()
+        splash.setKeepOnScreenCondition { isLoading }
 
         enableEdgeToEdge(
             navigationBarStyle = SystemBarStyle.light(
@@ -37,16 +38,19 @@ class MainActivity : ComponentActivity() {
             )
         )
 
-        setContent {
-            FoodLifeTheme {
-                AppScreen(rememberAppState(networkManager = networkManager))
+        viewModel.isLoading.observe(this) { isLoading = it }
+
+        viewModel.startDestinationRoute.observe(this) { route ->
+            route?.let {
+                setContent {
+                    FoodLifeTheme {
+                        AppScreen(
+                            appState = rememberAppState(networkManager = networkManager),
+                            startDestinationRoute = route
+                        )
+                    }
+                }
             }
         }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        facebookCallbackManager.onActivityResult(requestCode, resultCode, data)
     }
 }
