@@ -16,6 +16,8 @@
     <string name="meal_planner_meal_plan_no_plan_today_text">You don’t have a meal plan today!</string>
     <string name="meal_planner_meal_plan_internet_error_text">Fail to load meal plan!</string>
     <string name="meal_planner_meal_plan_button_text_reload">Reload</string>
+    <string name="meal_planner_meal_plan_snackbar_delete_success_message">Deleted successfully!</string>
+    <string name="meal_planner_meal_plan_snackbar_delete_fail_message">Fail to delete!</string>
 
     // Bottom sheet
     <string name="meal_planner_bottom_sheet_add_recipe_label">Complete</string>

@@ -4,9 +4,9 @@ import androidx.compose.ui.graphics.Color
 
 val Black101510 = Color(0xFF101510)
 val Black05172C = Color(0xFF05172C)
-val Black26000000 = Color(0x26000000)
 val Black063336 = Color(0xFF063336) // Shadow
 val Black374957 = Color(0xFF374957) // Icon
+val Black212121 = Color(0xDC212121) // Snackbar
 
 val WhiteFDFDFC = Color(0xFFFDFDFC)
 val WhiteF9F9F9 = Color(0xFFF5F5F5)

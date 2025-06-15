@@ -53,13 +53,14 @@ import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black101510
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Green86BF3E
-import com.forknowledge.core.ui.theme.RedF44336
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppButtonSmall
 import com.forknowledge.core.ui.theme.component.AppButtonSmallLoading
+import com.forknowledge.core.ui.theme.component.AppSnackBar
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.AppTextField
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
+import com.forknowledge.core.ui.theme.state.SnackBarState
 import com.forknowledge.feature.explore.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,7 +96,7 @@ fun ExploreSearchScreen(
             snackbarHostState.showSnackbar(
                 message = message,
                 duration = SnackbarDuration.Long
-                )
+            )
         }
     }
 
@@ -123,11 +124,22 @@ fun ExploreSearchScreen(
         snackbarHost = {
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopCenter // Or Alignment.TopStart / Alignment.TopEnd
+                contentAlignment = Alignment.TopCenter
             ) {
                 SnackbarHost(
                     hostState = snackbarHostState,
-                    snackbar = { SnackBarError(it.visuals.message) }
+                    snackbar = {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.TopCenter
+                        ) {
+                            AppSnackBar(
+                                modifier = Modifier.padding(top = 36.dp),
+                                message = it.visuals.message,
+                                state = SnackBarState.FAILURE
+                            )
+                        }
+                    }
                 )
             }
         }
@@ -343,25 +355,6 @@ fun RecipeItem(
     }
 }
 
-@Composable
-fun SnackBarError(message: String) {
-    AppText(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .padding(horizontal = 36.dp)
-            .background(
-                color = RedF44336,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .clip(RoundedCornerShape(16.dp))
-            .padding(horizontal = 24.dp),
-        text = message,
-        textStyle = Typography.bodyMedium,
-        color = White
-    )
-}
-
 @Preview
 @Composable
 fun SearchAppBarPreview() {
@@ -377,12 +370,6 @@ fun SearchAppBarPreview() {
 @Composable
 fun ActionAppBarPreview() {
     ActionAppBar {}
-}
-
-@Preview
-@Composable
-fun SnackBarErrorPreview() {
-    SnackBarError("Error")
 }
 
 @Preview

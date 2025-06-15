@@ -113,40 +113,26 @@ class FoodRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun deleteRecipeFromMealPlan(
+    override suspend fun deleteRecipeFromMealPlan(
         recipeId: Int,
         username: String,
         hashKey: String
-    ): Flow<Unit> {
-        TODO("Not yet implemented")
-    }
-
-    /*override fun addRecipeToMealPlan(
-        username: String,
-        hashKey: String,
-        recipes: List<Recipe>
-    ) = flow {
-        val mealPlan = MealPlanWeek()
-
-        val response = dataSource.addToMealPlan(
-            username = username,
-            hashKey = hashKey,
-            mealPlan = MealPlanWeek(
-                mealPlanId = mealPlanId,
+    ): Result<Unit> {
+        try {
+            val response = dataSource.deleteFromMealPlan(
+                username = username,
+                hashKey = hashKey,
+                mealId = recipeId
             )
+            return if (response.isSuccessful) {
+                Result.Success(Unit)
+            } else {
+                Result.Error(Exception(response.errorBody().toString()))
+            }
+        } catch (e: Exception) {
+            return Result.Error(e)
+        }
     }
-
-    override fun deleteRecipeFromMealPlan(
-        recipeId: Int,
-        username: String,
-        hashKey: String
-    ) = flow {
-        val response = dataSource.deleteFromMealPlan(
-            username = username,
-            mealId = recipeId,
-            hashKey = hashKey
-        )
-    }*/
 
     override fun searchRecipeForNutrition(
         query: String,

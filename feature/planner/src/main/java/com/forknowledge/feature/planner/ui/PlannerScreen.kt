@@ -25,8 +25,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +56,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.extension.toDayAndDateString
 import com.forknowledge.core.common.extension.toEpochSeconds
 import com.forknowledge.core.ui.R.drawable
@@ -64,8 +69,10 @@ import com.forknowledge.core.ui.theme.Grey7F000000
 import com.forknowledge.core.ui.theme.Grey808993
 import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.Typography
+import com.forknowledge.core.ui.theme.component.AppSnackBar
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
+import com.forknowledge.core.ui.theme.state.SnackBarState
 import com.forknowledge.feature.model.MealRecipe
 import com.forknowledge.feature.planner.MealAction
 import com.forknowledge.feature.planner.R
@@ -78,6 +85,8 @@ fun PlannerScreen(
     viewModel: MealPlannerViewModel = hiltViewModel(),
     onNavigateToExplore: (Long, Int) -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
     val weekDays = getCurrentWeekDays()
     var selectedTab by remember {
         mutableIntStateOf(weekDays.indexOf(getCurrentDate()))
@@ -85,6 +94,28 @@ fun PlannerScreen(
     val mealPlan by viewModel.mealPlan.collectAsStateWithLifecycle()
     val shouldShowLoading = viewModel.shouldShowLoading
     val shouldShowError = viewModel.shouldShowError
+    val onProcessItem = viewModel.onProcessItem
+    val deleteRecipeState = viewModel.deleteRecipeState
+
+    val successMessage = stringResource(R.string.meal_planner_meal_plan_snackbar_delete_success_message)
+    val failMessage = stringResource(R.string.meal_planner_meal_plan_snackbar_delete_fail_message)
+    LaunchedEffect(deleteRecipeState) {
+        when (deleteRecipeState) {
+            is Result.Success -> {
+                snackbarHostState.showSnackbar(
+                    message = successMessage,
+                    duration = SnackbarDuration.Short
+                )
+            }
+            is Result.Error -> {
+                snackbarHostState.showSnackbar(
+                    message = failMessage,
+                    duration = SnackbarDuration.Short
+                )
+            }
+            is Result.Loading -> { /* Do nothing */ }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -101,6 +132,27 @@ fun PlannerScreen(
                     color = GreyEBEBEB
                 )
             }
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
+                        AppSnackBar(
+                            modifier = Modifier.padding(top = 36.dp),
+                            message = it.visuals.message,
+                            state = when(deleteRecipeState) {
+                                is Result.Success -> SnackBarState.SUCCESS
+                                is Result.Error -> SnackBarState.FAILURE
+                                is Result.Loading -> SnackBarState.NONE
+                            }
+                        )
+                    }
+                }
+            )
         }
     ) { innerPadding ->
         if (shouldShowLoading) {
@@ -141,10 +193,18 @@ fun PlannerScreen(
                             meal = stringResource(R.string.meal_planner_meal_plan_breakfast_label),
                             calories = mealDay.breakfastCalories,
                             recipes = mealDay.breakfast,
+                            onProcessItem = onProcessItem,
                             onNavigateToExplore = {
                                 onNavigateToExplore(
                                     meal.date.toEpochSeconds(),
                                     1
+                                )
+                            },
+                            onDeleteRecipe = {
+                                viewModel.deleteRecipeFromMealPlan(
+                                    meal.date,
+                                    1,
+                                    it
                                 )
                             }
                         )
@@ -154,10 +214,18 @@ fun PlannerScreen(
                             meal = stringResource(R.string.meal_planner_meal_plan_lunch_label),
                             calories = mealDay.lunchCalories,
                             recipes = mealDay.lunch,
+                            onProcessItem = onProcessItem,
                             onNavigateToExplore = {
                                 onNavigateToExplore(
                                     meal.date.toEpochSeconds(),
                                     2
+                                )
+                            },
+                            onDeleteRecipe = {
+                                viewModel.deleteRecipeFromMealPlan(
+                                    meal.date,
+                                    2,
+                                    it
                                 )
                             }
                         )
@@ -167,10 +235,18 @@ fun PlannerScreen(
                             meal = stringResource(R.string.meal_planner_meal_plan_dinner_label),
                             calories = mealDay.dinnerCalories,
                             recipes = mealDay.dinner,
+                            onProcessItem = onProcessItem,
                             onNavigateToExplore = {
                                 onNavigateToExplore(
                                     meal.date.toEpochSeconds(),
                                     3
+                                )
+                            },
+                            onDeleteRecipe = {
+                                viewModel.deleteRecipeFromMealPlan(
+                                    meal.date,
+                                    3,
+                                    it
                                 )
                             }
                         )
@@ -242,7 +318,9 @@ fun MealSection(
     meal: String,
     calories: Int,
     recipes: List<MealRecipe>,
-    onNavigateToExplore: () -> Unit
+    onProcessItem: Int,
+    onNavigateToExplore: () -> Unit,
+    onDeleteRecipe: (Int) -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -293,7 +371,11 @@ fun MealSection(
                 }
         ) {
             recipes.forEach { recipe ->
-                MealItem(recipe)
+                MealItem(
+                    recipe = recipe,
+                    showLoading = recipe.mealId == onProcessItem,
+                    onDeleteRecipe = { onDeleteRecipe(recipe.mealId) }
+                )
             }
         }
     }
@@ -301,7 +383,11 @@ fun MealSection(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MealItem(recipe: MealRecipe) {
+fun MealItem(
+    recipe: MealRecipe,
+    showLoading: Boolean,
+    onDeleteRecipe: () -> Unit
+) {
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
@@ -311,7 +397,12 @@ fun MealItem(recipe: MealRecipe) {
             containerColor = MaterialTheme.colorScheme.background,
             onDismissRequest = { showBottomSheet = false }
         ) {
-            ActionBottomSheet()
+            ActionBottomSheet(
+                onDeleteRecipe = {
+                    showBottomSheet = false
+                    onDeleteRecipe()
+                }
+            )
         }
     }
 
@@ -411,25 +502,41 @@ fun MealItem(recipe: MealRecipe) {
             color = Grey808993
         )
 
-        Icon(
-            modifier = Modifier
-                .size(28.dp)
-                .clickable { showBottomSheet = true }
-                .constrainAs(actionIcon) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end, margin = 12.dp)
-                },
-            painter = painterResource(R.drawable.ic_options),
-            tint = Black374957,
-            contentDescription = null
-        )
+        if (showLoading) {
+            LoadingIndicator(
+                modifier = Modifier
+                    .size(28.dp)
+                    .clickable { showBottomSheet = true }
+                    .constrainAs(actionIcon) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end, margin = 12.dp)
+                    },
+                strokeWidth = 3.dp
+            )
+        } else {
+            Icon(
+                modifier = Modifier
+                    .size(28.dp)
+                    .clickable { showBottomSheet = true }
+                    .constrainAs(actionIcon) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end, margin = 12.dp)
+                    },
+                painter = painterResource(R.drawable.ic_options),
+                tint = Black374957,
+                contentDescription = null
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ActionBottomSheet() {
+fun ActionBottomSheet(
+    onDeleteRecipe: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -440,7 +547,13 @@ fun ActionBottomSheet() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .clickable {}
+                    .clickable {
+                        when (action) {
+                            MealAction.COMPLETE -> {}
+                            MealAction.SWAP -> {}
+                            MealAction.DELETE -> onDeleteRecipe()
+                        }
+                    }
                     .padding(
                         horizontal = 32.dp
                     ),
@@ -530,14 +643,16 @@ fun MealPlannerTopBarPreview() {
 @Composable
 fun MealItemPreview() {
     MealItem(
-        MealRecipe(
+        recipe = MealRecipe(
             mealId = 1,
             recipeId = 1,
             imageUrl = "",
             name = "Spaghetti Bolognese ".repeat(3),
             cookTime = 30,
             servings = 4,
-        )
+        ),
+        showLoading = true,
+        onDeleteRecipe = {}
     )
 }
 
@@ -547,6 +662,7 @@ fun MealSectionPreview() {
     MealSection(
         meal = "Breakfast",
         calories = 1000,
+        onProcessItem = 0,
         recipes = listOf(
             MealRecipe(
                 mealId = 1,
@@ -557,14 +673,17 @@ fun MealSectionPreview() {
                 servings = 4,
             )
         ),
-        onNavigateToExplore = {}
+        onNavigateToExplore = {},
+        onDeleteRecipe = {}
     )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ActionBottomSheetPreview() {
-    ActionBottomSheet()
+    ActionBottomSheet(
+        onDeleteRecipe = {}
+    )
 }
 
 @Preview(showBackground = true)
