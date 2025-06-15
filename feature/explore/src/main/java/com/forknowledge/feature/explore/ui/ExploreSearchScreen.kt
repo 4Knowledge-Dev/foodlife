@@ -21,10 +21,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,8 +53,10 @@ import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black101510
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Green86BF3E
+import com.forknowledge.core.ui.theme.RedF44336
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppButtonSmall
+import com.forknowledge.core.ui.theme.component.AppButtonSmallLoading
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.AppTextField
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
@@ -59,20 +65,42 @@ import com.forknowledge.feature.explore.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExploreSearchScreen(
-    viewModel: SearchViewModel = hiltViewModel(), mealPosition: Int,/*dateInMillis: Long,
-    query: String,*/
+    viewModel: SearchViewModel = hiltViewModel(),
+    isAddMealPlanProcess: Boolean,
+    mealPosition: Int,
+    dateInMillis: Long,
+    onNavigateToMealPlan: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     // val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val isLoading = viewModel.isLoading
+    val shouldShowLoadingButton = viewModel.shouldShowLoadingButton
+    val shouldShowError = viewModel.shouldShowError
+    val onNavigateToMealPlan = viewModel.onNavigateToMealPlan
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val recipes = viewModel.recipes.collectAsLazyPagingItems()
     val selectedRecipes by viewModel.selectedRecipes.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         // focusRequester.requestFocus()
+    }
+
+    if (shouldShowError) {
+        val message =
+            stringResource(R.string.explore_search_adding_to_meal_plan_snackbar_error_message)
+        LaunchedEffect(Unit) {
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Long
+                )
+        }
+    }
+
+    if (onNavigateToMealPlan) {
+        onNavigateToMealPlan()
     }
 
     Scaffold(
@@ -90,6 +118,17 @@ fun ExploreSearchScreen(
                 )
             } else {
                 ActionAppBar(onCloseClicked = { viewModel.clearSelectedRecipes() })
+            }
+        },
+        snackbarHost = {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopCenter // Or Alignment.TopStart / Alignment.TopEnd
+            ) {
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    snackbar = { SnackBarError(it.visuals.message) }
+                )
             }
         }
     ) { innerPadding ->
@@ -127,21 +166,34 @@ fun ExploreSearchScreen(
                                 imageUrl = recipe.imageUrl,
                                 cookTime = recipe.cookTime,
                                 isSelected = selectedRecipes.contains(recipe),
-                                onItemClick = { viewModel.updateSelectedRecipes(recipe) }
+                                onItemClick = {
+                                    if (isAddMealPlanProcess) {
+                                        viewModel.updateSelectedRecipes(recipe)
+                                    }
+                                }
                             )
                         }
                     }
                 }
 
                 if (selectedRecipes.isNotEmpty()) {
-                    AppButtonSmall(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 24.dp),
-                        text = stringResource(R.string.explore_search_add_to_meal_plan_button),
-                        trailingIcon = drawable.ic_add,
-                        onClicked = {}
-                    )
+                    if (shouldShowLoadingButton) {
+                        AppButtonSmallLoading(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 24.dp),
+                            text = stringResource(R.string.explore_search_adding_to_meal_plan_button)
+                        )
+                    } else {
+                        AppButtonSmall(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 24.dp),
+                            text = stringResource(R.string.explore_search_add_to_meal_plan_button),
+                            trailingIcon = drawable.ic_add,
+                            onClicked = { viewModel.addToMealPlan(dateInMillis, mealPosition) }
+                        )
+                    }
                 }
             }
         }
@@ -291,6 +343,25 @@ fun RecipeItem(
     }
 }
 
+@Composable
+fun SnackBarError(message: String) {
+    AppText(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .padding(horizontal = 36.dp)
+            .background(
+                color = RedF44336,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .clip(RoundedCornerShape(16.dp))
+            .padding(horizontal = 24.dp),
+        text = message,
+        textStyle = Typography.bodyMedium,
+        color = White
+    )
+}
+
 @Preview
 @Composable
 fun SearchAppBarPreview() {
@@ -306,6 +377,12 @@ fun SearchAppBarPreview() {
 @Composable
 fun ActionAppBarPreview() {
     ActionAppBar {}
+}
+
+@Preview
+@Composable
+fun SnackBarErrorPreview() {
+    SnackBarError("Error")
 }
 
 @Preview

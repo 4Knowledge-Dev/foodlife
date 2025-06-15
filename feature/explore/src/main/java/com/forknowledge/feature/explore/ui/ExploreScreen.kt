@@ -42,8 +42,7 @@ import com.forknowledge.feature.explore.R
 @Composable
 fun ExploreScreen(
     isAddMealPlanProcess: Boolean,
-    mealPosition: Int = 0,
-    onNavigateToSearch: (Int) -> Unit,
+    onNavigateToSearch: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     Scaffold(
@@ -62,7 +61,7 @@ fun ExploreScreen(
                 AppSearchBar(
                     modifier = Modifier.weight(0.8f),
                     placeholder = stringResource(R.string.explore_search_bar_placeholder),
-                    onClicked = { onNavigateToSearch(mealPosition) }
+                    onClicked = { onNavigateToSearch() }
                 )
 
                 if (isAddMealPlanProcess) {

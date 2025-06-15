@@ -153,6 +153,42 @@ fun AppButtonSmall(
     }
 }
 
+@Composable
+fun AppButtonSmallLoading(
+    modifier: Modifier = Modifier,
+    text: String
+) {
+    Button(
+        modifier = modifier
+            .height(100.dp)
+            .padding(bottom = 50.dp),
+        onClick = {},
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Green91C747
+        ),
+        enabled = false
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            AppText(
+                text = text,
+                color = White,
+                textStyle = TextStyle(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            )
+
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(start = 12.dp)
+                    .size(20.dp),
+                color = White,
+                strokeWidth = 2.dp
+            )
+        }
+    }
+}
+
 @Preview
 @Composable
 fun AppButtonPreview() {
@@ -178,12 +214,20 @@ fun AppButtonLoadingPreview() {
     )
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun AppButtonSmallPreview() {
     AppButtonSmall(
         text = "Done",
         trailingIcon = R.drawable.ic_arrow_next,
         onClicked = {}
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+fun AppButtonSmallLoadingPreview() {
+    AppButtonSmallLoading(
+        text = "Done"
     )
 }

@@ -5,6 +5,9 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.forknowledge.core.api.FoodApiService
+import com.forknowledge.core.api.model.post.MealItem
+import com.forknowledge.core.api.model.post.MealRecipeItem
+import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.extension.toLocalDate
 import com.forknowledge.core.data.datasource.FoodDataSource
 import com.forknowledge.core.data.datasource.SearchPagingSource
@@ -69,6 +72,53 @@ class FoodRepositoryImpl @Inject constructor(
             }
             emit(mealPlan)
         }
+    }
+
+    override suspend fun addRecipeToMealPlan(
+        username: String,
+        hashKey: String,
+        dateInMillis: Long,
+        mealPosition: Int,
+        recipes: List<MealSearchRecipe>
+    ): Result<Unit> {
+        val meals = recipes.map { recipe ->
+            MealItem(
+                date = dateInMillis,
+                slot = mealPosition,
+                position = 0,
+                type = "RECIPE",
+                recipe = MealRecipeItem(
+                    id = recipe.id,
+                    title = recipe.name,
+                    image = recipe.imageUrl,
+                    servings = recipe.servings,
+                    readyInMinutes = recipe.cookTime,
+                    isComplete = false
+                )
+            )
+        }
+        return try {
+            val response = dataSource.addToMealPlan(
+                username = username,
+                hashKey = hashKey,
+                mealList = meals
+            )
+            if (response.isSuccessful) {
+                Result.Success(Unit)
+            } else {
+                Result.Error(Exception(response.errorBody().toString()))
+            }
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    override fun deleteRecipeFromMealPlan(
+        recipeId: Int,
+        username: String,
+        hashKey: String
+    ): Flow<Unit> {
+        TODO("Not yet implemented")
     }
 
     /*override fun addRecipeToMealPlan(

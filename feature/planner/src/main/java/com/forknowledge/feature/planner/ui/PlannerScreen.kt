@@ -53,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.forknowledge.core.common.extension.toDayAndDateString
+import com.forknowledge.core.common.extension.toEpochSeconds
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
 import com.forknowledge.core.ui.theme.Black374957
@@ -75,7 +76,7 @@ import java.time.LocalDate
 @Composable
 fun PlannerScreen(
     viewModel: MealPlannerViewModel = hiltViewModel(),
-    onNavigateToExplore: (Int) -> Unit
+    onNavigateToExplore: (Long, Int) -> Unit
 ) {
     val weekDays = getCurrentWeekDays()
     var selectedTab by remember {
@@ -140,7 +141,12 @@ fun PlannerScreen(
                             meal = stringResource(R.string.meal_planner_meal_plan_breakfast_label),
                             calories = mealDay.breakfastCalories,
                             recipes = mealDay.breakfast,
-                            onNavigateToExplore = { onNavigateToExplore(1) }
+                            onNavigateToExplore = {
+                                onNavigateToExplore(
+                                    meal.date.toEpochSeconds(),
+                                    1
+                                )
+                            }
                         )
                     }
                     if (mealDay.lunch.isNotEmpty()) {
@@ -148,7 +154,12 @@ fun PlannerScreen(
                             meal = stringResource(R.string.meal_planner_meal_plan_lunch_label),
                             calories = mealDay.lunchCalories,
                             recipes = mealDay.lunch,
-                            onNavigateToExplore = { onNavigateToExplore(2) }
+                            onNavigateToExplore = {
+                                onNavigateToExplore(
+                                    meal.date.toEpochSeconds(),
+                                    2
+                                )
+                            }
                         )
                     }
                     if (mealDay.dinner.isNotEmpty()) {
@@ -156,7 +167,12 @@ fun PlannerScreen(
                             meal = stringResource(R.string.meal_planner_meal_plan_dinner_label),
                             calories = mealDay.dinnerCalories,
                             recipes = mealDay.dinner,
-                            onNavigateToExplore = { onNavigateToExplore(3) }
+                            onNavigateToExplore = {
+                                onNavigateToExplore(
+                                    meal.date.toEpochSeconds(),
+                                    3
+                                )
+                            }
                         )
                     }
                 }
@@ -417,14 +433,13 @@ fun ActionBottomSheet() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(bottom = 32.dp)
     ) {
         MealAction.entries.forEach { action ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp)
+                    .height(50.dp)
                     .clickable {}
                     .padding(
                         horizontal = 32.dp
@@ -432,6 +447,7 @@ fun ActionBottomSheet() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
+                    modifier = Modifier.size(28.dp),
                     painter = painterResource(action.icon),
                     tint = Black374957,
                     contentDescription = null

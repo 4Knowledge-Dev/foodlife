@@ -7,14 +7,17 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ExploreRoute(
     val isAddMealPlanProcess: Boolean,
-    val mealPosition: Int
+    val mealPosition: Int,
+    val dateInMillis: Long,
 )
 
 @Serializable
 data class ExploreSearchRoute(
-    val mealPosition: Int
+    val isAddMealPlanProcess: Boolean,
+    val mealPosition: Int,
+    val dateInMillis: Long,
 )
 
 fun NavController.navigateToExplore(navOptions: NavOptions? = null) {
-    navigate(ExploreRoute(false, 0), navOptions)
+    navigate(ExploreRoute(false, 0, 0), navOptions)
 }

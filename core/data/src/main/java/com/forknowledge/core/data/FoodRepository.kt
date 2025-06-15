@@ -1,6 +1,7 @@
 package com.forknowledge.core.data
 
 import androidx.paging.PagingData
+import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.model.MealPlanDisplayData
 import com.forknowledge.feature.model.MealSearchRecipe
 import com.forknowledge.feature.model.SearchRecipe
@@ -16,17 +17,19 @@ interface FoodRepository {
         startDate: String
     ): Flow<List<MealPlanDisplayData>>
 
-    /*fun addRecipeToMealPlan(
+     suspend fun addRecipeToMealPlan(
         username: String,
         hashKey: String,
-        recipes: List<Recipe>
-    ): Flow<Unit>
+        dateInMillis: Long,
+        mealPosition: Int,
+        recipes: List<MealSearchRecipe>
+    ): Result<Unit>
 
     fun deleteRecipeFromMealPlan(
         recipeId: Int,
         username: String,
         hashKey: String,
-    ): Flow<Unit>*/
+    ): Flow<Unit>
 
     fun searchRecipeForNutrition(
         query: String,
