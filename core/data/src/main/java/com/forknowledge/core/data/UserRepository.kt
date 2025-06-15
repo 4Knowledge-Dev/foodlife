@@ -3,7 +3,7 @@ package com.forknowledge.core.data
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.data.datatype.UserAuthState
-import com.forknowledge.feature.model.userdata.Recipe
+import com.forknowledge.feature.model.SearchRecipe
 import com.forknowledge.feature.model.userdata.TargetNutrition
 import com.forknowledge.feature.model.userdata.User
 import kotlinx.coroutines.flow.Flow
@@ -53,7 +53,7 @@ interface UserRepository {
     suspend fun createNewTrackDay(
         documentId: String,
         date: Date,
-        recipe: Recipe
+        recipe: SearchRecipe
     ): Result<Unit>
 
     /**
@@ -64,7 +64,7 @@ interface UserRepository {
      */
     suspend fun updateRecipeList(
         documentId: String,
-        recipe: Recipe,
+        recipe: SearchRecipe,
         isAdd: Boolean
     ): Result<Unit>
 }

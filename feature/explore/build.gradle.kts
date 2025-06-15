@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.hilt)
+    kotlin("kapt")
 }
 
 android {
@@ -19,6 +21,10 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:common"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:model"))
+    implementation(project(":core:data"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -31,4 +37,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.navigation.component)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.hilt)
+    kapt(libs.androidx.hilt.compiler)
+    implementation(libs.androidx.lifecycle.compose)
+    implementation(libs.androidx.paging)
+    implementation(libs.androidx.paging.compose)
+    implementation(libs.io.coil.compose)
+    implementation(libs.io.coil.network.okhttp)
 }

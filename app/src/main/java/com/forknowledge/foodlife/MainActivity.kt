@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.forknowledge.core.data.NetworkManager
 import com.forknowledge.core.ui.theme.FoodLifeTheme
+import com.forknowledge.feature.explore.ExploreRoute
 import com.forknowledge.feature.planner.PlannerRoute
 import com.forknowledge.foodlife.ui.AppScreen
 import com.forknowledge.foodlife.ui.rememberAppState
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
             FoodLifeTheme {
                 AppScreen(
                     appState = rememberAppState(networkManager = networkManager),
-                    startDestinationRoute = PlannerRoute
+                    startDestinationRoute = ExploreRoute(false, 0)
                 )
             }
         }

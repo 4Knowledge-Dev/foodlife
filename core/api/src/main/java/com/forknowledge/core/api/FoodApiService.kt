@@ -1,14 +1,15 @@
 package com.forknowledge.core.api
 
-import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.api.model.GenerateMealPlanResponse
 import com.forknowledge.core.api.model.MealPlanResponse
 import com.forknowledge.core.api.model.SearchResponse
 import com.forknowledge.core.api.model.UserResponse
+import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.api.model.post.MealPlanWeek
 import kotlinx.serialization.InternalSerializationApi
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -48,11 +49,19 @@ interface FoodApiService {
         @Body mealPlan: MealPlanWeek
     ): Response<Unit>
 
+    @DELETE("$API_HEADER_MEAL_PLANNER/{username}/items/{id}")
+    suspend fun deleteFromMealPlan(
+        @Path("username") username: String,
+        @Path("id") mealId: Int,
+        @Query("hash") hashKey: String
+    ): Response<Unit>
+
     @GET("$API_HEADER_RECIPE/complexSearch")
     suspend fun searchRecipe(
-        @Query("query") query: String = "",
         @Query("offset") index: Int = 0,
         @Query("number") pageSize: Int = 30,
-        @Query("addRecipeNutrition") includeNutrition: Boolean = true
+        @Query("query") query: String = "",
+        @Query("addRecipeInformation") includeInformation: Boolean,
+        @Query("addRecipeNutrition") includeNutrition: Boolean
     ): SearchResponse
 }

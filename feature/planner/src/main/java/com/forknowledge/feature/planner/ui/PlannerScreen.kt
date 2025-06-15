@@ -1,18 +1,24 @@
 package com.forknowledge.feature.planner.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -36,9 +42,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,11 +57,14 @@ import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Green86BF3E
+import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.GreenA1CE50
+import com.forknowledge.core.ui.theme.Grey7F000000
 import com.forknowledge.core.ui.theme.Grey808993
 import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.feature.model.MealRecipe
 import com.forknowledge.feature.planner.MealAction
 import com.forknowledge.feature.planner.R
@@ -62,13 +74,16 @@ import java.time.LocalDate
 
 @Composable
 fun PlannerScreen(
-    viewModel: MealPlannerViewModel = hiltViewModel()
+    viewModel: MealPlannerViewModel = hiltViewModel(),
+    onNavigateToExplore: (Int) -> Unit
 ) {
     val weekDays = getCurrentWeekDays()
     var selectedTab by remember {
         mutableIntStateOf(weekDays.indexOf(getCurrentDate()))
     }
     val mealPlan by viewModel.mealPlan.collectAsStateWithLifecycle()
+    val shouldShowLoading = viewModel.shouldShowLoading
+    val shouldShowError = viewModel.shouldShowError
 
     Scaffold(
         topBar = {
@@ -87,39 +102,73 @@ fun PlannerScreen(
             }
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(White)
-                .verticalScroll(rememberScrollState())
-                .padding(innerPadding)
-        ) {
+        if (shouldShowLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                LoadingIndicator(
+                    modifier = Modifier.padding(innerPadding)
+                )
+            }
+        }
+
+        if (shouldShowError) {
+            Column {
+                MealPlanInstruction(
+                    isNetworkError = true,
+                    instruction = stringResource(R.string.meal_planner_meal_plan_internet_error_text),
+                    image = drawable.img_vector_internet_error,
+                    onReload = { viewModel.getMealPlan() }
+                )
+            }
+        }
+
+        if (!shouldShowLoading && !shouldShowError) {
             val mealDay = mealPlan.firstOrNull { it.date == weekDays[selectedTab] }
             mealDay?.let { meal ->
-                if (meal.breakfast.isNotEmpty()) {
-                    MealSection(
-                        meal = stringResource(R.string.meal_planner_meal_plan_breakfast_label),
-                        calories = meal.breakfastCalories,
-                        recipes = meal.breakfast
-                    )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(White)
+                        .verticalScroll(rememberScrollState())
+                        .padding(innerPadding),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (meal.breakfast.isNotEmpty()) {
+                        MealSection(
+                            meal = stringResource(R.string.meal_planner_meal_plan_breakfast_label),
+                            calories = mealDay.breakfastCalories,
+                            recipes = mealDay.breakfast,
+                            onNavigateToExplore = { onNavigateToExplore(1) }
+                        )
+                    }
+                    if (mealDay.lunch.isNotEmpty()) {
+                        MealSection(
+                            meal = stringResource(R.string.meal_planner_meal_plan_lunch_label),
+                            calories = mealDay.lunchCalories,
+                            recipes = mealDay.lunch,
+                            onNavigateToExplore = { onNavigateToExplore(2) }
+                        )
+                    }
+                    if (mealDay.dinner.isNotEmpty()) {
+                        MealSection(
+                            meal = stringResource(R.string.meal_planner_meal_plan_dinner_label),
+                            calories = mealDay.dinnerCalories,
+                            recipes = mealDay.dinner,
+                            onNavigateToExplore = { onNavigateToExplore(3) }
+                        )
+                    }
                 }
-                if (meal.lunch.isNotEmpty()) {
-                    MealSection(
-                        meal = stringResource(R.string.meal_planner_meal_plan_lunch_label),
-                        calories = meal.lunchCalories,
-                        recipes = meal.lunch
-                    )
-                }
-                if (meal.dinner.isNotEmpty()) {
-                    MealSection(
-                        meal = stringResource(R.string.meal_planner_meal_plan_dinner_label),
-                        calories = meal.dinnerCalories,
-                        recipes = meal.dinner
-                    )
-                }
+            } ?: run {
+                MealPlanInstruction(
+                    instruction = stringResource(R.string.meal_planner_meal_plan_no_plan_today_text),
+                    image = R.drawable.img_vector_no_meal_plan
+                )
             }
         }
     }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -176,7 +225,8 @@ fun MealPlannerTopBar(
 fun MealSection(
     meal: String,
     calories: Int,
-    recipes: List<MealRecipe>
+    recipes: List<MealRecipe>,
+    onNavigateToExplore: () -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -191,7 +241,7 @@ fun MealSection(
                 start.linkTo(parent.start)
             },
             text = meal,
-            textStyle = Typography.titleSmall
+            textStyle = Typography.titleMedium
         )
 
         AppText(
@@ -207,6 +257,7 @@ fun MealSection(
         Icon(
             modifier = Modifier
                 .size(28.dp)
+                .clickable { onNavigateToExplore() }
                 .constrainAs(actionIcon) {
                     top.linkTo(textMeal.top)
                     bottom.linkTo(textCalories.bottom)
@@ -396,6 +447,59 @@ fun ActionBottomSheet() {
     }
 }
 
+@Composable
+fun MealPlanInstruction(
+    isNetworkError: Boolean = false,
+    instruction: String,
+    image: Int,
+    onReload: () -> Unit = {}
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                modifier = Modifier.size(250.dp),
+                painter = painterResource(image),
+                contentDescription = null
+            )
+
+            AppText(
+                modifier = Modifier.padding(top = 20.dp),
+                text = instruction,
+                textStyle = Typography.bodyLarge,
+                color = Grey7F000000
+            )
+
+            if (isNetworkError) {
+                Button(
+                    modifier = Modifier
+                        .height(80.dp)
+                        .padding(top = 36.dp)
+                        .align(Alignment.CenterHorizontally),
+                    onClick = { onReload() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Green91C747
+                    )
+                ) {
+                    AppText(
+                        text = stringResource(R.string.meal_planner_meal_plan_button_text_reload),
+                        color = White,
+                        textStyle = TextStyle(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Preview()
 @Composable
 fun MealPlannerTopBarPreview() {
@@ -436,7 +540,8 @@ fun MealSectionPreview() {
                 cookTime = 30,
                 servings = 4,
             )
-        )
+        ),
+        onNavigateToExplore = {}
     )
 }
 
@@ -444,4 +549,13 @@ fun MealSectionPreview() {
 @Composable
 fun ActionBottomSheetPreview() {
     ActionBottomSheet()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NoMealPlanInstructionPreview() {
+    MealPlanInstruction(
+        instruction = stringResource(R.string.meal_planner_meal_plan_no_plan_today_text),
+        image = R.drawable.img_vector_no_meal_plan
+    )
 }

@@ -37,7 +37,7 @@ import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.feature.model.userdata.Nutrient
-import com.forknowledge.feature.model.userdata.Recipe
+import com.forknowledge.feature.model.SearchRecipe
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -50,7 +50,7 @@ const val ANIMATION_DURATION = 1000L
 fun RecipeItem(
     result: Result<Unit>?,
     logRecipeId: Long?,
-    recipe: Recipe,
+    recipe: SearchRecipe,
     onLogRecipe: () -> Unit
 ) {
     ConstraintLayout(
@@ -210,9 +210,13 @@ fun RecipeItemPreview() {
     RecipeItem(
         result = Result.Loading,
         logRecipeId = 1L,
-        recipe = Recipe(
+        recipe = SearchRecipe(
+            id = 10,
             name = "Spaghetti Bolognese",
             healthScore = 100,
+            imageUrl = "",
+            servings = 2,
+            cookTime = 10,
             nutrients = listOf(
                 Nutrient(
                     name = "Calories",

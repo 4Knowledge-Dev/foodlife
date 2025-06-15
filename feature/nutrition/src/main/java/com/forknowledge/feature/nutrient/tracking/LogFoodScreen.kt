@@ -1,17 +1,13 @@
-package com.forknowledge.feature.nutrient.ui
+package com.forknowledge.feature.nutrient.tracking
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -28,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,11 +34,11 @@ import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Green86BF3E
 import com.forknowledge.core.ui.theme.GreenA1CE50
-import com.forknowledge.core.ui.theme.GreyF4F5F5
 import com.forknowledge.core.ui.theme.Typography
+import com.forknowledge.core.ui.theme.component.AppSearchBar
 import com.forknowledge.core.ui.theme.component.AppText
-import com.forknowledge.feature.model.userdata.Recipe
-import com.forknowledge.feature.model.userdata.logRecipes
+import com.forknowledge.feature.model.SearchRecipe
+import com.forknowledge.feature.model.logRecipes
 import com.forknowledge.feature.nutrient.R
 import com.forknowledge.feature.nutrient.toMealName
 import kotlinx.coroutines.launch
@@ -149,45 +144,11 @@ fun LogFoodTopAppBar(
         }
 
         // SearchBar
-        Row(
-            modifier = Modifier
-                .padding(top = 24.dp)
-                .height(55.dp)
-                .background(
-                    color = GreyF4F5F5,
-                    shape = RoundedCornerShape(32.dp)
-                )
-                .clip(RoundedCornerShape(32.dp))
-                .clickable { onNavigateToSearch() }
-                .padding(
-                    vertical = 16.dp,
-                    horizontal = 21.dp
-                ),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(id = drawable.ic_search),
-                tint = Black374957,
-                contentDescription = null
-            )
-
-            AppText(
-                modifier = Modifier.padding(start = 18.dp),
-                text = stringResource(R.string.nutrient_log_food_search_bar_label),
-                textStyle = Typography.bodyMedium,
-                color = Black374957
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(id = drawable.ic_scan),
-                tint = Black374957,
-                contentDescription = null
-            )
-        }
+        AppSearchBar(
+            modifier = Modifier.padding(top = 24.dp),
+            placeholder = stringResource(R.string.nutrient_log_food_search_bar_label),
+            onClicked = onNavigateToSearch
+        )
 
         SecondaryTabRow(
             modifier = Modifier
@@ -225,7 +186,7 @@ fun LogFoodTopAppBar(
 
 @Composable
 fun ContentSection(
-    recipes: List<Recipe>
+    recipes: List<SearchRecipe>
 ) {
     /*LazyColumn(
         modifier = Modifier

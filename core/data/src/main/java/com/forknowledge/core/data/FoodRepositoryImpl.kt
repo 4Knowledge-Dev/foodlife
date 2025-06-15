@@ -1,19 +1,21 @@
 package com.forknowledge.core.data
 
-import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.map
 import com.forknowledge.core.api.FoodApiService
 import com.forknowledge.core.common.extension.toLocalDate
 import com.forknowledge.core.data.datasource.FoodDataSource
 import com.forknowledge.core.data.datasource.SearchPagingSource
 import com.forknowledge.core.data.model.MealPlanDisplayData
-import com.forknowledge.feature.model.userdata.Recipe
+import com.forknowledge.feature.model.MealSearchRecipe
+import com.forknowledge.feature.model.SearchRecipe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.InternalSerializationApi
 import javax.inject.Inject
 
@@ -47,9 +49,9 @@ class FoodRepositoryImpl @Inject constructor(
             mealDays.forEach { mealDay ->
                 val date = mealDay.date.toLocalDate()
                 val recipes = mealDay.items
-                val breakfast = recipes.filter { it.position == 1 }.map { it.toMealRecipe() }
-                val lunch = recipes.filter { it.position == 2 }.map { it.toMealRecipe() }
-                val dinner = recipes.filter { it.position == 3 }.map { it.toMealRecipe() }
+                val breakfast = recipes.filter { it.slot == 1 }.map { it.toMealRecipe() }
+                val lunch = recipes.filter { it.slot == 2 }.map { it.toMealRecipe() }
+                val dinner = recipes.filter { it.slot == 3 }.map { it.toMealRecipe() }
                 val breakfastCalories = mealDay.nutritionSummaryBreakfast.nutrients[6].amount
                 val lunchCalories = mealDay.nutritionSummaryLunch.nutrients[6].amount
                 val dinnerCalories = mealDay.nutritionSummaryDinner.nutrients[6].amount
@@ -66,22 +68,84 @@ class FoodRepositoryImpl @Inject constructor(
                 )
             }
             emit(mealPlan)
-        } else {
-            Log.e(GET_MEAL_PLAN_EXCEPTION, "Fail on getMealPlan: ${response.errorBody()}")
-            emit(emptyList<MealPlanDisplayData>())
         }
     }
 
-    override fun searchRecipe(query: String): Flow<PagingData<Recipe>> {
+    /*override fun addRecipeToMealPlan(
+        username: String,
+        hashKey: String,
+        recipes: List<Recipe>
+    ) = flow {
+        val mealPlan = MealPlanWeek()
+
+        val response = dataSource.addToMealPlan(
+            username = username,
+            hashKey = hashKey,
+            mealPlan = MealPlanWeek(
+                mealPlanId = mealPlanId,
+            )
+    }
+
+    override fun deleteRecipeFromMealPlan(
+        recipeId: Int,
+        username: String,
+        hashKey: String
+    ) = flow {
+        val response = dataSource.deleteFromMealPlan(
+            username = username,
+            mealId = recipeId,
+            hashKey = hashKey
+        )
+    }*/
+
+    override fun searchRecipeForNutrition(
+        query: String,
+        includeInformation: Boolean,
+        includeNutrition: Boolean
+    ): Flow<PagingData<SearchRecipe>> {
         return Pager(
             config = PagingConfig(
                 pageSize = SEARCH_PAGE_SIZE,
                 enablePlaceholders = false,
                 maxSize = SEARCH_PAGE_SIZE + (2 * SEARCH_PREFETCH_DISTANCE)
             ),
-            pagingSourceFactory = { SearchPagingSource(service, query) }
+            pagingSourceFactory = {
+                SearchPagingSource(
+                    service = service,
+                    query = query,
+                    includeInformation = includeInformation,
+                    includeNutrition = includeNutrition
+                )
+            }
         )
             .flow
+            .flowOn(Dispatchers.IO)
+    }
+
+    override fun searchRecipeForMeal(
+        query: String,
+        includeInformation: Boolean,
+        includeNutrition: Boolean
+    ): Flow<PagingData<MealSearchRecipe>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = SEARCH_PAGE_SIZE,
+                enablePlaceholders = false,
+                maxSize = SEARCH_PAGE_SIZE + (2 * SEARCH_PREFETCH_DISTANCE)
+            ),
+            pagingSourceFactory = {
+                SearchPagingSource(
+                    service = service,
+                    query = query,
+                    includeInformation = includeInformation,
+                    includeNutrition = includeNutrition
+                )
+            }
+        )
+            .flow
+            .map { pagingData ->
+                pagingData.map { it.toMealSearchRecipe() }
+            }
             .flowOn(Dispatchers.IO)
     }
 }

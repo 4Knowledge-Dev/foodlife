@@ -1,20 +1,27 @@
 package com.forknowledge.core.api.model.post
 
+import kotlinx.serialization.SerialName
+
 data class MealPlanWeek(
     val mealList: List<MealItem>
 )
 
 data class MealItem(
     val date: Int,
-    val position: Int,
+    @SerialName("position")
+    val meal: Int,
     val slot: Int,
-    val type: String,
-    val value: Value
+    @SerialName("type")
+    val foodType: String,
+    @SerialName("value")
+    val recipe: MealRecipeItem
 )
 
-data class Value(
+data class MealRecipeItem(
     val id: Int,
     val image: String,
+    val imageType: String,
     val servings: Int,
-    val title: String
+    val title: String,
+    val readyInMinutes: Int,
 )

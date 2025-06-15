@@ -3,15 +3,11 @@ package com.forknowledge.feature.onboarding.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,14 +21,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.forknowledge.core.ui.R.drawable
-import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.Typography
+import com.forknowledge.core.ui.theme.component.AppButtonSmall
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.feature.onboarding.R
 
@@ -99,33 +94,12 @@ fun WelcomeScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Button(
-            modifier = Modifier
-                .height(100.dp)
-                .padding(bottom = 50.dp)
-                .align(Alignment.CenterHorizontally),
-            onClick = onNavigateToSurvey,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Green91C747
-            )
-        ) {
-            Row {
-                AppText(
-                    text = stringResource(id = R.string.onboarding_welcome_button),
-                    color = White,
-                    textStyle = TextStyle(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                )
-
-                Icon(
-                    modifier = Modifier.padding(start = 10.dp),
-                    painter = painterResource(id = drawable.ic_arrow_next),
-                    contentDescription = null
-                )
-            }
-        }
+        AppButtonSmall(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            text = stringResource(id = R.string.onboarding_welcome_button),
+            trailingIcon = drawable.ic_arrow_next,
+            onClicked = onNavigateToSurvey
+        )
     }
 }
 

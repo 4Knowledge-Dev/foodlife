@@ -39,13 +39,6 @@ import com.forknowledge.feature.nutrient.RecipeItem
 import kotlinx.serialization.Serializable
 import java.util.Date
 
-@Serializable
-data class SearchRoute(
-    val meal: Long,
-    val hasLoggedFood: Boolean,
-    val dateInMillis: Long
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
