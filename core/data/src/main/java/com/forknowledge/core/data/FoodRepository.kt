@@ -25,11 +25,11 @@ interface FoodRepository {
         recipes: List<MealSearchRecipe>
     ): Result<Unit>
 
-    fun deleteRecipeFromMealPlan(
+    suspend fun deleteRecipeFromMealPlan(
         recipeId: Int,
         username: String,
         hashKey: String,
-    ): Flow<Unit>
+    ): Result<Unit>
 
     fun searchRecipeForNutrition(
         query: String,

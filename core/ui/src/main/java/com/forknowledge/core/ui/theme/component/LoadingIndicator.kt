@@ -20,11 +20,12 @@ import com.forknowledge.core.ui.theme.GreyB7BDC4
 fun LoadingIndicator(
     modifier: Modifier = Modifier,
     size: Dp = 60.dp,
-    strokeWidth: Dp = 5.dp
+    strokeWidth: Dp = 5.dp,
+    color: Color = Black05172C
 ) {
     CircularProgressIndicator(
         modifier = modifier.size(size),
-        color = Black05172C,
+        color = color,
         strokeWidth = strokeWidth
     )
 }
