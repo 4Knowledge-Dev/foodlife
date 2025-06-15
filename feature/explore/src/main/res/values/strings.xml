@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="explore_search_bar_placeholder">What are you craving?</string>
+    <string name="explore_cancel_text">Cancel</string>
+    <string name="explore_diet_type_section_title">Diet</string>
+    <string name="explore_ingredient_section_title">Ingredient</string>
+    <string name="explore_popular_section_title">Popular</string>
+    <string name="explore_search_add_to_meal_plan_button">Add</string>
+    <plurals name="explore_recipe_cook_time_text">
+        <item quantity="one">%1$d min</item>
+        <item quantity="other">%1$d mins</item>
+    </plurals>
+
+    // Diet type
+    <string name="explore_diet_type_high_protein">High Protein</string>
+    <string name="explore_diet_type_low_carb">Low Carb</string>
+    <string name="explore_diet_type_gluten_free">Gluten free</string>
+    <string name="explore_diet_type_vegan">Vegan</string>
+    <string name="explore_diet_type_keto">Keto</string>
+    <string name="explore_diet_type_pescetarian">Pescetarian</string>
+</resources>

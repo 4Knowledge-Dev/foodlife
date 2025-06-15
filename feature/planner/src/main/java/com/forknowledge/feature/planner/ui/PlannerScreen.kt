@@ -74,7 +74,8 @@ import java.time.LocalDate
 
 @Composable
 fun PlannerScreen(
-    viewModel: MealPlannerViewModel = hiltViewModel()
+    viewModel: MealPlannerViewModel = hiltViewModel(),
+    onNavigateToExplore: (Int) -> Unit
 ) {
     val weekDays = getCurrentWeekDays()
     var selectedTab by remember {
@@ -138,21 +139,24 @@ fun PlannerScreen(
                         MealSection(
                             meal = stringResource(R.string.meal_planner_meal_plan_breakfast_label),
                             calories = mealDay.breakfastCalories,
-                            recipes = mealDay.breakfast
+                            recipes = mealDay.breakfast,
+                            onNavigateToExplore = { onNavigateToExplore(1) }
                         )
                     }
                     if (mealDay.lunch.isNotEmpty()) {
                         MealSection(
                             meal = stringResource(R.string.meal_planner_meal_plan_lunch_label),
                             calories = mealDay.lunchCalories,
-                            recipes = mealDay.lunch
+                            recipes = mealDay.lunch,
+                            onNavigateToExplore = { onNavigateToExplore(2) }
                         )
                     }
                     if (mealDay.dinner.isNotEmpty()) {
                         MealSection(
                             meal = stringResource(R.string.meal_planner_meal_plan_dinner_label),
                             calories = mealDay.dinnerCalories,
-                            recipes = mealDay.dinner
+                            recipes = mealDay.dinner,
+                            onNavigateToExplore = { onNavigateToExplore(3) }
                         )
                     }
                 }
@@ -221,7 +225,8 @@ fun MealPlannerTopBar(
 fun MealSection(
     meal: String,
     calories: Int,
-    recipes: List<MealRecipe>
+    recipes: List<MealRecipe>,
+    onNavigateToExplore: () -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -252,6 +257,7 @@ fun MealSection(
         Icon(
             modifier = Modifier
                 .size(28.dp)
+                .clickable { onNavigateToExplore() }
                 .constrainAs(actionIcon) {
                     top.linkTo(textMeal.top)
                     bottom.linkTo(textCalories.bottom)
@@ -534,7 +540,8 @@ fun MealSectionPreview() {
                 cookTime = 30,
                 servings = 4,
             )
-        )
+        ),
+        onNavigateToExplore = {}
     )
 }
 

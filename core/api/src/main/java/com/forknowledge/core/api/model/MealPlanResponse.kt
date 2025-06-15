@@ -26,8 +26,8 @@ data class DayResponse(
 @Serializable
 data class FoodResponse(
     val id: Int,
-    val position: Int,
-    val type: String,
+    val slot: Int,
+    val type: String? = null,
     val value: ValueResponse
 ) {
     fun toMealRecipe() = MealRecipe(
@@ -36,7 +36,7 @@ data class FoodResponse(
         imageUrl = getImageUrl(
             id = value.id.toString(),
             image = value.image ?: "",
-            mealType = type,
+            mealType = type ?: "",
             imageType = value.imageType ?: ""
         ),
         name = value.title,

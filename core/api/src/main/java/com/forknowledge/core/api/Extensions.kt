@@ -25,6 +25,9 @@ fun getImageUrl(
     mealType: String,
     imageType: String
 ): String {
+    if (image.isNotEmpty()) {
+        return image
+    }
     return when (mealType.toMealType()) {
         MealType.INGREDIENTS -> "${BuildConfig.API_IMAGE_URL}/${MEAL_TYPE_INGREDIENT}_$INGREDIENT_IMAGE_SIZE/$image"
         MealType.EQUIPMENT -> "${BuildConfig.API_IMAGE_URL}/${MEAL_TYPE_EQUIPMENT}_$INGREDIENT_IMAGE_SIZE/$image"

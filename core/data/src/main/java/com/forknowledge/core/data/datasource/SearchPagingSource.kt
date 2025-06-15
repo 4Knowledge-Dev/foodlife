@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.forknowledge.core.api.FoodApiService
 import com.forknowledge.core.data.SEARCH_PAGE_SIZE
-import com.forknowledge.feature.model.userdata.Recipe
+import com.forknowledge.feature.model.SearchRecipe
 import kotlinx.serialization.InternalSerializationApi
 import okio.IOException
 import retrofit2.HttpException
@@ -13,9 +13,11 @@ import retrofit2.HttpException
 class SearchPagingSource(
     val service: FoodApiService,
     val query: String,
-) : PagingSource<Int, Recipe>() {
+    val includeInformation: Boolean,
+    val includeNutrition: Boolean
+) : PagingSource<Int, SearchRecipe>() {
 
-    override fun getRefreshKey(state: PagingState<Int, Recipe>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, SearchRecipe>): Int? {
         // Try to find the page key (offset) of the closest page to anchorPosition from
         // either the prevKey or the nextKey; you need to handle nullability
         // here.
@@ -30,11 +32,13 @@ class SearchPagingSource(
         }
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Recipe> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SearchRecipe> {
         try {
             val position = params.key ?: 0
             val response = service.searchRecipe(
                 query = query,
+                includeInformation = includeInformation,
+                includeNutrition = includeNutrition,
                 index = position,
                 pageSize = params.loadSize
             )

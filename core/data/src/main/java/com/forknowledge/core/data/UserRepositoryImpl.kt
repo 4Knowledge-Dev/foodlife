@@ -11,7 +11,7 @@ import com.forknowledge.core.data.FirestoreReference.USER_RECORD_SUB_COLLECTION
 import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.data.datatype.UserAuthState
 import com.forknowledge.feature.model.userdata.IntakeNutrition
-import com.forknowledge.feature.model.userdata.Recipe
+import com.forknowledge.feature.model.SearchRecipe
 import com.forknowledge.feature.model.userdata.User
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
@@ -185,7 +185,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun createNewTrackDay(
         documentId: String,
         date: Date,
-        recipe: Recipe
+        recipe: SearchRecipe
     ) = withContext(Dispatchers.IO) {
         return@withContext try {
             firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
@@ -200,7 +200,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun updateRecipeList(
         documentId: String,
-        recipe: Recipe,
+        recipe: SearchRecipe,
         isAdd: Boolean
     ) = withContext(Dispatchers.IO) {
         return@withContext try {

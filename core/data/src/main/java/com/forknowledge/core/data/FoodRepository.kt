@@ -1,9 +1,9 @@
 package com.forknowledge.core.data
 
 import androidx.paging.PagingData
-import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.data.model.MealPlanDisplayData
-import com.forknowledge.feature.model.userdata.Recipe
+import com.forknowledge.feature.model.MealSearchRecipe
+import com.forknowledge.feature.model.SearchRecipe
 import kotlinx.coroutines.flow.Flow
 
 interface FoodRepository {
@@ -16,5 +16,27 @@ interface FoodRepository {
         startDate: String
     ): Flow<List<MealPlanDisplayData>>
 
-    fun searchRecipe(query: String): Flow<PagingData<Recipe>>
+    /*fun addRecipeToMealPlan(
+        username: String,
+        hashKey: String,
+        recipes: List<Recipe>
+    ): Flow<Unit>
+
+    fun deleteRecipeFromMealPlan(
+        recipeId: Int,
+        username: String,
+        hashKey: String,
+    ): Flow<Unit>*/
+
+    fun searchRecipeForNutrition(
+        query: String,
+        includeInformation: Boolean = false,
+        includeNutrition: Boolean = true
+    ): Flow<PagingData<SearchRecipe>>
+
+    fun searchRecipeForMeal(
+        query: String,
+        includeInformation: Boolean = true,
+        includeNutrition: Boolean = false
+    ): Flow<PagingData<MealSearchRecipe>>
 }

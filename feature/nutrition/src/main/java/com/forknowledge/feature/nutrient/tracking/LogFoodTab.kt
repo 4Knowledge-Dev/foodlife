@@ -1,4 +1,4 @@
-package com.forknowledge.feature.nutrient.ui
+package com.forknowledge.feature.nutrient.tracking
 
 import androidx.annotation.StringRes
 import com.forknowledge.feature.nutrient.R

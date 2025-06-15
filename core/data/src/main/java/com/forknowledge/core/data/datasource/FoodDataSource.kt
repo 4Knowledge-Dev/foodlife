@@ -52,4 +52,16 @@ class FoodDataSource @Inject constructor(
             mealPlan = mealPlan
         )
     }
+
+    suspend fun deleteFromMealPlan(
+        username: String,
+        mealId: Int,
+        hashKey: String
+    ) = withContext(Dispatchers.IO) {
+        apiService.deleteFromMealPlan(
+            username = username,
+            mealId = mealId,
+            hashKey = hashKey
+        )
+    }
 }
