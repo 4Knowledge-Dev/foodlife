@@ -5,7 +5,7 @@ import com.forknowledge.core.api.model.MealPlanResponse
 import com.forknowledge.core.api.model.SearchResponse
 import com.forknowledge.core.api.model.UserResponse
 import com.forknowledge.core.api.model.post.ConnectUser
-import com.forknowledge.core.api.model.post.MealPlanWeek
+import com.forknowledge.core.api.model.post.MealItem
 import kotlinx.serialization.InternalSerializationApi
 import retrofit2.Response
 import retrofit2.http.Body
@@ -46,7 +46,7 @@ interface FoodApiService {
     suspend fun addToMealPlan(
         @Path("username") username: String,
         @Query("hash") hashKey: String,
-        @Body mealPlan: MealPlanWeek
+        @Body meals: List<MealItem>
     ): Response<Unit>
 
     @DELETE("$API_HEADER_MEAL_PLANNER/{username}/items/{id}")

@@ -12,6 +12,6 @@ class GetMealPlanInteractor @Inject constructor(
     operator fun invoke() = foodRepository.getMealPlan(
         username = "02efe52d-221f-4586-9f5b-265ffd008c77",
         hashKey = "0be5335eb7bc70b5665c5f451e2031fe692bea57",
-        startDate = "2025-06-08"
+        startDate = "2025-06-15"
     )
 }

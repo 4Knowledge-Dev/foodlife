@@ -85,6 +85,10 @@ fun Long.toLocalDate(): LocalDate {
         .toLocalDate()
 }
 
+fun LocalDate.toEpochSeconds(): Long {
+    return this.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()
+}
+
 fun LocalDate.toDayAndDateString(): String {
     val formatter = DateTimeFormatter.ofPattern("dd EEE", Locale.getDefault())
     return formatter.format(this)

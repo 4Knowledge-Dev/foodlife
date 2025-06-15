@@ -18,7 +18,7 @@
     <string name="meal_planner_meal_plan_button_text_reload">Reload</string>
 
     // Bottom sheet
-    <string name="meal_planner_bottom_sheet_add_recipe_label">Add</string>
+    <string name="meal_planner_bottom_sheet_add_recipe_label">Complete</string>
     <string name="meal_planner_bottom_sheet_swap_recipe_label">Swap</string>
     <string name="meal_planner_bottom_sheet_delete_recipe_label">Delete</string>
 </resources>

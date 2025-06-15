@@ -2,7 +2,7 @@ package com.forknowledge.core.data.datasource
 
 import com.forknowledge.core.api.FoodApiService
 import com.forknowledge.core.api.model.post.ConnectUser
-import com.forknowledge.core.api.model.post.MealPlanWeek
+import com.forknowledge.core.api.model.post.MealItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.InternalSerializationApi
@@ -44,12 +44,12 @@ class FoodDataSource @Inject constructor(
     suspend fun addToMealPlan(
         username: String,
         hashKey: String,
-        mealPlan: MealPlanWeek
+        mealList: List<MealItem>
     ) = withContext(Dispatchers.IO) {
         apiService.addToMealPlan(
             username = username,
             hashKey = hashKey,
-            mealPlan = mealPlan
+            meals = mealList
         )
     }
 

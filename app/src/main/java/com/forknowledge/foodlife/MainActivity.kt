@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
             FoodLifeTheme {
                 AppScreen(
                     appState = rememberAppState(networkManager = networkManager),
-                    startDestinationRoute = ExploreRoute(false, 0)
+                    startDestinationRoute = PlannerRoute
                 )
             }
         }

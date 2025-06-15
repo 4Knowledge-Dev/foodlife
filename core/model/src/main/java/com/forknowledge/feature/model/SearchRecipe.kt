@@ -13,7 +13,7 @@ data class SearchRecipe(
     val nutrients: List<Nutrient>
 ){
     fun toMealSearchRecipe() = MealSearchRecipe(
-        id = id,
+        id = id.toInt(),
         name = name,
         imageUrl = imageUrl,
         servings = servings,
@@ -22,7 +22,7 @@ data class SearchRecipe(
 }
 
 data class MealSearchRecipe(
-    val id: Long,
+    val id: Int,
     val name: String,
     val imageUrl: String,
     val servings: Int,

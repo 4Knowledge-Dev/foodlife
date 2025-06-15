@@ -10,10 +10,12 @@ import com.forknowledge.core.common.AppConstant.SEARCH_DEBOUNCE
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.asFlowResult
 import com.forknowledge.core.data.FoodRepository
+import com.forknowledge.core.domain.di.AddToMealPlanInteractor
 import com.forknowledge.feature.model.MealSearchRecipe
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
@@ -25,9 +27,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+const val SNACK_BAR_ADD_RECIPE_ERROR_DELAY = 2000L
+
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
+    private val addToMealPlanInteractor: AddToMealPlanInteractor,
     private val foodRepository: FoodRepository
 ) : ViewModel() {
 
@@ -43,6 +48,15 @@ class SearchViewModel @Inject constructor(
     var isLoading by mutableStateOf(false)
         private set
 
+    var shouldShowLoadingButton by mutableStateOf(false)
+        private set
+
+    var shouldShowError by mutableStateOf(false)
+        private set
+
+    var onNavigateToMealPlan by mutableStateOf(false)
+        private set
+
     init {
         viewModelScope.launch { observeQueryChanges() }
     }
@@ -56,14 +70,16 @@ class SearchViewModel @Inject constructor(
             }
             .asFlowResult()
             .onEach { result ->
-                when (result) {
-                    is Result.Loading -> isLoading = true
-                    is Result.Success -> {
-                        _recipes.update { result.data }
-                        isLoading = false
-                    }
+                if (_searchQuery.value.isNotEmpty()) {
+                    when (result) {
+                        is Result.Loading -> isLoading = true
+                        is Result.Success -> {
+                            _recipes.update { result.data }
+                            isLoading = false
+                        }
 
-                    is Result.Error -> isLoading = false
+                        is Result.Error -> isLoading = false
+                    }
                 }
             }
             .launchIn(viewModelScope)
@@ -102,6 +118,35 @@ class SearchViewModel @Inject constructor(
                         is Result.Error -> isLoading = false
                     }
                 }
+        }
+    }
+
+    fun addToMealPlan(
+        dateInMillis: Long,
+        mealPosition: Int,
+    ) {
+        shouldShowLoadingButton = true
+        viewModelScope.launch {
+            when (addToMealPlanInteractor(
+                dateInMillis = dateInMillis,
+                mealPosition = mealPosition,
+                recipes = _selectedRecipes.value
+            )) {
+                is Result.Loading -> shouldShowLoadingButton = true
+                is Result.Success -> {
+                    clearSelectedRecipes()
+                    shouldShowLoadingButton = false
+                    onNavigateToMealPlan = true
+                }
+
+                is Result.Error -> {
+                    clearSelectedRecipes()
+                    shouldShowLoadingButton = false
+                    shouldShowError = true
+                    delay(SNACK_BAR_ADD_RECIPE_ERROR_DELAY)
+                    shouldShowError = false
+                }
+            }
         }
     }
 }

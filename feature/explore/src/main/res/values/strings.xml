@@ -6,6 +6,8 @@
     <string name="explore_ingredient_section_title">Ingredient</string>
     <string name="explore_popular_section_title">Popular</string>
     <string name="explore_search_add_to_meal_plan_button">Add</string>
+    <string name="explore_search_adding_to_meal_plan_button">Adding</string>
+    <string name="explore_search_adding_to_meal_plan_snackbar_error_message">Fail to add recipe to meal plan!</string>
     <plurals name="explore_recipe_cook_time_text">
         <item quantity="one">%1$d min</item>
         <item quantity="other">%1$d mins</item>
