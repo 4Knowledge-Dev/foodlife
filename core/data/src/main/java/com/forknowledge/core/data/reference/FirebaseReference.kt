@@ -1,4 +1,4 @@
-package com.forknowledge.core.data
+package com.forknowledge.core.data.reference
 
 object FirestoreReference {
     const val USER_COLLECTION = "User"

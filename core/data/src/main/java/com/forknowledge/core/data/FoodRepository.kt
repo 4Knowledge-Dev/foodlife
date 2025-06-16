@@ -1,35 +1,39 @@
 package com.forknowledge.core.data
 
 import androidx.paging.PagingData
+import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.model.MealPlanDisplayData
 import com.forknowledge.feature.model.MealSearchRecipe
 import com.forknowledge.feature.model.SearchRecipe
+import com.forknowledge.feature.model.userdata.UserToken
 import kotlinx.coroutines.flow.Flow
+import kotlinx.serialization.InternalSerializationApi
 
 interface FoodRepository {
 
-    //fun connectUser(user: ConnectUser): Flow<String>
+    @OptIn(InternalSerializationApi::class)
+    suspend fun connectUser(user: ConnectUser): Result<UserToken>
 
-    fun getMealPlan(
+    suspend fun getMealPlan(
         username: String,
         hashKey: String,
         startDate: String
-    ): Flow<List<MealPlanDisplayData>>
+    ): List<MealPlanDisplayData>
 
-     suspend fun addRecipeToMealPlan(
+    suspend fun addRecipeToMealPlan(
         username: String,
         hashKey: String,
         dateInMillis: Long,
         mealPosition: Int,
         recipes: List<MealSearchRecipe>
-    ): Result<Unit>
+    )
 
     suspend fun deleteRecipeFromMealPlan(
         recipeId: Int,
         username: String,
         hashKey: String,
-    ): Result<Unit>
+    )
 
     fun searchRecipeForNutrition(
         query: String,

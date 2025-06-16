@@ -3,6 +3,8 @@ package com.forknowledge.core.data
 import android.content.Context
 import android.util.Log
 import com.forknowledge.core.data.datatype.LoginResultType
+import com.forknowledge.core.data.reference.FirebaseException
+import com.forknowledge.core.data.reference.FirestoreReference
 import com.forknowledge.feature.model.userdata.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException

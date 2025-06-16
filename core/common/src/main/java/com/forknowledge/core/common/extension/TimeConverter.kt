@@ -93,3 +93,8 @@ fun LocalDate.toDayAndDateString(): String {
     val formatter = DateTimeFormatter.ofPattern("dd EEE", Locale.getDefault())
     return formatter.format(this)
 }
+
+fun LocalDate.toYearMonthDateString(): String {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
+    return formatter.format(this)
+}

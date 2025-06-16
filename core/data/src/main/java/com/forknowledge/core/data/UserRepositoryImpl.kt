@@ -1,18 +1,21 @@
 package com.forknowledge.core.data
 
 import android.util.Log
+import androidx.datastore.core.IOException
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.extension.endOfDay
 import com.forknowledge.core.common.extension.startOfDay
-import com.forknowledge.core.data.FirebaseException.FIREBASE_EXCEPTION
-import com.forknowledge.core.data.FirebaseException.FIREBASE_GET_DATA_EXCEPTION
-import com.forknowledge.core.data.FirestoreReference.USER_COLLECTION
-import com.forknowledge.core.data.FirestoreReference.USER_RECORD_SUB_COLLECTION
-import com.forknowledge.core.data.model.NutritionDisplayData
+import com.forknowledge.core.data.datasource.PreferenceDatastore
 import com.forknowledge.core.data.datatype.UserAuthState
-import com.forknowledge.feature.model.userdata.IntakeNutrition
+import com.forknowledge.core.data.model.NutritionDisplayData
+import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_EXCEPTION
+import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_GET_DATA_EXCEPTION
+import com.forknowledge.core.data.reference.FirestoreReference.USER_COLLECTION
+import com.forknowledge.core.data.reference.FirestoreReference.USER_RECORD_SUB_COLLECTION
 import com.forknowledge.feature.model.SearchRecipe
+import com.forknowledge.feature.model.userdata.IntakeNutrition
 import com.forknowledge.feature.model.userdata.User
+import com.forknowledge.feature.model.userdata.UserToken
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -42,10 +45,57 @@ const val RECIPE_NUTRIENT_FAT_INDEX = 1
 
 class UserRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
+    private val datastore: PreferenceDatastore,
     private val firestore: FirebaseFirestore
 ) : UserRepository {
 
-    override fun getUserFlow() = flow {
+    override suspend fun getUserTokenFromLocal(): Result<UserToken> {
+        return try {
+            Result.Success(datastore.getUserToken())
+        } catch (e: IOException) {
+            Result.Error(e)
+        }
+    }
+
+    override suspend fun saveUserTokenToLocal(username: String, hashKey: String) =
+        datastore.saveUserToken(
+            username = username,
+            hashKey = hashKey
+        )
+
+    override suspend fun getUserTokenFromServer(): Result<UserToken> = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val user = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+                .get()
+                .await()
+                .toObject(User::class.java)
+            Result.Success(
+                UserToken(
+                    username = user?.username ?: "",
+                    hashKey = user?.hashKey ?: ""
+                )
+            )
+        } catch (e: FirebaseException) {
+            Log.e(FIREBASE_GET_DATA_EXCEPTION, "Get data failed with ", e)
+            Result.Error(Exception(e))
+        }
+    }
+
+    override suspend fun saveUserTokenToServer(
+        username: String,
+        hashKey: String
+    ) = withContext(Dispatchers.IO) {
+        return@withContext try {
+            firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+                .set(User(username = username, hashKey = hashKey), SetOptions.merge())
+                .await()
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    override fun getUserStateFlow() = flow {
         if (auth.currentUser == null) {
             emit(UserAuthState.UNAUTHENTICATED)
         } else {
@@ -74,14 +124,6 @@ class UserRepositoryImpl @Inject constructor(
             }
         }
     }
-
-    override fun getHashKey() = flow {
-        val user = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
-            .get()
-            .await()
-            .toObject(User::class.java)
-        emit(user?.hashKey ?: "")
-    }.flowOn(Dispatchers.IO)
 
     override suspend fun updateUserInfo(user: User): Result<Unit> {
         return try {

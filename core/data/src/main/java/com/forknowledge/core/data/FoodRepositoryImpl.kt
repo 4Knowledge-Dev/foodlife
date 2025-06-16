@@ -1,10 +1,12 @@
 package com.forknowledge.core.data
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.forknowledge.core.api.FoodApiService
+import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.api.model.post.MealItem
 import com.forknowledge.core.api.model.post.MealRecipeItem
 import com.forknowledge.core.common.Result
@@ -14,9 +16,9 @@ import com.forknowledge.core.data.datasource.SearchPagingSource
 import com.forknowledge.core.data.model.MealPlanDisplayData
 import com.forknowledge.feature.model.MealSearchRecipe
 import com.forknowledge.feature.model.SearchRecipe
+import com.forknowledge.feature.model.userdata.UserToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.InternalSerializationApi
@@ -25,6 +27,7 @@ import javax.inject.Inject
 const val SEARCH_PAGE_SIZE = 30
 const val SEARCH_PREFETCH_DISTANCE = SEARCH_PAGE_SIZE
 const val GET_MEAL_PLAN_EXCEPTION = "GetMealPlanException"
+const val CONNECT_USER_EXCEPTION = "ConnectUserException"
 
 @OptIn(InternalSerializationApi::class)
 class FoodRepositoryImpl @Inject constructor(
@@ -32,15 +35,25 @@ class FoodRepositoryImpl @Inject constructor(
     private val dataSource: FoodDataSource
 ) : FoodRepository {
 
-    /*override fun connectUser(user: ConnectUser) = flow {
-        emit(service.connectUser(user).hashKey)
-    }*/
+    override suspend fun connectUser(user: ConnectUser): Result<UserToken> {
+        return try {
+            val response = service.connectUser(user)
+            if (response.isSuccessful && response.body() != null) {
+                Result.Success(response.body()!!.toUserToken())
+            } else {
+                Result.Success(UserToken("", ""))
+            }
+        } catch (e: Exception) {
+            Log.e(CONNECT_USER_EXCEPTION, "Connect user to server failed with ", e)
+            Result.Error(e)
+        }
+    }
 
-    override fun getMealPlan(
+    override suspend fun getMealPlan(
         username: String,
         hashKey: String,
         startDate: String
-    ) = flow {
+    ): List<MealPlanDisplayData> {
         val response = dataSource.getMealPlan(
             username = username,
             hashKey = hashKey,
@@ -70,8 +83,8 @@ class FoodRepositoryImpl @Inject constructor(
                     )
                 )
             }
-            emit(mealPlan)
         }
+        return mealPlan
     }
 
     override suspend fun addRecipeToMealPlan(
@@ -80,7 +93,7 @@ class FoodRepositoryImpl @Inject constructor(
         dateInMillis: Long,
         mealPosition: Int,
         recipes: List<MealSearchRecipe>
-    ): Result<Unit> {
+    ) {
         val meals = recipes.map { recipe ->
             MealItem(
                 date = dateInMillis,
@@ -97,41 +110,23 @@ class FoodRepositoryImpl @Inject constructor(
                 )
             )
         }
-        return try {
-            val response = dataSource.addToMealPlan(
-                username = username,
-                hashKey = hashKey,
-                mealList = meals
-            )
-            if (response.isSuccessful) {
-                Result.Success(Unit)
-            } else {
-                Result.Error(Exception(response.errorBody().toString()))
-            }
-        } catch (e: Exception) {
-            Result.Error(e)
-        }
+        dataSource.addToMealPlan(
+            username = username,
+            hashKey = hashKey,
+            mealList = meals
+        )
     }
 
     override suspend fun deleteRecipeFromMealPlan(
         recipeId: Int,
         username: String,
         hashKey: String
-    ): Result<Unit> {
-        try {
-            val response = dataSource.deleteFromMealPlan(
-                username = username,
-                hashKey = hashKey,
-                mealId = recipeId
-            )
-            return if (response.isSuccessful) {
-                Result.Success(Unit)
-            } else {
-                Result.Error(Exception(response.errorBody().toString()))
-            }
-        } catch (e: Exception) {
-            return Result.Error(e)
-        }
+    ) {
+        dataSource.deleteFromMealPlan(
+            username = username,
+            hashKey = hashKey,
+            mealId = recipeId
+        )
     }
 
     override fun searchRecipeForNutrition(
