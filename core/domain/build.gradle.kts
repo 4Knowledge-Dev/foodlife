@@ -24,6 +24,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
     implementation(project(":core:data"))
+    implementation(project(":core:api"))
 
     implementation(libs.androidx.hilt)
     kapt(libs.androidx.hilt.compiler)

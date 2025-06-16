@@ -26,7 +26,7 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            userRepository.getUserFlow().collect { state ->
+            userRepository.getUserStateFlow().collect { state ->
                 _startDestinationRoute.value = when (state) {
                     UserAuthState.NONE -> { /* Do nothing */
                     }

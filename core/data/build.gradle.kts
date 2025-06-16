@@ -48,4 +48,5 @@ dependencies {
     implementation(libs.androidx.credentials.play.services)
     implementation(libs.identity.googleid)
     implementation(libs.play.services)
+    implementation(libs.androidx.datastore)
 }
