@@ -171,7 +171,7 @@ fun BottomSheetDetail(diet: Diet) {
         ) {
             Macros(
                 modifier = Modifier.weight(
-                    if (diet == Diet.KETO) 0.15F else diet.macro.carbs,
+                    if (diet == Diet.KETO) 0.15F else diet.macro.carbs.toFloat(),
                 ),
                 nutrition = stringResource(R.string.onboarding_survey_diet_carbs),
                 ratio = (diet.macro.carbs * 100).roundToInt(),
@@ -180,7 +180,7 @@ fun BottomSheetDetail(diet: Diet) {
 
             Macros(
                 modifier = Modifier
-                    .weight(diet.macro.protein)
+                    .weight(diet.macro.protein.toFloat())
                     .padding(start = 2.dp),
                 nutrition = stringResource(R.string.onboarding_survey_diet_protein),
                 ratio = (diet.macro.protein * 100).roundToInt(),
@@ -189,7 +189,7 @@ fun BottomSheetDetail(diet: Diet) {
 
             Macros(
                 modifier = Modifier
-                    .weight(diet.macro.fat)
+                    .weight(diet.macro.fat.toFloat())
                     .padding(start = 2.dp),
                 nutrition = stringResource(R.string.onboarding_survey_diet_fat),
                 ratio = (diet.macro.fat * 100).roundToInt(),

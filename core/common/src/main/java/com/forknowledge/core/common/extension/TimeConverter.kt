@@ -86,7 +86,7 @@ fun Long.toLocalDate(): LocalDate {
 }
 
 fun LocalDate.toEpochSeconds(): Long {
-    return this.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()
+    return this.atStartOfDay(ZoneId.of("GMT")).toEpochSecond()
 }
 
 fun LocalDate.toDayAndDateString(): String {

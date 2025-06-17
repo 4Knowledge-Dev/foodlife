@@ -15,7 +15,7 @@ import com.forknowledge.core.data.datasource.FoodDataSource
 import com.forknowledge.core.data.datasource.SearchPagingSource
 import com.forknowledge.core.data.model.MealPlanDisplayData
 import com.forknowledge.feature.model.MealSearchRecipe
-import com.forknowledge.feature.model.SearchRecipe
+import com.forknowledge.feature.model.NutritionSearchRecipe
 import com.forknowledge.feature.model.userdata.UserToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -68,15 +68,9 @@ class FoodRepositoryImpl @Inject constructor(
                 val breakfast = recipes.filter { it.slot == 1 }.map { it.toMealRecipe() }
                 val lunch = recipes.filter { it.slot == 2 }.map { it.toMealRecipe() }
                 val dinner = recipes.filter { it.slot == 3 }.map { it.toMealRecipe() }
-                val breakfastCalories = mealDay.nutritionSummaryBreakfast.nutrients[6].amount
-                val lunchCalories = mealDay.nutritionSummaryLunch.nutrients[6].amount
-                val dinnerCalories = mealDay.nutritionSummaryDinner.nutrients[6].amount
                 mealPlan.add(
                     MealPlanDisplayData(
                         date = date,
-                        breakfastCalories = breakfastCalories.toInt(),
-                        lunchCalories = lunchCalories.toInt(),
-                        dinnerCalories = dinnerCalories.toInt(),
                         breakfast = breakfast,
                         lunch = lunch,
                         dinner = dinner
@@ -133,7 +127,7 @@ class FoodRepositoryImpl @Inject constructor(
         query: String,
         includeInformation: Boolean,
         includeNutrition: Boolean
-    ): Flow<PagingData<SearchRecipe>> {
+    ): Flow<PagingData<NutritionSearchRecipe>> {
         return Pager(
             config = PagingConfig(
                 pageSize = SEARCH_PAGE_SIZE,
@@ -150,6 +144,9 @@ class FoodRepositoryImpl @Inject constructor(
             }
         )
             .flow
+            .map { pagingData ->
+                pagingData.map { it.toNutritionSearchRecipe() }
+            }
             .flowOn(Dispatchers.IO)
     }
 

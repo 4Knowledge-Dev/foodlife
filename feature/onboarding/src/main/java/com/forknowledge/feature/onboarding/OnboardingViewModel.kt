@@ -111,9 +111,9 @@ class OnboardingViewModel @Inject constructor(
             excludes = excludes,
             targetNutrition = TargetNutrition(
                 calories = targetCalories.toLong(),
-                carbRatio = targetCalories * diet!!.macro.carbs.toDouble(),
-                proteinRatio = targetCalories * diet!!.macro.protein.toDouble(),
-                fatRatio = targetCalories * diet!!.macro.fat.toDouble(),
+                carbRatio = diet!!.macro.carbs,
+                proteinRatio = diet!!.macro.protein,
+                fatRatio = diet!!.macro.fat,
             )
         )
     }

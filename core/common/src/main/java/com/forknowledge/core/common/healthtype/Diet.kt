@@ -19,9 +19,9 @@ enum class Diet(
                 "limitation of any single group.",
         typeUrl = "",
         macro = Macros(
-            carbs = 0.55f,
-            protein = 0.2f,
-            fat = 0.25f
+            carbs = 0.55,
+            protein = 0.2,
+            fat = 0.25
         )
     ),
 
@@ -34,9 +34,9 @@ enum class Diet(
         goal = "Primarily used for long-term weight loss, blood sugar management and metabolic heath.",
         typeUrl = "ketogenic",
         macro = Macros(
-            carbs = 0.3f,
-            protein = 0.25f,
-            fat = 0.45f
+            carbs = 0.3,
+            protein = 0.25,
+            fat = 0.45
         )
     ),
 
@@ -51,9 +51,9 @@ enum class Diet(
                 "preserving muscle mass during aging or weight loss.",
         typeUrl = "",
         macro = Macros(
-            carbs = 0.35f,
-            protein = 0.35f,
-            fat = 0.3f
+            carbs = 0.35,
+            protein = 0.35,
+            fat = 0.3
         )
     ),
 
@@ -66,9 +66,9 @@ enum class Diet(
         goal = "Very low-carb diets like Keto restrict carbs drastically to induce fat burning.",
         typeUrl = "ketogenic",
         macro = Macros(
-            carbs = 0.1f,
-            protein = 0.25f,
-            fat = 0.65f
+            carbs = 0.1,
+            protein = 0.25,
+            fat = 0.65
         )
     ),
 
@@ -80,15 +80,15 @@ enum class Diet(
         goal = "",
         typeUrl = "vegan",
         macro = Macros(
-            carbs = 0.5f,
-            protein = 0.2f,
-            fat = 0.3f
+            carbs = 0.5,
+            protein = 0.2,
+            fat = 0.3
         )
     ),
 }
 
 data class Macros(
-    val protein: Float,
-    val carbs: Float,
-    val fat: Float
+    val protein: Double,
+    val carbs: Double,
+    val fat: Double
 )

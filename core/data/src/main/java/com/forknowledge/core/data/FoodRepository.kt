@@ -5,7 +5,7 @@ import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.model.MealPlanDisplayData
 import com.forknowledge.feature.model.MealSearchRecipe
-import com.forknowledge.feature.model.SearchRecipe
+import com.forknowledge.feature.model.NutritionSearchRecipe
 import com.forknowledge.feature.model.userdata.UserToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.InternalSerializationApi
@@ -39,7 +39,7 @@ interface FoodRepository {
         query: String,
         includeInformation: Boolean = false,
         includeNutrition: Boolean = true
-    ): Flow<PagingData<SearchRecipe>>
+    ): Flow<PagingData<NutritionSearchRecipe>>
 
     fun searchRecipeForMeal(
         query: String,

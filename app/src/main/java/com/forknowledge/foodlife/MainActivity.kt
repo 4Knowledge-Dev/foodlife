@@ -43,7 +43,9 @@ class MainActivity : ComponentActivity() {
         viewModel.startDestinationRoute.observe(this) { route ->
             route?.let {
                 setContent {
-                    FoodLifeTheme {
+                    FoodLifeTheme(
+                        darkTheme = false
+                    ) {
                         AppScreen(
                             appState = rememberAppState(networkManager = networkManager),
                             startDestinationRoute = route

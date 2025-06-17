@@ -311,40 +311,64 @@ fun NutrientSection(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             // Carbs
-            NutrientProgress(
-                modifier = Modifier.size(90.dp),
-                progressBarWidth = 7.dp,
-                progressIndicatorColor = RedFF4950,
-                progress = intakeNutrition.carbs,
-                totalNutrients = caloriesToNutrientAmount(
-                    nutrient = Nutrient.CARBOHYDRATE,
-                    calories =  (targetNutrition.calories * targetNutrition.carbRatio)
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                NutrientProgress(
+                    modifier = Modifier.size(90.dp),
+                    progressBarWidth = 7.dp,
+                    progressIndicatorColor = RedFF4950,
+                    progress = intakeNutrition.carbs,
+                    totalNutrients = caloriesToNutrientAmount(
+                        nutrient = Nutrient.CARBOHYDRATE,
+                        calories = (targetNutrition.calories * targetNutrition.carbRatio)
+                    )
                 )
-            )
+
+                AppText(
+                    modifier = Modifier.padding(top = 8.dp),
+                    text = stringResource(R.string.nutrient_label_carb),
+                    textStyle = Typography.bodyMedium
+                )
+            }
 
             // Protein
-            NutrientProgress(
-                modifier = Modifier.size(90.dp),
-                progressBarWidth = 7.dp,
-                progressIndicatorColor = YellowFB880C,
-                progress = intakeNutrition.proteins,
-                totalNutrients = caloriesToNutrientAmount(
-                    nutrient = Nutrient.PROTEIN,
-                    calories =  (targetNutrition.calories * targetNutrition.proteinRatio)
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                NutrientProgress(
+                    modifier = Modifier.size(90.dp),
+                    progressBarWidth = 7.dp,
+                    progressIndicatorColor = YellowFB880C,
+                    progress = intakeNutrition.proteins,
+                    totalNutrients = caloriesToNutrientAmount(
+                        nutrient = Nutrient.PROTEIN,
+                        calories = (targetNutrition.calories * targetNutrition.proteinRatio)
+                    )
                 )
-            )
+
+                AppText(
+                    modifier = Modifier.padding(top = 8.dp),
+                    text = stringResource(R.string.nutrient_label_protein),
+                    textStyle = Typography.bodyMedium
+                )
+            }
 
             // Fat
-            NutrientProgress(
-                modifier = Modifier.size(90.dp),
-                progressBarWidth = 7.dp,
-                progressIndicatorColor = Blue05A6F1,
-                progress = intakeNutrition.fats,
-                totalNutrients = caloriesToNutrientAmount(
-                    nutrient = Nutrient.CARBOHYDRATE,
-                    calories =  (targetNutrition.calories * targetNutrition.fatRatio)
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                NutrientProgress(
+                    modifier = Modifier.size(90.dp),
+                    progressBarWidth = 7.dp,
+                    progressIndicatorColor = Blue05A6F1,
+                    progress = intakeNutrition.fats,
+                    totalNutrients = caloriesToNutrientAmount(
+                        nutrient = Nutrient.CARBOHYDRATE,
+                        calories = (targetNutrition.calories * targetNutrition.fatRatio)
+                    )
                 )
-            )
+
+                AppText(
+                    modifier = Modifier.padding(top = 8.dp),
+                    text = stringResource(R.string.nutrient_label_fat),
+                    textStyle = Typography.bodyMedium
+                )
+            }
         }
 
         Row(
@@ -443,7 +467,7 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_breakfast),
             calories = intakeNutrition.mealCalories[0],
             totalCalories = (targetNutrition.calories * targetNutrition.breakfastRatio).roundToLong(),
-            image = R.drawable.ic_breakfast,
+            image = drawable.ic_breakfast,
             onNavigateToLogFood = { onNavigateToLogFood(0) }
         )
 
@@ -459,7 +483,7 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_lunch),
             calories = intakeNutrition.mealCalories[1],
             totalCalories = (targetNutrition.calories * targetNutrition.lunchRatio).roundToLong(),
-            image = R.drawable.ic_lunch,
+            image = drawable.ic_lunch,
             onNavigateToLogFood = { onNavigateToLogFood(1) }
         )
 
@@ -475,7 +499,7 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_dinner),
             calories = intakeNutrition.mealCalories[2],
             totalCalories = (targetNutrition.calories * targetNutrition.dinnerRatio).roundToLong(),
-            image = R.drawable.ic_dinner,
+            image = drawable.ic_dinner,
             onNavigateToLogFood = { onNavigateToLogFood(2) }
         )
 
@@ -491,7 +515,7 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_snack),
             calories = intakeNutrition.mealCalories[3],
             totalCalories = (targetNutrition.calories * targetNutrition.snacksRatio).roundToLong(),
-            image = R.drawable.ic_snack,
+            image = drawable.ic_snack,
             onNavigateToLogFood = { onNavigateToLogFood(3) }
         )
     }
@@ -746,9 +770,9 @@ fun NutrientSectionPreview() {
     NutrientSection(
         targetNutrition = TargetNutrition(
             calories = 2000,
-            carbRatio = 50.0,
-            proteinRatio = 30.0,
-            fatRatio = 20.0
+            carbRatio = 0.5,
+            proteinRatio = 0.3,
+            fatRatio = 0.2
         ),
         intakeNutrition = NutritionDisplayData()
     )
@@ -798,7 +822,7 @@ fun MealCardPreview() {
         label = "Breakfast",
         calories = 1500,
         totalCalories = 2000,
-        image = R.drawable.ic_snack,
+        image = drawable.ic_snack,
         onNavigateToLogFood = {}
     )
 }
