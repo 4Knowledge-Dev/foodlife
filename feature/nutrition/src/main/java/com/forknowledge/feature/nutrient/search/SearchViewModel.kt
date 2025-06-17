@@ -42,9 +42,6 @@ class SearchViewModel @Inject constructor(
     private val _recipes = MutableStateFlow<PagingData<NutritionSearchRecipe>>(PagingData.empty())
     val recipes: StateFlow<PagingData<NutritionSearchRecipe>> = _recipes
 
-    var logRecipes by mutableStateOf(listOf<NutritionSearchRecipe>())
-        private set
-
     var isLoading by mutableStateOf(false)
         private set
 
@@ -83,7 +80,9 @@ class SearchViewModel @Inject constructor(
                             _recipes.update { result.data }
                         }
 
-                        is Result.Error -> isLoading = false
+                        is Result.Error -> {
+                            isLoading = false
+                        }
                     }
                 }
             }
@@ -107,8 +106,8 @@ class SearchViewModel @Inject constructor(
                     when (result) {
                         is Result.Loading -> isLoading = true
                         is Result.Success -> {
-                            _recipes.update { result.data }
                             isLoading = false
+                            _recipes.update { result.data }
                         }
 
                         is Result.Error -> isLoading = false

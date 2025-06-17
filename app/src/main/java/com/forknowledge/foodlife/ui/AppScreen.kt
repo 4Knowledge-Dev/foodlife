@@ -146,7 +146,12 @@ fun AppScreen(
                 SearchScreen(
                     mealPosition = data.mealPosition,
                     dateInMillis = data.dateInMillis,
-                    onNavigateBack = { appState.navController.popBackStack() }
+                    onNavigateBack = { appState.navController.popBackStack() },
+                    onNavigateToNutrient = {
+                        appState.navigateToTopLevelDestination(
+                            TopLevelDestination.NUTRIENT
+                        )
+                    }
                 )
             }
             composable<ExploreSearchRoute> { backStackEntry ->

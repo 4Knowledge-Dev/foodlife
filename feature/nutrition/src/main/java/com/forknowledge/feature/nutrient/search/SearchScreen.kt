@@ -54,10 +54,12 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
 import com.forknowledge.core.ui.theme.Black374957
+import com.forknowledge.core.ui.theme.Grey7F000000
 import com.forknowledge.core.ui.theme.Grey808993
 import com.forknowledge.core.ui.theme.Grey8A949F
 import com.forknowledge.core.ui.theme.GreyDADADA
 import com.forknowledge.core.ui.theme.Typography
+import com.forknowledge.core.ui.theme.component.AppButtonSmall
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.feature.model.Nutrient
@@ -75,7 +77,8 @@ fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
     mealPosition: Int,
     dateInMillis: Long,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToNutrient: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -92,8 +95,7 @@ fun SearchScreen(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize()
     ) {
         SearchBar(
             modifier = Modifier.align(Alignment.TopCenter),
@@ -138,36 +140,52 @@ fun SearchScreen(
                     LoadingIndicator()
                 }
             } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background),
-                    contentPadding = PaddingValues(
-                        vertical = 8.dp,
-                        horizontal = 16.dp
-                    )
-                ) {
-                    items(
-                        count = recipes.itemCount,
-                        key = recipes.itemKey { it.id }
-                    ) { index ->
-                        recipes[index]?.let {
-                            RecipeItem(
-                                recipe = it,
-                                showLoading = shouldShowItemProcessLoading && it.id == onProcessItemId,
-                                logRecipeResult = logRecipeResult,
-                                onLogRecipe = {
-                                    viewModel.logRecipe(
-                                        date = Date(dateInMillis),
-                                        mealPosition = mealPosition,
-                                        recipe = it
-                                    )
-                                }
-                            )
+                if (recipes.itemCount > 0) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background),
+                        contentPadding = PaddingValues(
+                            vertical = 8.dp,
+                            horizontal = 16.dp
+                        )
+                    ) {
+                        items(
+                            count = recipes.itemCount,
+                            key = recipes.itemKey { it.id }
+                        ) { index ->
+                            recipes[index]?.let {
+                                RecipeItem(
+                                    recipe = it,
+                                    showLoading = shouldShowItemProcessLoading && it.id == onProcessItemId,
+                                    logRecipeResult = logRecipeResult,
+                                    onLogRecipe = {
+                                        viewModel.logRecipe(
+                                            date = Date(dateInMillis),
+                                            mealPosition = mealPosition,
+                                            recipe = it
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 }
+
+                if (recipes.itemCount == 0 && searchQuery.isNotEmpty()) {
+                    NoDataFoundMessage()
+                }
             }
+        }
+
+        if (!isLoading && recipes.itemCount > 0) {
+            AppButtonSmall(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp),
+                text = stringResource(R.string.nutrient_log_food_search_screen_button_done),
+                onClicked = onNavigateToNutrient
+            )
         }
     }
 }
@@ -416,6 +434,31 @@ fun RecipeItem(
     }
 }
 
+@Composable
+fun NoDataFoundMessage() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                modifier = Modifier.size(250.dp),
+                painter = painterResource(drawable.img_vector_no_data_found),
+                contentDescription = null
+            )
+
+            AppText(
+                text = stringResource(R.string.nutrient_log_food_search_screen_no_data_found),
+                textStyle = Typography.bodyLarge,
+                color = Grey7F000000
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun RecipeItemPreview() {
@@ -452,4 +495,10 @@ fun RecipeItemPreview() {
         logRecipeResult = LogRecipeState.NONE,
         onLogRecipe = {}
     )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+fun NoDataFoundMessagePreview() {
+    NoDataFoundMessage()
 }

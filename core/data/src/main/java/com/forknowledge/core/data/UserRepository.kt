@@ -72,19 +72,6 @@ interface UserRepository {
     fun getUserNutritionRecordByDate(date: Date): Flow<NutritionDisplayData>
 
     /**
-     * Log recipe to a day and create a new firestore document.
-     * @param [documentId] the id of document to create.
-     * @param [date] the date to log recipe.
-     * @param [recipe] the recipe to add.
-     * @return [Result] of operation.
-     */
-    suspend fun createNewTrackDay(
-        documentId: String,
-        date: Date,
-        recipe: NutritionSearchRecipe
-    ): Result<Unit>
-
-    /**
      * Update the logged recipe list of a day.
      * @param [date] the date to update.
      * @param [recipe] a recipe to add or remove.

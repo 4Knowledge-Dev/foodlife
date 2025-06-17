@@ -35,7 +35,6 @@ import java.util.Date
 import javax.inject.Inject
 
 const val USER_RECORD_DATE_FIELD = "date"
-const val USER_RECORD_RECIPE_LIST_FIELD = "recipes"
 const val RECIPE_MEAL_TYPE_BREAKFAST = 1L
 const val RECIPE_MEAL_TYPE_LUNCH = 2L
 const val RECIPE_MEAL_TYPE_DINNER = 3L
@@ -229,14 +228,6 @@ class UserRepositoryImpl @Inject constructor(
     }
         .flowOn(Dispatchers.IO)
         .conflate()
-
-    override suspend fun createNewTrackDay(
-        documentId: String,
-        date: Date,
-        recipe: NutritionSearchRecipe
-    ): Result<Unit> {
-        TODO("Not yet implemented")
-    }
 
     override suspend fun updateRecipeList(
         date: Date,
