@@ -43,7 +43,7 @@ class SearchPagingSource(
                 pageSize = params.loadSize
             )
             return LoadResult.Page(
-                data = response.recipes.map { it.toRecipe() },
+                data = response.recipes.map { it.toSearchRecipe() },
                 prevKey = if (position == 0) null else position - SEARCH_PAGE_SIZE,
                 nextKey = position + params.loadSize
             )

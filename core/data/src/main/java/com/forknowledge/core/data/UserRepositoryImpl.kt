@@ -12,6 +12,7 @@ import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_EXCEPTION
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_GET_DATA_EXCEPTION
 import com.forknowledge.core.data.reference.FirestoreReference.USER_COLLECTION
 import com.forknowledge.core.data.reference.FirestoreReference.USER_RECORD_SUB_COLLECTION
+import com.forknowledge.feature.model.NutritionSearchRecipe
 import com.forknowledge.feature.model.SearchRecipe
 import com.forknowledge.feature.model.userdata.IntakeNutrition
 import com.forknowledge.feature.model.userdata.User
@@ -31,14 +32,13 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
-import kotlin.math.roundToLong
 
 const val USER_RECORD_DATE_FIELD = "date"
 const val USER_RECORD_RECIPE_LIST_FIELD = "recipes"
-const val RECIPE_MEAL_TYPE_BREAKFAST = 0L
-const val RECIPE_MEAL_TYPE_LUNCH = 1L
-const val RECIPE_MEAL_TYPE_DINNER = 2L
-const val RECIPE_MEAL_TYPE_SNACKS = 3L
+const val RECIPE_MEAL_TYPE_BREAKFAST = 1L
+const val RECIPE_MEAL_TYPE_LUNCH = 2L
+const val RECIPE_MEAL_TYPE_DINNER = 3L
+const val RECIPE_MEAL_TYPE_SNACKS = 4L
 const val RECIPE_NUTRIENT_CARB_INDEX = 3
 const val RECIPE_NUTRIENT_PROTEIN_INDEX = 10
 const val RECIPE_NUTRIENT_FAT_INDEX = 1
@@ -180,26 +180,30 @@ class UserRepositoryImpl @Inject constructor(
                     }
                     if (snapshot != null && !snapshot.isEmpty) {
                         try {
-                            snapshot.documents[0].toObject(IntakeNutrition::class.java)
+                            snapshot.documents[0].toObject(IntakeNutrition::class.java) // Query get only one day.
                                 ?.let { nutrition ->
                                     val recipes = nutrition.recipes
                                     val mealCalories = listOf(
-                                        recipes.filter { it.meal == RECIPE_MEAL_TYPE_BREAKFAST }
-                                            .sumOf { it.nutrients.first().amount },
-                                        recipes.filter { it.meal == RECIPE_MEAL_TYPE_LUNCH }
-                                            .sumOf { it.nutrients.first().amount },
-                                        recipes.filter { it.meal == RECIPE_MEAL_TYPE_DINNER }
-                                            .sumOf { it.nutrients.first().amount },
-                                        recipes.filter { it.meal == RECIPE_MEAL_TYPE_SNACKS }
-                                            .sumOf { it.nutrients.first().amount }
+                                        recipes
+                                            .filter { it.mealPosition == RECIPE_MEAL_TYPE_BREAKFAST }
+                                            .sumOf { it.calories },
+                                        recipes
+                                            .filter { it.mealPosition == RECIPE_MEAL_TYPE_LUNCH }
+                                            .sumOf { it.calories },
+                                        recipes
+                                            .filter { it.mealPosition == RECIPE_MEAL_TYPE_DINNER }
+                                            .sumOf { it.calories },
+                                        recipes
+                                            .filter { it.mealPosition == RECIPE_MEAL_TYPE_SNACKS }
+                                            .sumOf { it.calories }
                                     )
                                     channel.trySend(
                                         NutritionDisplayData(
-                                            calories = mealCalories.sum().roundToLong(),
-                                            carbs = recipes.sumOf { it.nutrients[RECIPE_NUTRIENT_CARB_INDEX].amount.roundToLong() },
-                                            proteins = recipes.sumOf { it.nutrients[RECIPE_NUTRIENT_PROTEIN_INDEX].amount.roundToLong() },
-                                            fats = recipes.sumOf { it.nutrients[RECIPE_NUTRIENT_FAT_INDEX].amount.roundToLong() },
-                                            mealCalories = mealCalories.map { it.roundToLong() }
+                                            calories = nutrition.calories,
+                                            carbs = nutrition.carbs,
+                                            proteins = nutrition.proteins,
+                                            fats = nutrition.fats,
+                                            mealCalories = mealCalories
                                         )
                                     )
                                 } ?: channel.trySend(NutritionDisplayData())
@@ -227,22 +231,14 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun createNewTrackDay(
         documentId: String,
         date: Date,
-        recipe: SearchRecipe
-    ) = withContext(Dispatchers.IO) {
-        return@withContext try {
-            firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
-                .collection(USER_RECORD_SUB_COLLECTION).document(documentId.toString())
-                .set(IntakeNutrition(date, listOf(recipe)))
-                .await()
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            Result.Error(e)
-        }
+        recipe: NutritionSearchRecipe
+    ): Result<Unit> {
+        TODO("Not yet implemented")
     }
 
     override suspend fun updateRecipeList(
         documentId: String,
-        recipe: SearchRecipe,
+        recipe: NutritionSearchRecipe,
         isAdd: Boolean
     ) = withContext(Dispatchers.IO) {
         return@withContext try {

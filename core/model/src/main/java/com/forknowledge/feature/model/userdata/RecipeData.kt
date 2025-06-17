@@ -1,0 +1,10 @@
+package com.forknowledge.feature.model.userdata
+
+data class RecipeData(
+    val id: Long = 0,
+    val name: String = "",
+    val imageUrl: String = "",
+    val mealPosition: Long = 0,
+    val servings: Long = 0,
+    val calories: Long = 0
+)

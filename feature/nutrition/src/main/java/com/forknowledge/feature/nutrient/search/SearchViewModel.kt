@@ -12,7 +12,7 @@ import com.forknowledge.core.common.asFlowResult
 import com.forknowledge.core.common.extension.toFirestoreDocumentIdByDate
 import com.forknowledge.core.data.FoodRepository
 import com.forknowledge.core.data.UserRepository
-import com.forknowledge.feature.model.SearchRecipe
+import com.forknowledge.feature.model.NutritionSearchRecipe
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -39,8 +39,8 @@ class SearchViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow<String>("")
     val searchQuery: StateFlow<String> = _searchQuery
 
-    private val _recipes = MutableStateFlow<PagingData<SearchRecipe>>(PagingData.empty())
-    val recipes: StateFlow<PagingData<SearchRecipe>> = _recipes
+    private val _recipes = MutableStateFlow<PagingData<NutritionSearchRecipe>>(PagingData.empty())
+    val recipes: StateFlow<PagingData<NutritionSearchRecipe>> = _recipes
 
     var isLoading by mutableStateOf(false)
         private set
@@ -116,10 +116,10 @@ class SearchViewModel @Inject constructor(
     fun logRecipe(
         meal: Long,
         date: Date,
-        recipe: SearchRecipe
+        recipe: NutritionSearchRecipe
     ) {
         logRecipeResult = Result.Loading
-        loggedRecipeId = recipe.id
+        loggedRecipeId = recipe.id.toLong()
         viewModelScope.launch {
             if (hasLoggedFood) {
                 when (val result = userRepository.updateRecipeList(

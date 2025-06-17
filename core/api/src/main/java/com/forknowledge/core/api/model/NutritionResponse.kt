@@ -1,6 +1,6 @@
 package com.forknowledge.core.api.model
 
-import com.forknowledge.feature.model.userdata.Nutrient
+import com.forknowledge.feature.model.Nutrient
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.Serializable
 
@@ -14,7 +14,7 @@ data class NutritionResponse(
 @Serializable
 data class NutrientResponse(
     val name: String,
-    val amount: Double,
+    val amount: Float,
     val unit: String,
 ) {
 

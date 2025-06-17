@@ -41,9 +41,9 @@ fun AppButton(
     textStyle: TextStyle = buttonTextStyle,
     enabled: Boolean = true,
     buttonText: String,
-    textColor: Color = Color.White,
+    textColor: Color = White,
     icon: Int? = null,
-    iconTint: Color = Color.White,
+    iconTint: Color = White,
     isNextButton: Boolean = true,
     onClicked: () -> Unit
 ) {
@@ -105,12 +105,11 @@ fun AppButtonLoading(
     Button(
         modifier = modifier.clip(RoundedCornerShape(50.dp)),
         colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
-        enabled = true,
         onClick = { /* Do no implement */ }
     ) {
         CircularProgressIndicator(
             modifier = Modifier.size(20.dp),
-            color = Color.White,
+            color = White,
             strokeWidth = 2.dp
         )
     }
@@ -162,11 +161,10 @@ fun AppButtonSmallLoading(
         modifier = modifier
             .height(100.dp)
             .padding(bottom = 50.dp),
-        onClick = {},
         colors = ButtonDefaults.buttonColors(
             containerColor = Green91C747
         ),
-        enabled = false
+        onClick = { /* Do no implement */ }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AppText(

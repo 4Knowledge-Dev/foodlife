@@ -96,7 +96,9 @@ class MealPlannerViewModel @Inject constructor(
         shouldShowError = false
         viewModelScope.launch {
             when (val result = getMealPlanInteractor(getFirstDayOfWeek().toYearMonthDateString())) {
-                is Result.Loading -> { /* Do nothing */ }
+                is Result.Loading -> { /* Do nothing */
+                }
+
                 is Result.Success -> {
                     shouldShowLoading = false
                     _mealPlan.update { result.data }

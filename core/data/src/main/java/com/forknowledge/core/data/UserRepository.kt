@@ -3,6 +3,7 @@ package com.forknowledge.core.data
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.data.datatype.UserAuthState
+import com.forknowledge.feature.model.NutritionSearchRecipe
 import com.forknowledge.feature.model.SearchRecipe
 import com.forknowledge.feature.model.userdata.TargetNutrition
 import com.forknowledge.feature.model.userdata.User
@@ -80,7 +81,7 @@ interface UserRepository {
     suspend fun createNewTrackDay(
         documentId: String,
         date: Date,
-        recipe: SearchRecipe
+        recipe: NutritionSearchRecipe
     ): Result<Unit>
 
     /**
@@ -91,7 +92,7 @@ interface UserRepository {
      */
     suspend fun updateRecipeList(
         documentId: String,
-        recipe: SearchRecipe,
+        recipe: NutritionSearchRecipe,
         isAdd: Boolean
     ): Result<Unit>
 }
