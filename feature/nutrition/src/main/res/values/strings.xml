@@ -24,7 +24,10 @@
     <string name="nutrient_log_food_tab_label_frequent">Frequent</string>
     <string name="nutrient_log_food_tab_label_plan">Plan</string>
     <string name="nutrient_log_food_tab_label_saved">Saved</string>
-    <string name="nutrient_log_food_food_item_amount">%1$d kcal, %2$d score</string>
     <string name="nutrient_log_food_search_screen_search_bar_label">Enter food</string>
     <string name="nutrient_log_food_search_screen_nutrient_amount">%.1f g</string>
+    <plurals name="nutrient_log_food_item_amount">
+        <item quantity="one">%1$d kcal, %2$d serving</item>
+        <item quantity="other">%1$d kcal, %2$d servings</item>
+    </plurals>
 </resources>

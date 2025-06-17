@@ -1,6 +1,7 @@
 package com.forknowledge.feature.nutrient.search
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,7 @@ import com.forknowledge.core.common.asFlowResult
 import com.forknowledge.core.data.FoodRepository
 import com.forknowledge.core.data.UserRepository
 import com.forknowledge.feature.model.NutritionSearchRecipe
+import com.forknowledge.feature.nutrient.LogRecipeState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -46,7 +48,13 @@ class SearchViewModel @Inject constructor(
     var isLoading by mutableStateOf(false)
         private set
 
-    var logRecipeResult by mutableStateOf<Result<Unit>?>(null)
+    var shouldShowItemProcessLoading by mutableStateOf(false)
+        private set
+
+    var onProcessItemId by mutableIntStateOf(0)
+        private set
+
+    var logRecipeResult by mutableStateOf<LogRecipeState>(LogRecipeState.NONE)
         private set
 
     init {
@@ -66,12 +74,13 @@ class SearchViewModel @Inject constructor(
             }
             .asFlowResult()
             .onEach { result ->
+                logRecipeResult = LogRecipeState.NONE
                 if (_searchQuery.value.isNotEmpty()) {
                     when (result) {
                         is Result.Loading -> isLoading = true
                         is Result.Success -> {
-                            _recipes.update { result.data }
                             isLoading = false
+                            _recipes.update { result.data }
                         }
 
                         is Result.Error -> isLoading = false
@@ -86,6 +95,7 @@ class SearchViewModel @Inject constructor(
     }
 
     fun search(query: String) {
+        logRecipeResult = LogRecipeState.NONE
         viewModelScope.launch {
             foodRepository
                 .searchRecipeForNutrition(
@@ -112,20 +122,26 @@ class SearchViewModel @Inject constructor(
         mealPosition: Int,
         recipe: NutritionSearchRecipe
     ) {
-        logRecipeResult = Result.Loading
+        shouldShowItemProcessLoading = true
+        onProcessItemId = recipe.id
+
         viewModelScope.launch {
-            when (val result = userRepository.updateRecipeList(
+            when (userRepository.updateRecipeList(
                 date = date,
                 mealPosition = mealPosition,
                 recipe = recipe
             )) {
                 is Result.Loading -> Unit
                 is Result.Success -> {
-                    logRecipeResult = Result.Success(Unit)
+                    shouldShowItemProcessLoading = false
+                    onProcessItemId = 0
+                    logRecipeResult = LogRecipeState.SUCCESS
                 }
 
                 is Result.Error -> {
-                    logRecipeResult = Result.Error(result.exception)
+                    shouldShowItemProcessLoading = false
+                    onProcessItemId = 0
+                    logRecipeResult = LogRecipeState.FAIL
                 }
             }
         }

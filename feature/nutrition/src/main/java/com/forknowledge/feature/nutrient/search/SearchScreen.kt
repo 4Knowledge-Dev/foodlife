@@ -22,7 +22,10 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +37,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +47,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
 import com.forknowledge.core.ui.theme.Black374957
@@ -54,7 +62,10 @@ import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.feature.model.Nutrient
 import com.forknowledge.feature.model.NutritionSearchRecipe
+import com.forknowledge.feature.nutrient.LogRecipeState
 import com.forknowledge.feature.nutrient.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filter
 import java.util.Date
 import kotlin.math.roundToInt
 
@@ -70,6 +81,9 @@ fun SearchScreen(
     val focusManager = LocalFocusManager.current
 
     val isLoading = viewModel.isLoading
+    val shouldShowItemProcessLoading = viewModel.shouldShowItemProcessLoading
+    val onProcessItemId = viewModel.onProcessItemId
+    val logRecipeResult = viewModel.logRecipeResult
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val recipes = viewModel.recipes.collectAsLazyPagingItems()
 
@@ -140,6 +154,8 @@ fun SearchScreen(
                         recipes[index]?.let {
                             RecipeItem(
                                 recipe = it,
+                                showLoading = shouldShowItemProcessLoading && it.id == onProcessItemId,
+                                logRecipeResult = logRecipeResult,
                                 onLogRecipe = {
                                     viewModel.logRecipe(
                                         date = Date(dateInMillis),
@@ -160,8 +176,38 @@ fun SearchScreen(
 @Composable
 fun RecipeItem(
     recipe: NutritionSearchRecipe,
+    showLoading: Boolean,
+    logRecipeResult: LogRecipeState,
     onLogRecipe: () -> Unit
 ) {
+    val successComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.anim_success)
+    )
+    val failComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.anim_fail)
+    )
+    var showAnim by remember { mutableStateOf(false) }
+    val successProgress by animateLottieCompositionAsState(
+        composition = successComposition,
+        isPlaying = showAnim
+    )
+    val failProgress by animateLottieCompositionAsState(
+        composition = failComposition,
+        isPlaying = showAnim
+    )
+
+    LaunchedEffect(showLoading) {
+        snapshotFlow { showLoading }
+            .filter { it == false }
+            .collect { isLoading ->
+                if (logRecipeResult != LogRecipeState.NONE) {
+                    showAnim = true
+                    delay(1500)
+                    showAnim = false
+                }
+            }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .padding(top = 16.dp)
@@ -229,28 +275,64 @@ fun RecipeItem(
                 end.linkTo(icon.start)
                 horizontalBias = 0F
             },
-            text = stringResource(
-                R.string.nutrient_log_food_food_item_amount,
+            text = pluralStringResource(
+                id = R.plurals.nutrient_log_food_item_amount,
+                count = recipe.servings,
                 recipe.nutrients[0].amount.roundToInt(),
-                recipe.nutrients[0].amount.roundToInt()
+                recipe.servings
             ),
             textStyle = Typography.bodySmall,
             color = Grey808993
         )
 
-        Icon(
+        Box(
             modifier = Modifier
                 .size(28.dp)
-                .clickable { onLogRecipe() }
                 .constrainAs(icon) {
                     top.linkTo(recipeImage.top)
                     bottom.linkTo(recipeImage.bottom)
                     end.linkTo(parent.end, margin = 16.dp)
-                },
-            painter = painterResource(drawable.ic_add_solid),
-            tint = Black374957,
-            contentDescription = null
-        )
+                }
+        ) {
+            if (!showLoading && !showAnim) {
+                Icon(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable { onLogRecipe() },
+                    painter = painterResource(drawable.ic_add_solid),
+                    tint = Black374957,
+                    contentDescription = null
+                )
+            }
+            if (showLoading) {
+                LoadingIndicator(
+                    modifier = Modifier.fillMaxSize(),
+                    strokeWidth = 3.dp
+                )
+            }
+            if (showAnim) {
+                when (logRecipeResult) {
+                    LogRecipeState.NONE -> { /* Do nothing */
+                    }
+
+                    LogRecipeState.SUCCESS -> {
+                        LottieAnimation(
+                            modifier = Modifier.fillMaxSize(),
+                            composition = successComposition,
+                            progress = { successProgress },
+                        )
+                    }
+
+                    LogRecipeState.FAIL -> {
+                        LottieAnimation(
+                            modifier = Modifier.fillMaxSize(),
+                            composition = failComposition,
+                            progress = { failProgress },
+                        )
+                    }
+                }
+            }
+        }
 
         HorizontalDivider(
             modifier = Modifier
@@ -274,7 +356,7 @@ fun RecipeItem(
             AppText(
                 text = stringResource(
                     R.string.nutrient_log_food_search_screen_nutrient_amount,
-                    60.5
+                    recipe.nutrients[1].amount
                 ),
                 textStyle = Typography.labelSmall
             )
@@ -297,7 +379,7 @@ fun RecipeItem(
             AppText(
                 text = stringResource(
                     R.string.nutrient_log_food_search_screen_nutrient_amount,
-                    60.5
+                    recipe.nutrients[2].amount
                 ),
                 textStyle = Typography.labelSmall
             )
@@ -320,7 +402,7 @@ fun RecipeItem(
             AppText(
                 text = stringResource(
                     R.string.nutrient_log_food_search_screen_nutrient_amount,
-                    60.5
+                    recipe.nutrients[3].amount
                 ),
                 textStyle = Typography.labelSmall
             )
@@ -346,11 +428,28 @@ fun RecipeItemPreview() {
             nutrients = listOf(
                 Nutrient(
                     name = "Calories",
-                    amount = 1200f,
+                    amount = 90f,
+                    unit = "kcal",
+                ),
+                Nutrient(
+                    name = "Calories",
+                    amount = 90f,
+                    unit = "kcal",
+                ),
+                Nutrient(
+                    name = "Calories",
+                    amount = 90f,
+                    unit = "kcal",
+                ),
+                Nutrient(
+                    name = "Calories",
+                    amount = 90f,
                     unit = "kcal",
                 )
             )
         ),
+        showLoading = false,
+        logRecipeResult = LogRecipeState.NONE,
         onLogRecipe = {}
     )
 }

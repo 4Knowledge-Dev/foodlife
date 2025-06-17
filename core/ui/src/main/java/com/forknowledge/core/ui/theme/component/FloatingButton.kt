@@ -43,7 +43,7 @@ fun AppFloatingButton(
 ) {
     val rotationAngle by animateFloatAsState(
         targetValue = if (isExpanded) 135f else 0f,
-        animationSpec = tween(500)
+        animationSpec = tween(300)
     )
 
     Column(
