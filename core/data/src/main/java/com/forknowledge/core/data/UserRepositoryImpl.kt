@@ -5,21 +5,22 @@ import androidx.datastore.core.IOException
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.extension.endOfDay
 import com.forknowledge.core.common.extension.startOfDay
+import com.forknowledge.core.common.extension.toFirestoreDocumentIdByDate
 import com.forknowledge.core.data.datasource.PreferenceDatastore
 import com.forknowledge.core.data.datatype.UserAuthState
 import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_EXCEPTION
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_GET_DATA_EXCEPTION
+import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_TRANSACTION_EXCEPTION
 import com.forknowledge.core.data.reference.FirestoreReference.USER_COLLECTION
 import com.forknowledge.core.data.reference.FirestoreReference.USER_RECORD_SUB_COLLECTION
 import com.forknowledge.feature.model.NutritionSearchRecipe
-import com.forknowledge.feature.model.SearchRecipe
 import com.forknowledge.feature.model.userdata.IntakeNutrition
+import com.forknowledge.feature.model.userdata.RecipeData
 import com.forknowledge.feature.model.userdata.User
 import com.forknowledge.feature.model.userdata.UserToken
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.Dispatchers
@@ -39,9 +40,10 @@ const val RECIPE_MEAL_TYPE_BREAKFAST = 1L
 const val RECIPE_MEAL_TYPE_LUNCH = 2L
 const val RECIPE_MEAL_TYPE_DINNER = 3L
 const val RECIPE_MEAL_TYPE_SNACKS = 4L
-const val RECIPE_NUTRIENT_CARB_INDEX = 3
-const val RECIPE_NUTRIENT_PROTEIN_INDEX = 10
-const val RECIPE_NUTRIENT_FAT_INDEX = 1
+const val RECIPE_NUTRIENT_CALORIES_INDEX = 0
+const val RECIPE_NUTRIENT_CARB_INDEX = 1
+const val RECIPE_NUTRIENT_PROTEIN_INDEX = 2
+const val RECIPE_NUTRIENT_FAT_INDEX = 3
 
 class UserRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
@@ -237,17 +239,97 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateRecipeList(
-        documentId: String,
-        recipe: NutritionSearchRecipe,
-        isAdd: Boolean
+        date: Date,
+        mealPosition: Int,
+        recipe: NutritionSearchRecipe
     ) = withContext(Dispatchers.IO) {
+        val documentId = date.toFirestoreDocumentIdByDate()
+        val collectionRef = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+            .collection(USER_RECORD_SUB_COLLECTION)
+
+        val transaction = firestore.runTransaction { transaction ->
+            val snapshot = transaction.get(collectionRef.document(documentId))
+            if (snapshot.exists()) {
+                val intakeNutrition =
+                    snapshot.toObject(IntakeNutrition::class.java) ?: IntakeNutrition()
+                var recipeRecords = intakeNutrition.recipes
+                var newRecipeRecords = emptyList<RecipeData>()
+
+                var currentCalories = intakeNutrition.calories
+                var currentCarbs = intakeNutrition.carbs
+                var currentProteins = intakeNutrition.proteins
+                var currentFats = intakeNutrition.fats
+
+                if (recipeRecords.any { it.mealPosition == mealPosition.toLong() && it.id == recipe.id.toLong() }) {
+                    newRecipeRecords = recipeRecords.map { recipeRecord ->
+                        if (recipeRecord.id == recipe.id.toLong() && recipeRecord.mealPosition == mealPosition.toLong()) {
+                            recipeRecord.copy(
+                                servings = recipeRecord.servings + recipe.servings.toLong(),
+                                calories = recipeRecord.calories + recipe.nutrients[0].amount.toLong()
+                            )
+                        } else {
+                            recipeRecord
+                        }
+                    }
+                } else {
+                    val newRecipeRecord = RecipeData(
+                        id = recipe.id.toLong(),
+                        name = recipe.name,
+                        imageUrl = recipe.imageUrl,
+                        mealPosition = mealPosition.toLong(),
+                        servings = recipe.servings.toLong(),
+                        calories = recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong()
+                    )
+                    newRecipeRecords = recipeRecords + newRecipeRecord
+                }
+
+                currentCalories += recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong()
+                currentCarbs += recipe.nutrients[RECIPE_NUTRIENT_CARB_INDEX].amount.toLong()
+                currentProteins += recipe.nutrients[RECIPE_NUTRIENT_PROTEIN_INDEX].amount.toLong()
+                currentFats += recipe.nutrients[RECIPE_NUTRIENT_FAT_INDEX].amount.toLong()
+
+                val newIntakeNutrition = intakeNutrition.copy(
+                    calories = currentCalories,
+                    carbs = currentCarbs,
+                    proteins = currentProteins,
+                    fats = currentFats,
+                    recipes = newRecipeRecords
+                )
+                transaction.set(
+                    collectionRef.document(documentId),
+                    newIntakeNutrition,
+                    SetOptions.merge()
+                )
+            } else {
+                val newIntakeNutrition = IntakeNutrition(
+                    date = date,
+                    calories = recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong(),
+                    carbs = recipe.nutrients[RECIPE_NUTRIENT_CARB_INDEX].amount.toLong(),
+                    proteins = recipe.nutrients[RECIPE_NUTRIENT_PROTEIN_INDEX].amount.toLong(),
+                    fats = recipe.nutrients[RECIPE_NUTRIENT_FAT_INDEX].amount.toLong(),
+                    recipes = listOf(
+                        RecipeData(
+                            id = recipe.id.toLong(),
+                            name = recipe.name,
+                            imageUrl = recipe.imageUrl,
+                            mealPosition = mealPosition.toLong(),
+                            servings = recipe.servings.toLong(),
+                            calories = recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong()
+                        )
+                    )
+                )
+                transaction.set(
+                    collectionRef.document(documentId),
+                    newIntakeNutrition
+                )
+            }
+        }
+
         return@withContext try {
-            firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
-                .collection(USER_RECORD_SUB_COLLECTION).document(documentId.toString())
-                .update(USER_RECORD_RECIPE_LIST_FIELD, FieldValue.arrayUnion(recipe))
-                .await()
+            transaction.await()
             Result.Success(Unit)
-        } catch (e: Exception) {
+        } catch (e: FirebaseException) {
+            Log.e(FIREBASE_TRANSACTION_EXCEPTION, "Update data failed with ", e)
             Result.Error(e)
         }
     }

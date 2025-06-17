@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.forknowledge.core.common.getCurrentDate
+import com.forknowledge.core.common.getCurrentDateTime
 import com.forknowledge.core.data.UserRepository
 import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.feature.model.userdata.TargetNutrition
@@ -22,7 +22,7 @@ class NutritionViewModel @Inject constructor(
     private val userRepository: UserRepository,
 ) : ViewModel() {
 
-    var date by mutableStateOf(getCurrentDate())
+    var date by mutableStateOf(getCurrentDateTime())
         private set
 
     private val _targetNutrition = MutableStateFlow<TargetNutrition?>(null)

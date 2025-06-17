@@ -63,7 +63,8 @@ import com.forknowledge.core.common.caloriesToNutrientAmount
 import com.forknowledge.core.common.extension.nextDate
 import com.forknowledge.core.common.extension.previousDate
 import com.forknowledge.core.common.extension.toDayMonthDateString
-import com.forknowledge.core.common.getCurrentDate
+import com.forknowledge.core.common.extension.toFirestoreDateTime
+import com.forknowledge.core.common.getCurrentDateTime
 import com.forknowledge.core.common.healthtype.Nutrient
 import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.ui.R.drawable
@@ -88,7 +89,7 @@ import kotlin.math.roundToLong
 
 @Composable
 fun NutrientScreen(
-    onNavigateToLogFood: (Long, Boolean, Long) -> Unit,
+    onNavigateToLogFood: (Int, Long) -> Unit,
     viewModel: NutritionViewModel = hiltViewModel()
 ) {
     val date = viewModel.date
@@ -123,7 +124,7 @@ fun NutrientScreen(
                     targetNutrition = nutrition,
                     intakeNutrition = intakeNutrition,
                     onNavigateToLogFood = {
-                        onNavigateToLogFood(it, intakeNutrition.calories != 0L, date.time)
+                        onNavigateToLogFood(it, date.time)
                     }
                 )
             }
@@ -145,7 +146,7 @@ fun AppBarDateSelector(
             confirmText = stringResource(R.string.nutrient_date_picker_button_confirm_text),
             date = date.time,
             onDateSelected = { date ->
-                date?.let { onDateChanged(Date(it)) }
+                date?.let { onDateChanged(it.toFirestoreDateTime()) }
             },
             onDismiss = { showDatePickerModal = false }
         )
@@ -182,7 +183,7 @@ fun AppBarDateSelector(
         Icon(
             modifier = Modifier
                 .padding(start = 12.dp)
-                .clickable { onDateChanged(getCurrentDate()) },
+                .clickable { onDateChanged(getCurrentDateTime()) },
             painter = painterResource(drawable.ic_calendar),
             tint = Black374957,
             contentDescription = null
@@ -426,7 +427,7 @@ fun NutrientSection(
 fun MealSection(
     targetNutrition: TargetNutrition,
     intakeNutrition: NutritionDisplayData,
-    onNavigateToLogFood: (Long) -> Unit
+    onNavigateToLogFood: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -468,7 +469,7 @@ fun MealSection(
             calories = intakeNutrition.mealCalories[0],
             totalCalories = (targetNutrition.calories * targetNutrition.breakfastRatio).roundToLong(),
             image = drawable.ic_breakfast,
-            onNavigateToLogFood = { onNavigateToLogFood(0) }
+            onNavigateToLogFood = { onNavigateToLogFood(1) }
         )
 
         HorizontalDivider(
@@ -484,7 +485,7 @@ fun MealSection(
             calories = intakeNutrition.mealCalories[1],
             totalCalories = (targetNutrition.calories * targetNutrition.lunchRatio).roundToLong(),
             image = drawable.ic_lunch,
-            onNavigateToLogFood = { onNavigateToLogFood(1) }
+            onNavigateToLogFood = { onNavigateToLogFood(2) }
         )
 
         HorizontalDivider(
@@ -500,7 +501,7 @@ fun MealSection(
             calories = intakeNutrition.mealCalories[2],
             totalCalories = (targetNutrition.calories * targetNutrition.dinnerRatio).roundToLong(),
             image = drawable.ic_dinner,
-            onNavigateToLogFood = { onNavigateToLogFood(2) }
+            onNavigateToLogFood = { onNavigateToLogFood(3) }
         )
 
         HorizontalDivider(
@@ -516,7 +517,7 @@ fun MealSection(
             calories = intakeNutrition.mealCalories[3],
             totalCalories = (targetNutrition.calories * targetNutrition.snacksRatio).roundToLong(),
             image = drawable.ic_snack,
-            onNavigateToLogFood = { onNavigateToLogFood(3) }
+            onNavigateToLogFood = { onNavigateToLogFood(4) }
         )
     }
 }

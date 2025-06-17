@@ -8,8 +8,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SearchRoute(
-    val meal: Long,
-    val hasLoggedFood: Boolean,
+    val mealPosition: Int,
     val dateInMillis: Long
 )
 

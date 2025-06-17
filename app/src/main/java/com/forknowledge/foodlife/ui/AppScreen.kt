@@ -92,9 +92,9 @@ fun AppScreen(
             onboardingNavGraph(navController = appState.navController)
             composable<NutrientRoute> {
                 NutrientScreen(
-                    onNavigateToLogFood = { meal, hasLoggedFood, date ->
+                    onNavigateToLogFood = { mealPosition, date ->
                         appState.navController.navigate(
-                            LogFoodRoute(meal, hasLoggedFood, date)
+                            LogFoodRoute(mealPosition, date)
                         )
                     }
                 )
@@ -131,12 +131,11 @@ fun AppScreen(
             composable<LogFoodRoute> { backStackEntry ->
                 val meal = backStackEntry.toRoute<LogFoodRoute>()
                 LogFoodScreen(
-                    meal = meal.meal,
-                    hasLoggedFood = meal.hasLoggedRecipe,
+                    mealPosition = meal.mealPosition,
                     dateInMillis = meal.dateInMillis,
-                    onNavigateToSearch = { meal, hasLoggedFood, date ->
+                    onNavigateToSearch = { mealPosition, date ->
                         appState.navController.navigate(
-                            SearchRoute(meal, hasLoggedFood, date)
+                            SearchRoute(mealPosition, date)
                         )
                     },
                     onNavigateBack = { appState.navController.popBackStack() }
@@ -145,8 +144,7 @@ fun AppScreen(
             composable<SearchRoute> { backStackEntry ->
                 val data = backStackEntry.toRoute<SearchRoute>()
                 SearchScreen(
-                    meal = data.meal,
-                    hasLoggedFood = data.hasLoggedFood,
+                    mealPosition = data.mealPosition,
                     dateInMillis = data.dateInMillis,
                     onNavigateBack = { appState.navController.popBackStack() }
                 )

@@ -86,13 +86,13 @@ interface UserRepository {
 
     /**
      * Update the logged recipe list of a day.
-     * @param [documentId] the id of document updated.
-     * @param [recipe] the recipe to add or remove.
+     * @param [date] the date to update.
+     * @param [recipe] a recipe to add or remove.
      * @return [Result] of operation.
      */
     suspend fun updateRecipeList(
-        documentId: String,
-        recipe: NutritionSearchRecipe,
-        isAdd: Boolean
+        date: Date,
+        mealPosition: Int,
+        recipe: NutritionSearchRecipe
     ): Result<Unit>
 }

@@ -9,14 +9,12 @@ import androidx.paging.PagingData
 import com.forknowledge.core.common.AppConstant.SEARCH_DEBOUNCE
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.asFlowResult
-import com.forknowledge.core.common.extension.toFirestoreDocumentIdByDate
 import com.forknowledge.core.data.FoodRepository
 import com.forknowledge.core.data.UserRepository
 import com.forknowledge.feature.model.NutritionSearchRecipe
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
@@ -42,16 +40,14 @@ class SearchViewModel @Inject constructor(
     private val _recipes = MutableStateFlow<PagingData<NutritionSearchRecipe>>(PagingData.empty())
     val recipes: StateFlow<PagingData<NutritionSearchRecipe>> = _recipes
 
+    var logRecipes by mutableStateOf(listOf<NutritionSearchRecipe>())
+        private set
+
     var isLoading by mutableStateOf(false)
         private set
 
     var logRecipeResult by mutableStateOf<Result<Unit>?>(null)
         private set
-
-    var loggedRecipeId by mutableStateOf<Long?>(null)
-        private set
-
-    private var hasLoggedFood = false
 
     init {
         viewModelScope.launch { observeQueryChanges() }
@@ -70,21 +66,19 @@ class SearchViewModel @Inject constructor(
             }
             .asFlowResult()
             .onEach { result ->
-                when (result) {
-                    is Result.Loading -> isLoading = true
-                    is Result.Success -> {
-                        _recipes.update { result.data }
-                        isLoading = false
-                    }
+                if (_searchQuery.value.isNotEmpty()) {
+                    when (result) {
+                        is Result.Loading -> isLoading = true
+                        is Result.Success -> {
+                            _recipes.update { result.data }
+                            isLoading = false
+                        }
 
-                    is Result.Error -> isLoading = false
+                        is Result.Error -> isLoading = false
+                    }
                 }
             }
             .launchIn(viewModelScope)
-    }
-
-    fun updateHasLoggedFood(isLogged: Boolean) {
-        hasLoggedFood = isLogged
     }
 
     fun updateSearchQuery(query: String) {
@@ -114,49 +108,24 @@ class SearchViewModel @Inject constructor(
     }
 
     fun logRecipe(
-        meal: Long,
         date: Date,
+        mealPosition: Int,
         recipe: NutritionSearchRecipe
     ) {
         logRecipeResult = Result.Loading
-        loggedRecipeId = recipe.id.toLong()
         viewModelScope.launch {
-            if (hasLoggedFood) {
-                when (val result = userRepository.updateRecipeList(
-                    documentId = date.toFirestoreDocumentIdByDate(),
-                    recipe = recipe,
-                    isAdd = true
-                )) {
-                    is Result.Loading -> Unit
-                    is Result.Success -> {
-                        logRecipeResult = Result.Success(Unit)
-                        delay(1000L)
-                        loggedRecipeId = null
-                    }
-
-                    is Result.Error -> {
-                        logRecipeResult = Result.Error(result.exception)
-                        delay(1000L)
-                        loggedRecipeId = null
-                    }
+            when (val result = userRepository.updateRecipeList(
+                date = date,
+                mealPosition = mealPosition,
+                recipe = recipe
+            )) {
+                is Result.Loading -> Unit
+                is Result.Success -> {
+                    logRecipeResult = Result.Success(Unit)
                 }
-            } else {
-                when (val result = userRepository.createNewTrackDay(
-                    documentId = date.toFirestoreDocumentIdByDate(),
-                    date = date,
-                    recipe = recipe
-                )) {
-                    is Result.Loading -> Unit
-                    is Result.Success -> {
-                        hasLoggedFood = true
-                        logRecipeResult = Result.Success(Unit)
-                        loggedRecipeId = null
-                    }
 
-                    is Result.Error -> {
-                        logRecipeResult = Result.Error(result.exception)
-                        loggedRecipeId = null
-                    }
+                is Result.Error -> {
+                    logRecipeResult = Result.Error(result.exception)
                 }
             }
         }

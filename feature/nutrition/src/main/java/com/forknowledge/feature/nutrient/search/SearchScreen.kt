@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.runtime.Composable
@@ -61,8 +62,7 @@ import kotlin.math.roundToInt
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    meal: Long,
-    hasLoggedFood: Boolean,
+    mealPosition: Int,
     dateInMillis: Long,
     onNavigateBack: () -> Unit
 ) {
@@ -70,13 +70,10 @@ fun SearchScreen(
     val focusManager = LocalFocusManager.current
 
     val isLoading = viewModel.isLoading
-    val logRecipeResult = viewModel.logRecipeResult
-    val loggedRecipeId = viewModel.loggedRecipeId
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val recipes = viewModel.recipes.collectAsLazyPagingItems()
 
     LaunchedEffect(Unit) {
-        viewModel.updateHasLoggedFood(hasLoggedFood)
         focusRequester.requestFocus()
     }
 
@@ -120,10 +117,17 @@ fun SearchScreen(
             onExpandedChange = { },
         ) {
             if (isLoading) {
-                LoadingIndicator()
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LoadingIndicator()
+                }
             } else {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background),
                     contentPadding = PaddingValues(
                         vertical = 8.dp,
                         horizontal = 16.dp
@@ -138,8 +142,8 @@ fun SearchScreen(
                                 recipe = it,
                                 onLogRecipe = {
                                     viewModel.logRecipe(
-                                        meal = meal,
                                         date = Date(dateInMillis),
+                                        mealPosition = mealPosition,
                                         recipe = it
                                     )
                                 }
@@ -169,7 +173,7 @@ fun RecipeItem(
                     bottomStart = 8.dp,
                     bottomEnd = 8.dp
                 )
-                shadowElevation = 3.dp.toPx()
+                shadowElevation = 2.dp.toPx()
                 spotShadowColor = Black063336
                 clip = true
             }

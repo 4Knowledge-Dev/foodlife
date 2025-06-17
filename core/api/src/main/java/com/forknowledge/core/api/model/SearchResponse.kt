@@ -1,6 +1,5 @@
 package com.forknowledge.core.api.model
 
-import com.forknowledge.feature.model.Nutrient
 import com.forknowledge.feature.model.SearchRecipe
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerialName
@@ -30,17 +29,29 @@ data class RecipeResponse(
     val nutrition: NutritionResponse? = null
 ) {
 
-    fun toSearchRecipe() = SearchRecipe(
-        id = id,
-        name = title,
-        imageUrl = image,
-        servings = servings,
-        cookTime = readyInMinutes ?: 0,
-        nutrients = nutrition?.nutrients?.takeWhile {
+    fun toSearchRecipe(): SearchRecipe {
+        val responseNutrients = nutrition?.nutrients ?: emptyList()
+        val nutrients = mutableListOf<NutrientResponse>()
+        nutrients.add(responseNutrients.firstOrNull {
             it.name == NUTRIENT_TYPE_NAME_CALORIES
-                    || it.name == NUTRIENT_TYPE_NAME_CARBOHYDRATES
-                    || it.name == NUTRIENT_TYPE_NAME_PROTEIN
-                    || it.name == NUTRIENT_TYPE_NAME_FAT
-        }?.map { it.toNutrient() } ?: emptyList<Nutrient>()
-    )
+        }!!)
+        nutrients.add(responseNutrients.firstOrNull {
+            it.name == NUTRIENT_TYPE_NAME_CARBOHYDRATES
+        }!!)
+        nutrients.add(responseNutrients.firstOrNull {
+            it.name == NUTRIENT_TYPE_NAME_PROTEIN
+        }!!)
+        nutrients.add(responseNutrients.firstOrNull {
+            it.name == NUTRIENT_TYPE_NAME_FAT
+        }!!)
+
+        return SearchRecipe(
+            id = id,
+            name = title,
+            imageUrl = image,
+            servings = servings,
+            cookTime = readyInMinutes ?: 0,
+            nutrients = nutrients.map { it.toNutrient() }
+        )
+    }
 }

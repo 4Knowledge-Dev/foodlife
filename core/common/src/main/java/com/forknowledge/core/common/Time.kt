@@ -3,7 +3,11 @@ package com.forknowledge.core.common
 import java.util.Calendar
 import java.util.Date
 
-fun getCurrentDate(): Date {
+/**
+ * Get current date to execute with firestore.
+ * @return [Date] object.
+ */
+fun getCurrentDateTime(): Date {
     val calendar = Calendar.getInstance()
     calendar.time = Date()
     calendar.set(Calendar.HOUR_OF_DAY, 12)

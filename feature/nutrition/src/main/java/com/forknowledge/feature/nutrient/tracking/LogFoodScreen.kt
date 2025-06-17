@@ -46,18 +46,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LogFoodRoute(
-    val meal: Long,
-    val hasLoggedRecipe: Boolean,
+    val mealPosition: Int,
     val dateInMillis: Long
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogFoodScreen(
-    meal: Long,
-    hasLoggedFood: Boolean,
+    mealPosition: Int,
     dateInMillis: Long,
-    onNavigateToSearch: (Long, Boolean, Long) -> Unit,
+    onNavigateToSearch: (Int, Long) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     var selectedTabIndex by remember {
@@ -76,7 +74,7 @@ fun LogFoodScreen(
     Scaffold(
         topBar = {
             LogFoodTopAppBar(
-                meal = stringResource(meal.toMealName()),
+                meal = stringResource(mealPosition.toMealName()),
                 selectedTabIndex = selectedTabIndex,
                 onTabChanged = {
                     selectedTabIndex = it
@@ -84,7 +82,7 @@ fun LogFoodScreen(
                         pagerState.animateScrollToPage(it)
                     }
                 },
-                onNavigateToSearch = { onNavigateToSearch(meal, hasLoggedFood, dateInMillis) },
+                onNavigateToSearch = { onNavigateToSearch(mealPosition, dateInMillis) },
                 onNavigateBack = onNavigateBack
             )
         },

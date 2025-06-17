@@ -63,7 +63,7 @@ fun Date.previousDate(): Date {
 
 /**
  * Get firestore document id by getting date in millis.
- * @return firestore document id.
+ * @return firestore document id should be used when create a new nutrition track date.
  */
 fun Date.toFirestoreDocumentIdByDate(): String {
     val calendar = Calendar.getInstance()
@@ -73,6 +73,17 @@ fun Date.toFirestoreDocumentIdByDate(): String {
     calendar.set(Calendar.SECOND, 0)
     calendar.set(Calendar.MILLISECOND, 0)
     return calendar.timeInMillis.toString()
+}
+
+/**
+ * Convert time in milliseconds to Date for working with firestore.
+ * @return [Date] object.
+ */
+fun Long.toFirestoreDateTime(): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = Date(this)
+    calendar.set(Calendar.HOUR_OF_DAY, 12)
+    return calendar.time
 }
 
 /**
