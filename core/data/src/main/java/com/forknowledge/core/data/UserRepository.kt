@@ -2,12 +2,61 @@ package com.forknowledge.core.data
 
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.model.NutritionDisplayData
-import com.forknowledge.feature.model.Recipe
-import com.forknowledge.feature.model.TargetNutrition
+import com.forknowledge.core.data.datatype.UserAuthState
+import com.forknowledge.feature.model.NutritionSearchRecipe
+import com.forknowledge.feature.model.SearchRecipe
+import com.forknowledge.feature.model.userdata.TargetNutrition
+import com.forknowledge.feature.model.userdata.User
+import com.forknowledge.feature.model.userdata.UserToken
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 interface UserRepository {
+
+    /**
+     * Get user's token from local storage.
+     * @return [UserToken].
+     */
+    suspend fun getUserTokenFromLocal(): Result<UserToken>
+
+    /**
+     * Save user's token to local storage.
+     * @param [username] user's username.
+     * @param [hashKey] user's hash key.
+     */
+    suspend fun saveUserTokenToLocal(
+        username: String,
+        hashKey: String
+    )
+
+    /**
+     * Get user's token from user database.
+     * @return user's hash key.
+     */
+    suspend fun getUserTokenFromServer(): Result<UserToken>
+
+    /**
+     * Save user's token to user database.
+     * @param [username] user's username.
+     * @param [hashKey] user's hash key.
+     */
+    suspend fun saveUserTokenToServer(
+        username: String,
+        hashKey: String
+    ): Result<Unit>
+
+    /**
+     * Get user's flow from app startup.
+     * @return [UserAuthState] of user in time app startup.
+     */
+    fun getUserStateFlow(): Flow<UserAuthState>
+
+    /**
+     * Update user's information.
+     * @param [user] the user to update.
+     * @return [Result] of operation.
+     */
+    suspend fun updateUserInfo(user: User): Result<Unit>
 
     /**
      * Get user's target nutrition.
@@ -32,7 +81,7 @@ interface UserRepository {
     suspend fun createNewTrackDay(
         documentId: String,
         date: Date,
-        recipe: Recipe
+        recipe: NutritionSearchRecipe
     ): Result<Unit>
 
     /**
@@ -43,7 +92,7 @@ interface UserRepository {
      */
     suspend fun updateRecipeList(
         documentId: String,
-        recipe: Recipe,
+        recipe: NutritionSearchRecipe,
         isAdd: Boolean
     ): Result<Unit>
 }

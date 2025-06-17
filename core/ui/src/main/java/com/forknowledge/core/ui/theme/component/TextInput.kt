@@ -1,6 +1,7 @@
 package com.forknowledge.core.ui.theme.component
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.forknowledge.core.ui.R.drawable
@@ -35,7 +37,9 @@ fun AppTextField(
     placeholder: String = "",
     supportingText: String = "",
     @DrawableRes leadingIcon: Int? = null,
+    onLeadingIconClick: () -> Unit = {},
     trailingIcon: @Composable (() -> Unit)? = null,
+    corner: Dp = 14.dp,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -43,7 +47,7 @@ fun AppTextField(
 ) {
     TextField(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(corner),
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = GreyEBEBEB,
             unfocusedContainerColor = GreyEBEBEB,
@@ -64,6 +68,7 @@ fun AppTextField(
         leadingIcon = leadingIcon?.let { icon ->
             {
                 Icon(
+                    modifier = Modifier.clickable { onLeadingIconClick() },
                     painter = painterResource(id = icon),
                     contentDescription = null,
                     tint = GreyA7A6A6

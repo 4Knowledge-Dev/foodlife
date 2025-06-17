@@ -6,6 +6,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable object NutrientRoute
 
+@Serializable
+data class SearchRoute(
+    val meal: Long,
+    val hasLoggedFood: Boolean,
+    val dateInMillis: Long
+)
+
 fun NavController.navigateToNutrient(navOptions: NavOptions? = null) {
     navigate(NutrientRoute, navOptions)
 }

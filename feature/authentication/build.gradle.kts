@@ -35,7 +35,9 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:common"))
     implementation(project(":core:model"))
-    implementation(project(":core:domain"))
+    implementation(project(":core:data"))
+    implementation(project(":feature:onboarding"))
+    implementation(project(":feature:planner"))
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -55,6 +57,5 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
-    implementation(libs.facebook.login)
     implementation(libs.kotlinx.serialization.json)
 }

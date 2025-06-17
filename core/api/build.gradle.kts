@@ -17,6 +17,7 @@ android {
         properties.load(project.rootProject.file("gradle.properties").inputStream())
 
         buildConfigField("String", "API_URL", properties.getProperty("API_URL"))
+        buildConfigField("String", "API_IMAGE_URL", properties.getProperty("API_IMAGE_URL"))
         buildConfigField("String", "API_KEY", properties.getProperty("API_KEY"))
     }
     buildFeatures {

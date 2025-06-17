@@ -1,23 +1,5 @@
 package com.forknowledge.feature.onboarding.ui
 
-val excludedIngredients = listOf(
-    "alcohol",
-    "caffeine",
-    "sugar",
-    "celery",
-    "crustacean",
-    "egg",
-    "fish",
-    "gluten",
-    "groundnut",
-    "milk",
-    "mustard",
-    "tree nut",
-    "wheat",
-    "soybean",
-    "lactose"
-)
-
 val heightInCmRange = 18..302
 val heightInFeetRange = 1..9
 val weightInKgRange = 8..502

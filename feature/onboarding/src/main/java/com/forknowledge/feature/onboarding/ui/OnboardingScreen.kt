@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.forknowledge.core.common.healthtype.SurveyQuestionType
 import com.forknowledge.core.common.healthtype.questions
 import com.forknowledge.core.ui.R.drawable
@@ -52,10 +52,17 @@ import com.forknowledge.feature.onboarding.ui.surveyscreen.HeightSection
 import com.forknowledge.feature.onboarding.ui.surveyscreen.WeightSection
 
 @Composable
-fun SurveyScreen(viewModel: OnboardingViewModel = viewModel()) {
-
+fun SurveyScreen(
+    viewModel: OnboardingViewModel = hiltViewModel(),
+    onNavigateToPlanner: () -> Unit
+) {
     val question = viewModel.question
     val progress = (viewModel.progress + 1).toFloat() / (questions.size)
+    val onNavigateToPlanner = viewModel.onNavigateToPlanner
+
+    if (onNavigateToPlanner) {
+        onNavigateToPlanner()
+    }
 
     Scaffold(
         modifier = Modifier
@@ -259,5 +266,5 @@ fun SurveyBottomBar(
 @Preview(showBackground = true)
 @Composable
 fun SurveyScreenPreview() {
-    SurveyScreen()
+    SurveyScreen {}
 }

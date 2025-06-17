@@ -6,9 +6,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.calculateTargetCalories
 import com.forknowledge.core.common.extension.toAge
-import com.forknowledge.feature.onboarding.ui.DataUnit
 import com.forknowledge.core.common.healthtype.ActivityLevel
 import com.forknowledge.core.common.healthtype.Diet
 import com.forknowledge.core.common.healthtype.Gender
@@ -16,11 +17,22 @@ import com.forknowledge.core.common.healthtype.Goal
 import com.forknowledge.core.common.healthtype.SurveyQuestionType
 import com.forknowledge.core.common.healthtype.TargetWeightError
 import com.forknowledge.core.common.healthtype.questions
+import com.forknowledge.core.data.UserRepository
+import com.forknowledge.feature.model.userdata.TargetNutrition
+import com.forknowledge.feature.model.userdata.User
+import com.forknowledge.feature.onboarding.ui.DataUnit
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
-class OnboardingViewModel @Inject constructor() : ViewModel() {
+class OnboardingViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
+
+    var onNavigateToPlanner by mutableStateOf(false)
+        private set
 
     var progress by mutableIntStateOf(0)
         private set
@@ -82,6 +94,30 @@ class OnboardingViewModel @Inject constructor() : ViewModel() {
 
     var targetCalories = 0
 
+    private fun createUserInfo(): User {
+        return User(
+            isNewUser = false,
+            gender = gender == Gender.MALE,
+            birthday = Date(birthday!!),
+            height = height,
+            goal = goal!!.ordinal.toLong(),
+            currentWeight = currentWeight,
+            targetWeight = targetWeight,
+            weighPerWeek = weightPerWeek,
+            isHeightUnitCm = isCmUnit,
+            isWeightUnitKg = isKgUnit,
+            activityLevel = activityLevel!!.ordinal.toLong(),
+            diet = diet!!.ordinal.toLong(),
+            excludes = excludes,
+            targetNutrition = TargetNutrition(
+                calories = targetCalories.toLong(),
+                carbRatio = diet!!.macro.carbs,
+                proteinRatio = diet!!.macro.protein,
+                fatRatio = diet!!.macro.fat,
+            )
+        )
+    }
+
     fun onPreviousClicked() {
         progress -= if (questions[progress] == SurveyQuestionType.ACTIVITY_LEVEL) {
             when (goal) {
@@ -104,6 +140,15 @@ class OnboardingViewModel @Inject constructor() : ViewModel() {
                 goal = goal!!,
                 weightPerWeek = weightPerWeek,
             )
+            viewModelScope.launch {
+                when (userRepository.updateUserInfo(createUserInfo())) {
+                    is Result.Loading -> { /* Do nothing */ }
+                    is Result.Success -> {
+                        onNavigateToPlanner = true
+                    }
+                    is Result.Error -> { /* Do nothing */ }
+                }
+            }
             return
         }
         progress += if (questions[progress] == SurveyQuestionType.GOAL) {
@@ -152,7 +197,8 @@ class OnboardingViewModel @Inject constructor() : ViewModel() {
                 }
             }
 
-            else -> { /* Nothing to do */ }
+            else -> { /* Nothing to do */
+            }
         }
     }
 

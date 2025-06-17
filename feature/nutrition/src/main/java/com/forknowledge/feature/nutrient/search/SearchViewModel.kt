@@ -6,12 +6,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import com.forknowledge.core.common.AppConstant.SEARCH_DEBOUNCE
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.asFlowResult
 import com.forknowledge.core.common.extension.toFirestoreDocumentIdByDate
 import com.forknowledge.core.data.FoodRepository
 import com.forknowledge.core.data.UserRepository
-import com.forknowledge.feature.model.Recipe
+import com.forknowledge.feature.model.NutritionSearchRecipe
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -28,8 +29,6 @@ import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
 
-const val SEARCH_DEBOUNCE = 500L
-
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -40,8 +39,8 @@ class SearchViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow<String>("")
     val searchQuery: StateFlow<String> = _searchQuery
 
-    private val _recipes = MutableStateFlow<PagingData<Recipe>>(PagingData.empty())
-    val recipes: StateFlow<PagingData<Recipe>> = _recipes
+    private val _recipes = MutableStateFlow<PagingData<NutritionSearchRecipe>>(PagingData.empty())
+    val recipes: StateFlow<PagingData<NutritionSearchRecipe>> = _recipes
 
     var isLoading by mutableStateOf(false)
         private set
@@ -64,9 +63,12 @@ class SearchViewModel @Inject constructor(
             .filter { it.isNotBlank() }
             .flatMapLatest { query ->
                 foodRepository
-                    .searchRecipe(query)
-                    .asFlowResult()
+                    .searchRecipeForNutrition(
+                        query = query,
+                        includeNutrition = true
+                    )
             }
+            .asFlowResult()
             .onEach { result ->
                 when (result) {
                     is Result.Loading -> isLoading = true
@@ -92,7 +94,10 @@ class SearchViewModel @Inject constructor(
     fun search(query: String) {
         viewModelScope.launch {
             foodRepository
-                .searchRecipe(query)
+                .searchRecipeForNutrition(
+                    query = query,
+                    includeNutrition = true
+                )
                 .asFlowResult()
                 .collect { result ->
                     when (result) {
@@ -111,15 +116,15 @@ class SearchViewModel @Inject constructor(
     fun logRecipe(
         meal: Long,
         date: Date,
-        recipe: Recipe
+        recipe: NutritionSearchRecipe
     ) {
         logRecipeResult = Result.Loading
-        loggedRecipeId = recipe.id
+        loggedRecipeId = recipe.id.toLong()
         viewModelScope.launch {
             if (hasLoggedFood) {
                 when (val result = userRepository.updateRecipeList(
                     documentId = date.toFirestoreDocumentIdByDate(),
-                    recipe = recipe.copy(meal = meal),
+                    recipe = recipe,
                     isAdd = true
                 )) {
                     is Result.Loading -> Unit
@@ -139,7 +144,7 @@ class SearchViewModel @Inject constructor(
                 when (val result = userRepository.createNewTrackDay(
                     documentId = date.toFirestoreDocumentIdByDate(),
                     date = date,
-                    recipe = recipe.copy(meal = meal)
+                    recipe = recipe
                 )) {
                     is Result.Loading -> Unit
                     is Result.Success -> {

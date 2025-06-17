@@ -33,20 +33,26 @@ import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.feature.authentication.authenticationNavGraph
 import com.forknowledge.feature.explore.ExploreRoute
-import com.forknowledge.feature.explore.ExploreScreen
+import com.forknowledge.feature.explore.ExploreSearchRoute
+import com.forknowledge.feature.explore.ui.ExploreScreen
+import com.forknowledge.feature.explore.ui.ExploreSearchScreen
 import com.forknowledge.feature.nutrient.NutrientRoute
+import com.forknowledge.feature.nutrient.SearchRoute
 import com.forknowledge.feature.nutrient.nutrient.NutrientScreen
-import com.forknowledge.feature.nutrient.search.SearchRoute
 import com.forknowledge.feature.nutrient.search.SearchScreen
-import com.forknowledge.feature.nutrient.ui.LogFoodRoute
-import com.forknowledge.feature.nutrient.ui.LogFoodScreen
+import com.forknowledge.feature.nutrient.tracking.LogFoodRoute
+import com.forknowledge.feature.nutrient.tracking.LogFoodScreen
 import com.forknowledge.feature.onboarding.onboardingNavGraph
 import com.forknowledge.feature.planner.PlannerRoute
-import com.forknowledge.feature.planner.PlannerScreen
+import com.forknowledge.feature.planner.navigateToPlannerRoute
+import com.forknowledge.feature.planner.ui.PlannerScreen
 import com.forknowledge.foodlife.R
 
 @Composable
-fun AppScreen(appState: AppState) {
+fun AppScreen(
+    appState: AppState,
+    startDestinationRoute: Any,
+) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -79,7 +85,7 @@ fun AppScreen(appState: AppState) {
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding),
             navController = appState.navController,
-            startDestination = NutrientRoute,
+            startDestination = startDestinationRoute,
         ) {
 
             authenticationNavGraph(navController = appState.navController)
@@ -93,8 +99,35 @@ fun AppScreen(appState: AppState) {
                     }
                 )
             }
-            composable<PlannerRoute> { PlannerScreen() }
-            composable<ExploreRoute> { ExploreScreen() }
+            composable<PlannerRoute> {
+                PlannerScreen(
+                    onNavigateToExplore = { date, mealPosition ->
+                        appState.navController.navigate(
+                            ExploreRoute(
+                                isAddMealPlanProcess = true,
+                                mealPosition = mealPosition,
+                                dateInMillis = date
+                            )
+                        )
+                    }
+                )
+            }
+            composable<ExploreRoute> { backStackEntry ->
+                val data = backStackEntry.toRoute<ExploreRoute>()
+                ExploreScreen(
+                    isAddMealPlanProcess = data.isAddMealPlanProcess,
+                    onNavigateToSearch = {
+                        appState.navController.navigate(
+                            ExploreSearchRoute(
+                                isAddMealPlanProcess = data.isAddMealPlanProcess,
+                                mealPosition = data.mealPosition,
+                                dateInMillis = data.dateInMillis
+                            )
+                        )
+                    },
+                    onNavigateBack = appState.navController::popBackStack
+                )
+            }
             composable<LogFoodRoute> { backStackEntry ->
                 val meal = backStackEntry.toRoute<LogFoodRoute>()
                 LogFoodScreen(
@@ -115,6 +148,18 @@ fun AppScreen(appState: AppState) {
                     meal = data.meal,
                     hasLoggedFood = data.hasLoggedFood,
                     dateInMillis = data.dateInMillis,
+                    onNavigateBack = { appState.navController.popBackStack() }
+                )
+            }
+            composable<ExploreSearchRoute> { backStackEntry ->
+                val data = backStackEntry.toRoute<ExploreSearchRoute>()
+                ExploreSearchScreen(
+                    isAddMealPlanProcess = data.isAddMealPlanProcess,
+                    mealPosition = data.mealPosition,
+                    dateInMillis = data.dateInMillis,
+                    onNavigateToMealPlan = {
+                        appState.navController.navigateToPlannerRoute()
+                    },
                     onNavigateBack = { appState.navController.popBackStack() }
                 )
             }
