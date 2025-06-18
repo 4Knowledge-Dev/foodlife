@@ -7,8 +7,11 @@ import kotlinx.serialization.Serializable
 
 const val NUTRIENT_TYPE_NAME_CALORIES = "Calories"
 const val NUTRIENT_TYPE_NAME_CARBOHYDRATES = "Carbohydrates"
+const val NUTRIENT_TYPE_NAME_FIBER = "Fiber"
+const val NUTRIENT_TYPE_NAME_SUGAR = "Sugar"
 const val NUTRIENT_TYPE_NAME_PROTEIN = "Protein"
 const val NUTRIENT_TYPE_NAME_FAT = "Fat"
+const val NUTRIENT_TYPE_NAME_SATURATED_FAT = "Saturated Fat"
 
 @InternalSerializationApi
 @Serializable
@@ -36,14 +39,24 @@ data class RecipeResponse(
             it.name == NUTRIENT_TYPE_NAME_CALORIES
         }!!)
         nutrients.add(responseNutrients.firstOrNull {
-            it.name == NUTRIENT_TYPE_NAME_CARBOHYDRATES
+            it.name == NUTRIENT_TYPE_NAME_PROTEIN
         }!!)
         nutrients.add(responseNutrients.firstOrNull {
-            it.name == NUTRIENT_TYPE_NAME_PROTEIN
+            it.name == NUTRIENT_TYPE_NAME_CARBOHYDRATES
         }!!)
         nutrients.add(responseNutrients.firstOrNull {
             it.name == NUTRIENT_TYPE_NAME_FAT
         }!!)
+        /*nutrients.add(responseNutrients.firstOrNull {
+            it.name == NUTRIENT_TYPE_NAME_FIBER
+        }!!)
+        nutrients.add(responseNutrients.firstOrNull {
+            it.name == NUTRIENT_TYPE_NAME_SUGAR
+        }!!)
+
+        nutrients.add(responseNutrients.firstOrNull {
+            it.name == NUTRIENT_TYPE_NAME_SATURATED_FAT
+        }!!)*/
 
         return SearchRecipe(
             id = id,

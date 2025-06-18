@@ -19,7 +19,9 @@
     <string name="nutrient_label_carb">Carbs</string>
     <string name="nutrient_label_protein">Protein</string>
     <string name="nutrient_label_fat">Fat</string>
+    <string name="nutrient_label_detail">Detail</string>
 
+    // Log Food
     <string name="nutrient_log_food_search_bar_label">What did you eat?</string>
     <string name="nutrient_log_food_tab_label_frequent">Frequent</string>
     <string name="nutrient_log_food_tab_label_plan">Plan</string>
@@ -32,4 +34,7 @@
         <item quantity="one">%1$d kcal, %2$d serving</item>
         <item quantity="other">%1$d kcal, %2$d servings</item>
     </plurals>
+
+    // Insights
+    <string name="nutrient_insights_header">Today</string>
 </resources>

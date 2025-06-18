@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.forknowledge.core.data.NetworkManager
 import com.forknowledge.core.ui.theme.FoodLifeTheme
+import com.forknowledge.feature.nutrient.NutrientRoute
 import com.forknowledge.foodlife.ui.AppScreen
 import com.forknowledge.foodlife.ui.rememberAppState
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
 
         viewModel.isLoading.observe(this) { isLoading = it }
 
-        viewModel.startDestinationRoute.observe(this) { route ->
+        /*viewModel.startDestinationRoute.observe(this) { route ->
             route?.let {
                 setContent {
                     FoodLifeTheme(
@@ -52,6 +53,16 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 }
+            }
+        }*/
+        setContent {
+            FoodLifeTheme(
+                darkTheme = false
+            ) {
+                AppScreen(
+                    appState = rememberAppState(networkManager = networkManager),
+                    startDestinationRoute = NutrientRoute
+                )
             }
         }
     }

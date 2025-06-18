@@ -53,12 +53,17 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_CALORIES_INDEX
+import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_CARB_INDEX
+import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_FAT_INDEX
+import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_PROTEIN_INDEX
 import com.forknowledge.core.common.caloriesToNutrientAmount
 import com.forknowledge.core.common.extension.nextDate
 import com.forknowledge.core.common.extension.previousDate
@@ -71,6 +76,7 @@ import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Blue05A6F1
+import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.GreenA1CE50
 import com.forknowledge.core.ui.theme.Grey8A949F
 import com.forknowledge.core.ui.theme.GreyDADADA
@@ -81,6 +87,7 @@ import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.YellowFB880C
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.DatePickerModal
+import com.forknowledge.feature.model.userdata.NutrientData
 import com.forknowledge.feature.model.userdata.TargetNutrition
 import com.forknowledge.feature.nutrient.R
 import java.util.Date
@@ -115,9 +122,23 @@ fun NutrientScreen(
             targetNutrition?.let { nutrition ->
                 viewModel.getIntakeNutritionByDate()
 
+                AppText(
+                    modifier = Modifier
+                        .padding(
+                            top = 24.dp,
+                            start = 16.dp,
+                            end = 16.dp
+                        )
+                        .clickable {},
+                    text = stringResource(R.string.nutrient_label_detail),
+                    textStyle = Typography.labelLarge,
+                    textAlign = TextAlign.End,
+                    color = Green91C747
+                )
+
                 NutrientSection(
                     targetNutrition = nutrition,
-                    intakeNutrition = intakeNutrition
+                    intakeNutrition = intakeNutrition.nutrients
                 )
 
                 MealSection(
@@ -206,13 +227,13 @@ fun AppBarDateSelector(
 @Composable
 fun NutrientSection(
     targetNutrition: TargetNutrition,
-    intakeNutrition: NutritionDisplayData
+    intakeNutrition: List<NutrientData>?
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                top = 24.dp,
+                top = 16.dp,
                 start = 16.dp,
                 end = 16.dp
             )
@@ -250,10 +271,13 @@ fun NutrientSection(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround
         ) {
+            val intakeCalories =
+                intakeNutrition?.get(RECIPE_NUTRIENT_CALORIES_INDEX)?.amount?.roundToLong() ?: 0
+
             // Eaten
             ActivityCard(
                 activityLabel = stringResource(R.string.nutrient_activity_calories_label_eaten),
-                activityValue = intakeNutrition.calories,
+                activityValue = intakeCalories,
                 activityUnit = stringResource(R.string.nutrient_activity_calories_unit)
             )
 
@@ -261,12 +285,12 @@ fun NutrientSection(
                 modifier = Modifier.size(130.dp),
                 isDailyCalories = true,
                 progressBarWidth = 9.dp,
-                progressIndicatorColor = if (intakeNutrition.calories <= targetNutrition.calories) {
+                progressIndicatorColor = if (intakeCalories <= targetNutrition.calories) {
                     GreenA1CE50
                 } else {
                     RedFF3939
                 },
-                progress = intakeNutrition.calories,
+                progress = intakeCalories,
                 totalNutrients = targetNutrition.calories
             )
 
@@ -317,7 +341,7 @@ fun NutrientSection(
                     modifier = Modifier.size(90.dp),
                     progressBarWidth = 7.dp,
                     progressIndicatorColor = RedFF4950,
-                    progress = intakeNutrition.carbs,
+                    progress = intakeNutrition?.get(RECIPE_NUTRIENT_CARB_INDEX)?.amount?.roundToLong() ?: 0,
                     totalNutrients = caloriesToNutrientAmount(
                         nutrient = Nutrient.CARBOHYDRATE,
                         calories = (targetNutrition.calories * targetNutrition.carbRatio)
@@ -337,7 +361,7 @@ fun NutrientSection(
                     modifier = Modifier.size(90.dp),
                     progressBarWidth = 7.dp,
                     progressIndicatorColor = YellowFB880C,
-                    progress = intakeNutrition.proteins,
+                    progress = intakeNutrition?.get(RECIPE_NUTRIENT_PROTEIN_INDEX)?.amount?.roundToLong() ?: 0,
                     totalNutrients = caloriesToNutrientAmount(
                         nutrient = Nutrient.PROTEIN,
                         calories = (targetNutrition.calories * targetNutrition.proteinRatio)
@@ -357,7 +381,7 @@ fun NutrientSection(
                     modifier = Modifier.size(90.dp),
                     progressBarWidth = 7.dp,
                     progressIndicatorColor = Blue05A6F1,
-                    progress = intakeNutrition.fats,
+                    progress = intakeNutrition?.get(RECIPE_NUTRIENT_FAT_INDEX)?.amount?.roundToLong() ?: 0,
                     totalNutrients = caloriesToNutrientAmount(
                         nutrient = Nutrient.CARBOHYDRATE,
                         calories = (targetNutrition.calories * targetNutrition.fatRatio)
@@ -775,7 +799,7 @@ fun NutrientSectionPreview() {
             proteinRatio = 0.3,
             fatRatio = 0.2
         ),
-        intakeNutrition = NutritionDisplayData()
+        intakeNutrition = NutritionDisplayData().nutrients
     )
 }
 
