@@ -37,4 +37,11 @@
 
     // Insights
     <string name="nutrient_insights_header">Today</string>
+    <string name="nutrient_insights_goal_label">Goal</string>
+    <string name="nutrient_insights_macro_info">Macro</string>
+    <string name="nutrient_insights_nutrition_info">Nutrition</string>
+    <string name="nutrient_insights_amount_unit">%.1f %s</string>
+    <string name="nutrient_insights_pie_chart_label">%d%%</string>
+    <string name="nutrient_insights_daily_progress">%1$d / %2$d %3$s</string>
+    <string name="nutrient_insights_error_message">Fail to get insights data!</string>
 </resources>

@@ -47,6 +47,14 @@ data class RecipeResponse(
         nutrients.add(responseNutrients.firstOrNull {
             it.name == NUTRIENT_TYPE_NAME_FAT
         }!!)
+        nutrients.addAll(
+            responseNutrients.filter {
+                it.name != NUTRIENT_TYPE_NAME_CALORIES &&
+                        it.name != NUTRIENT_TYPE_NAME_PROTEIN &&
+                        it.name != NUTRIENT_TYPE_NAME_CARBOHYDRATES &&
+                        it.name != NUTRIENT_TYPE_NAME_FAT
+            }
+        )
         /*nutrients.add(responseNutrients.firstOrNull {
             it.name == NUTRIENT_TYPE_NAME_FIBER
         }!!)

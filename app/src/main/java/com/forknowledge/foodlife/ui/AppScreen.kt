@@ -36,8 +36,10 @@ import com.forknowledge.feature.explore.ExploreRoute
 import com.forknowledge.feature.explore.ExploreSearchRoute
 import com.forknowledge.feature.explore.ui.ExploreScreen
 import com.forknowledge.feature.explore.ui.ExploreSearchScreen
+import com.forknowledge.feature.nutrient.InsightsRoute
 import com.forknowledge.feature.nutrient.NutrientRoute
 import com.forknowledge.feature.nutrient.SearchRoute
+import com.forknowledge.feature.nutrient.insights.InsightsScreen
 import com.forknowledge.feature.nutrient.nutrient.NutrientScreen
 import com.forknowledge.feature.nutrient.search.SearchScreen
 import com.forknowledge.feature.nutrient.tracking.LogFoodRoute
@@ -95,6 +97,11 @@ fun AppScreen(
                     onNavigateToLogFood = { mealPosition, date ->
                         appState.navController.navigate(
                             LogFoodRoute(mealPosition, date)
+                        )
+                    },
+                    onNavigateToInsights = { dateInMillis ->
+                        appState.navController.navigate(
+                            InsightsRoute(dateInMillis)
                         )
                     }
                 )
@@ -164,6 +171,13 @@ fun AppScreen(
                         appState.navController.navigateToPlannerRoute()
                     },
                     onNavigateBack = { appState.navController.popBackStack() }
+                )
+            }
+            composable<InsightsRoute> { backStackEntry ->
+                val data = backStackEntry.toRoute<InsightsRoute>()
+                InsightsScreen(
+                    dateInMillis = data.dateInMillis,
+                    onNavigateBack = appState.navController::popBackStack
                 )
             }
         }

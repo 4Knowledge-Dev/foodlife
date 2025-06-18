@@ -23,6 +23,7 @@ val Grey7F000000 = Color(0x7F000000)
 
 val Green91C747 = Color(0xFF91C747)
 val Green879672 = Color(0xFF879672)
+val GreenD8E4CD = Color(0xFFD8E4CD)
 val GreenC9D8B6 = Color(0xFFC9D8B6)
 val Green9CA98D = Color(0xFF9CA98D)
 val Green6F8168 = Color(0xFF6F8168)

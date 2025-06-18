@@ -9,6 +9,7 @@ import com.forknowledge.core.common.extension.startOfDay
 import com.forknowledge.core.common.extension.toFirestoreDocumentIdByDate
 import com.forknowledge.core.data.datasource.PreferenceDatastore
 import com.forknowledge.core.data.datatype.UserAuthState
+import com.forknowledge.core.data.model.DailyNutritionDisplayData
 import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_EXCEPTION
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_GET_DATA_EXCEPTION
@@ -26,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
@@ -322,6 +324,60 @@ class UserRepositoryImpl @Inject constructor(
             Result.Success(Unit)
         } catch (e: FirebaseException) {
             Log.e(FIREBASE_TRANSACTION_EXCEPTION, "Update data failed with ", e)
+            Result.Error(e)
+        }
+    }
+
+    override suspend fun getDailyNutritionInfo(date: Date) = withContext(Dispatchers.IO) {
+        val docRef = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+        return@withContext try {
+            val userInfoDeferred = async { docRef.get() }.await()
+            val intakeNutritionDeferred = async {
+                docRef.collection(USER_RECORD_SUB_COLLECTION)
+                    .whereGreaterThanOrEqualTo(USER_RECORD_DATE_FIELD, date.startOfDay())
+                    .whereLessThan(USER_RECORD_DATE_FIELD, date.endOfDay())
+                    .get()
+            }.await()
+            val userInfo = userInfoDeferred.await().toObject(User::class.java) ?: User()
+            val nutritionRecordDocument = intakeNutritionDeferred.await()
+            val intakeNutrition = if (!nutritionRecordDocument.isEmpty) {
+                nutritionRecordDocument.documents[0].toObject(IntakeNutrition::class.java)
+            } else {
+                null
+            }
+            val intakeNutrients = intakeNutrition?.nutrients ?: listOf(
+                NutrientData(
+                    name = "Calories",
+                    amount = 0f,
+                    unit = "kcal"
+                ),
+                NutrientData(
+                    name = "Carbohydrates",
+                    amount = 0f,
+                    unit = "g"
+                ),
+                NutrientData(
+                    name = "Proteins",
+                    amount = 0f,
+                    unit = "g"
+                ),
+                NutrientData(
+                    name = "Fats",
+                    amount = 0f,
+                    unit = "g"
+                )
+            )
+            Result.Success(
+                DailyNutritionDisplayData(
+                    targetCalories = userInfo.targetNutrition.calories.toInt(),
+                    targetCarbRatio = userInfo.targetNutrition.carbRatio.toFloat(),
+                    targetFatRatio = userInfo.targetNutrition.fatRatio.toFloat(),
+                    targetProteinRatio = userInfo.targetNutrition.proteinRatio.toFloat(),
+                    nutrients = intakeNutrients
+                )
+            )
+        } catch (e: FirebaseException) {
+            Log.e(FIREBASE_GET_DATA_EXCEPTION, "Get data failed with ", e)
             Result.Error(e)
         }
     }

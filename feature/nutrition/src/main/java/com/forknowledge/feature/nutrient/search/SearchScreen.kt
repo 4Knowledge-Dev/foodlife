@@ -3,6 +3,7 @@ package com.forknowledge.feature.nutrient.search
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -51,6 +52,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.forknowledge.core.common.extension.toFirestoreDateTime
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
 import com.forknowledge.core.ui.theme.Black374957
@@ -68,7 +70,6 @@ import com.forknowledge.feature.nutrient.LogRecipeState
 import com.forknowledge.feature.nutrient.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
-import java.util.Date
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,6 +86,7 @@ fun SearchScreen(
 
     val isLoading = viewModel.isLoading
     val shouldShowItemProcessLoading = viewModel.shouldShowItemProcessLoading
+    val shouldShowError = viewModel.shouldShowError
     val onProcessItemId = viewModel.onProcessItemId
     val logRecipeResult = viewModel.logRecipeResult
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
@@ -139,7 +141,13 @@ fun SearchScreen(
                 ) {
                     LoadingIndicator()
                 }
-            } else {
+            }
+
+            if (shouldShowError) {
+                ErrorMessage()
+            }
+
+            if (!isLoading && !shouldShowError) {
                 if (recipes.itemCount > 0) {
                     LazyColumn(
                         modifier = Modifier
@@ -161,7 +169,7 @@ fun SearchScreen(
                                     logRecipeResult = logRecipeResult,
                                     onLogRecipe = {
                                         viewModel.logRecipe(
-                                            date = Date(dateInMillis),
+                                            date = dateInMillis.toFirestoreDateTime(),
                                             mealPosition = mealPosition,
                                             recipe = it
                                         )
@@ -459,6 +467,27 @@ fun NoDataFoundMessage() {
     }
 }
 
+@Composable
+fun ErrorMessage() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            modifier = Modifier.size(150.dp),
+            painter = painterResource(id = drawable.img_vector_internet_error),
+            contentScale = ContentScale.Crop,
+            contentDescription = null
+        )
+
+        AppText(
+            text = stringResource(R.string.nutrient_insights_error_message),
+            textStyle = Typography.bodyMedium
+        )
+    }
+}
+
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun RecipeItemPreview() {
@@ -501,4 +530,10 @@ fun RecipeItemPreview() {
 @Composable
 fun NoDataFoundMessagePreview() {
     NoDataFoundMessage()
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+fun ErrorMessagePreview() {
+    ErrorMessage()
 }

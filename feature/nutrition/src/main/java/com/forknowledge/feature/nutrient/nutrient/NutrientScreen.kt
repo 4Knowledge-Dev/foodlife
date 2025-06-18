@@ -70,7 +70,7 @@ import com.forknowledge.core.common.extension.previousDate
 import com.forknowledge.core.common.extension.toDayMonthDateString
 import com.forknowledge.core.common.extension.toFirestoreDateTime
 import com.forknowledge.core.common.getCurrentDateTime
-import com.forknowledge.core.common.healthtype.Nutrient
+import com.forknowledge.core.common.healthtype.NutrientType
 import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
@@ -97,6 +97,7 @@ import kotlin.math.roundToLong
 @Composable
 fun NutrientScreen(
     onNavigateToLogFood: (Int, Long) -> Unit,
+    onNavigateToInsights: (Long) -> Unit,
     viewModel: NutritionViewModel = hiltViewModel()
 ) {
     val date = viewModel.date
@@ -129,7 +130,8 @@ fun NutrientScreen(
                             start = 16.dp,
                             end = 16.dp
                         )
-                        .clickable {},
+                        .fillMaxWidth()
+                        .clickable { onNavigateToInsights(date.time) },
                     text = stringResource(R.string.nutrient_label_detail),
                     textStyle = Typography.labelLarge,
                     textAlign = TextAlign.End,
@@ -341,9 +343,10 @@ fun NutrientSection(
                     modifier = Modifier.size(90.dp),
                     progressBarWidth = 7.dp,
                     progressIndicatorColor = RedFF4950,
-                    progress = intakeNutrition?.get(RECIPE_NUTRIENT_CARB_INDEX)?.amount?.roundToLong() ?: 0,
+                    progress = intakeNutrition?.get(RECIPE_NUTRIENT_CARB_INDEX)?.amount?.roundToLong()
+                        ?: 0,
                     totalNutrients = caloriesToNutrientAmount(
-                        nutrient = Nutrient.CARBOHYDRATE,
+                        nutrient = NutrientType.CARBOHYDRATE,
                         calories = (targetNutrition.calories * targetNutrition.carbRatio)
                     )
                 )
@@ -361,9 +364,10 @@ fun NutrientSection(
                     modifier = Modifier.size(90.dp),
                     progressBarWidth = 7.dp,
                     progressIndicatorColor = YellowFB880C,
-                    progress = intakeNutrition?.get(RECIPE_NUTRIENT_PROTEIN_INDEX)?.amount?.roundToLong() ?: 0,
+                    progress = intakeNutrition?.get(RECIPE_NUTRIENT_PROTEIN_INDEX)?.amount?.roundToLong()
+                        ?: 0,
                     totalNutrients = caloriesToNutrientAmount(
-                        nutrient = Nutrient.PROTEIN,
+                        nutrient = NutrientType.PROTEIN,
                         calories = (targetNutrition.calories * targetNutrition.proteinRatio)
                     )
                 )
@@ -381,9 +385,10 @@ fun NutrientSection(
                     modifier = Modifier.size(90.dp),
                     progressBarWidth = 7.dp,
                     progressIndicatorColor = Blue05A6F1,
-                    progress = intakeNutrition?.get(RECIPE_NUTRIENT_FAT_INDEX)?.amount?.roundToLong() ?: 0,
+                    progress = intakeNutrition?.get(RECIPE_NUTRIENT_FAT_INDEX)?.amount?.roundToLong()
+                        ?: 0,
                     totalNutrients = caloriesToNutrientAmount(
-                        nutrient = Nutrient.CARBOHYDRATE,
+                        nutrient = NutrientType.CARBOHYDRATE,
                         calories = (targetNutrition.calories * targetNutrition.fatRatio)
                     )
                 )
