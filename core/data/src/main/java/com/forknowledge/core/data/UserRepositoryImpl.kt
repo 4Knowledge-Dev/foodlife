@@ -14,6 +14,7 @@ import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_EXCEPTION
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_GET_DATA_EXCEPTION
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_TRANSACTION_EXCEPTION
+import com.forknowledge.core.data.reference.FirestoreReference
 import com.forknowledge.core.data.reference.FirestoreReference.USER_COLLECTION
 import com.forknowledge.core.data.reference.FirestoreReference.USER_RECORD_SUB_COLLECTION
 import com.forknowledge.feature.model.NutritionSearchRecipe
@@ -86,9 +87,13 @@ class UserRepositoryImpl @Inject constructor(
         username: String,
         hashKey: String
     ) = withContext(Dispatchers.IO) {
+        val updateUser = mapOf<String, String>(
+            FirestoreReference.USER_DOCUMENT_USERNAME_FIELD to username,
+            FirestoreReference.USER_DOCUMENT_HASH_KEY_FIELD to hashKey
+        )
         return@withContext try {
             firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
-                .set(User(username = username, hashKey = hashKey), SetOptions.merge())
+                .update(updateUser)
                 .await()
             Result.Success(Unit)
         } catch (e: Exception) {
