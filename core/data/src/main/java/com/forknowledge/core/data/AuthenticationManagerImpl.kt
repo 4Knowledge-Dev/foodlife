@@ -98,7 +98,7 @@ class AuthenticationManagerImpl @Inject constructor(
             auth
                 .signInWithEmailAndPassword(email, password)
                 .await()
-            emit(LoginResultType.SUCCESS_OLD_USER)
+            emit(getUserState(auth.currentUser!!.uid))
         } catch (e: FirebaseAuthException) {
             Log.e(FirebaseException.FIREBASE_EXCEPTION, "Failed to log user in: ${e.message}", e)
             emit(LoginResultType.FAIL)

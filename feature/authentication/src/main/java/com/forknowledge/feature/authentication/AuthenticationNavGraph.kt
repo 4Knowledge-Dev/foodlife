@@ -70,6 +70,7 @@ fun NavGraphBuilder.signInWithEmailScreen(navController: NavController) {
             viewModel = hiltViewModel<AuthenticationViewModel>(parentEntry),
             onBackClicked = navController::popBackStack,
             onNavigateToRegisterClicked = navController::navigateToSignUpWithEmail,
+            onNavigateToOnboarding = { navController.navigateToOnboarding() },
             onNavigateToPlanner = { navController.navigateToPlannerRoute() }
         )
     }
