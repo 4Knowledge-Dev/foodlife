@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
 
         viewModel.isLoading.observe(this) { isLoading = it }
 
-        /*viewModel.startDestinationRoute.observe(this) { route ->
+        viewModel.startDestinationRoute.observe(this) { route ->
             route?.let {
                 setContent {
                     FoodLifeTheme(
@@ -54,8 +54,8 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-        }*/
-        setContent {
+        }
+        /*setContent {
             FoodLifeTheme(
                 darkTheme = false
             ) {
@@ -64,6 +64,6 @@ class MainActivity : ComponentActivity() {
                     startDestinationRoute = NutrientRoute
                 )
             }
-        }
+        }*/
     }
 }

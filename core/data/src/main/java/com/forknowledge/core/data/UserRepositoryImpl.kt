@@ -235,6 +235,7 @@ class UserRepositoryImpl @Inject constructor(
         mealPosition: Int,
         recipe: NutritionSearchRecipe
     ) = withContext(Dispatchers.IO) {
+
         val documentId = date.toFirestoreDocumentIdByDate()
         val collectionRef = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
             .collection(USER_RECORD_SUB_COLLECTION)
@@ -345,28 +346,7 @@ class UserRepositoryImpl @Inject constructor(
             } else {
                 null
             }
-            val intakeNutrients = intakeNutrition?.nutrients ?: listOf(
-                NutrientData(
-                    name = "Calories",
-                    amount = 0f,
-                    unit = "kcal"
-                ),
-                NutrientData(
-                    name = "Carbohydrates",
-                    amount = 0f,
-                    unit = "g"
-                ),
-                NutrientData(
-                    name = "Proteins",
-                    amount = 0f,
-                    unit = "g"
-                ),
-                NutrientData(
-                    name = "Fats",
-                    amount = 0f,
-                    unit = "g"
-                )
-            )
+            val intakeNutrients = intakeNutrition?.nutrients ?: emptyList()
             Result.Success(
                 DailyNutritionDisplayData(
                     targetCalories = userInfo.targetNutrition.calories.toInt(),

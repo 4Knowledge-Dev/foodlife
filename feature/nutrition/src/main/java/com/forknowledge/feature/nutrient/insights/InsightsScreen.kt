@@ -14,7 +14,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -32,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
@@ -41,6 +45,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.forknowledge.core.common.AppConstant.NUTRITION_CALORIES_NAME
+import com.forknowledge.core.common.AppConstant.NUTRITION_CARB_NAME
+import com.forknowledge.core.common.AppConstant.NUTRITION_FAT_NAME
+import com.forknowledge.core.common.AppConstant.NUTRITION_PROTEIN_NAME
 import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_CALORIES_INDEX
 import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_CARB_INDEX
 import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_FAT_INDEX
@@ -53,12 +61,12 @@ import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Blue05A6F1
 import com.forknowledge.core.ui.theme.Green91C747
-import com.forknowledge.core.ui.theme.GreenD8E4CD
+import com.forknowledge.core.ui.theme.GreenE2F2EC
 import com.forknowledge.core.ui.theme.GreyF4F5F5
 import com.forknowledge.core.ui.theme.GreyFAFAFA
 import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
-import com.forknowledge.core.ui.theme.YellowFB880C
+import com.forknowledge.core.ui.theme.YellowFFAE01
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.feature.model.userdata.NutrientData
@@ -109,6 +117,7 @@ fun InsightsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(GreyF4F5F5)
+                    .verticalScroll(rememberScrollState())
                     .padding(innerPadding),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -127,7 +136,9 @@ fun InsightsScreen(
                     nutrients = nutrition.nutrients
                 )
 
-                NutrientInfoSection(nutrients = nutrition.nutrients)
+                if (nutrition.nutrients.isNotEmpty()) {
+                    NutrientInfoSection(nutrients = nutrition.nutrients)
+                }
             }
         }
     }
@@ -200,18 +211,50 @@ fun DailyProgressSection(
             color = White
         )
 
-        nutrients.forEachIndexed { index, nutrient ->
+        val mainNutrients = if (nutrients.isNotEmpty()) {
+            nutrients.filter {
+                it.name == NUTRITION_CALORIES_NAME
+                        || it.name == NUTRITION_CARB_NAME
+                        || it.name == NUTRITION_PROTEIN_NAME
+                        || it.name == NUTRITION_FAT_NAME
+            }
+        } else {
+            listOf(
+                NutrientData(
+                    name = stringResource(R.string.nutrient_label_calories),
+                    amount = 0f,
+                    unit = stringResource(R.string.nutrient_insights_daily_progress_unit_kcal)
+                ),
+                NutrientData(
+                    name = stringResource(R.string.nutrient_label_carb),
+                    amount = 0f,
+                    unit = stringResource(R.string.nutrient_insights_daily_progress_unit_gram)
+                ),
+                NutrientData(
+                    name = stringResource(R.string.nutrient_label_protein),
+                    amount = 0f,
+                    unit = stringResource(R.string.nutrient_insights_daily_progress_unit_gram)
+                ),
+                NutrientData(
+                    name = stringResource(R.string.nutrient_label_fat),
+                    amount = 0f,
+                    unit = stringResource(R.string.nutrient_insights_daily_progress_unit_gram)
+                ),
+            )
+        }
+
+        mainNutrients.forEachIndexed { index, nutrient ->
             var progress by remember { mutableFloatStateOf(0f) }
             val animatedProgress by animateFloatAsState(
                 targetValue = progress.toFloat(),
                 animationSpec = tween(durationMillis = 1000)
             )
             val target = when (index) {
-                RECIPE_NUTRIENT_CALORIES_INDEX -> targetCalories
-                RECIPE_NUTRIENT_CARB_INDEX -> (targetCalories * targetCarbsRatio).roundToInt()
-                RECIPE_NUTRIENT_PROTEIN_INDEX -> (targetCalories * targetProteinRatio).roundToInt()
-                RECIPE_NUTRIENT_FAT_INDEX -> (targetCalories * targetFatRatio).roundToInt()
-                else -> 0
+                0 -> targetCalories
+                1 -> (targetCalories * targetCarbsRatio).roundToInt()
+                2 -> (targetCalories * targetProteinRatio).roundToInt()
+                3 -> (targetCalories * targetFatRatio).roundToInt()
+                else -> 1
             }
 
             LaunchedEffect(nutrient) {
@@ -249,13 +292,13 @@ fun DailyProgressSection(
                     .height(5.dp),
                 progress = { animatedProgress },
                 color = White,
-                trackColor = GreenD8E4CD,
+                trackColor = GreenE2F2EC,
                 gapSize = (-4).dp,
                 drawStopIndicator = {
                     drawStopIndicator(
                         drawScope = this,
                         stopSize = ProgressIndicatorDefaults.LinearTrackStopIndicatorSize,
-                        color = if (nutrient.amount.roundToInt() >= target) White else GreenD8E4CD,
+                        color = if (nutrient.amount.roundToInt() >= target) White else GreenE2F2EC,
                         strokeCap = StrokeCap.Round
                     )
                 }
@@ -271,16 +314,20 @@ fun MacroSection(
     targetFatRatio: Float,
     nutrients: List<NutrientData>
 ) {
-    val totalCalories = nutrientAmountToCalories(
-        nutrient = NutrientType.CARBOHYDRATE,
-        amount = nutrients[RECIPE_NUTRIENT_CARB_INDEX].amount
-    ) + nutrientAmountToCalories(
-        nutrient = NutrientType.PROTEIN,
-        amount = nutrients[RECIPE_NUTRIENT_PROTEIN_INDEX].amount
-    ) + nutrientAmountToCalories(
-        nutrient = NutrientType.FAT,
-        amount = nutrients[RECIPE_NUTRIENT_FAT_INDEX].amount
-    )
+    val totalCalories = if (nutrients.isNotEmpty()) {
+        nutrientAmountToCalories(
+            nutrient = NutrientType.CARBOHYDRATE,
+            amount = nutrients[RECIPE_NUTRIENT_CARB_INDEX].amount
+        ) + nutrientAmountToCalories(
+            nutrient = NutrientType.PROTEIN,
+            amount = nutrients[RECIPE_NUTRIENT_PROTEIN_INDEX].amount
+        ) + nutrientAmountToCalories(
+            nutrient = NutrientType.FAT,
+            amount = nutrients[RECIPE_NUTRIENT_FAT_INDEX].amount
+        )
+    } else {
+        0f
+    }
 
     Column(
         modifier = Modifier
@@ -306,9 +353,23 @@ fun MacroSection(
             modifier = Modifier
                 .padding(top = 12.dp)
                 .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
+            MacroNote(
+                label = stringResource(R.string.nutrient_label_carb),
+                color = RedFF4950
+            )
 
+            MacroNote(
+                label = stringResource(R.string.nutrient_label_protein),
+                color = YellowFFAE01
+            )
+
+            MacroNote(
+                label = stringResource(R.string.nutrient_label_fat),
+                color = Blue05A6F1
+            )
         }
 
         Row(
@@ -328,7 +389,7 @@ fun MacroSection(
                 ),
                 PieChartData(
                     value = targetProteinRatio,
-                    color = YellowFB880C.asSolidChartColor(),
+                    color = YellowFFAE01.asSolidChartColor(),
                     label = stringResource(
                         R.string.nutrient_insights_pie_chart_label,
                         (targetProteinRatio * 100).toInt()
@@ -344,10 +405,18 @@ fun MacroSection(
                 )
             )
 
-            PieChart(
-                modifier = Modifier.size(150.dp),
-                data = { targetRatioData }
-            )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                PieChart(
+                    modifier = Modifier.size(150.dp),
+                    data = { targetRatioData }
+                )
+
+                AppText(
+                    modifier = Modifier.padding(top = 8.dp),
+                    text = stringResource(R.string.nutrient_insights_macro_recommend_label),
+                    textStyle = Typography.bodyMedium
+                )
+            }
 
             if (totalCalories > 0) {
                 val actualCarbRatio = nutrientAmountToCaloriesRatio(
@@ -375,7 +444,7 @@ fun MacroSection(
                     ),
                     PieChartData(
                         value = actualProteinRatio,
-                        color = YellowFB880C.asSolidChartColor(),
+                        color = YellowFFAE01.asSolidChartColor(),
                         label = stringResource(
                             R.string.nutrient_insights_pie_chart_label,
                             (actualProteinRatio * 100).toInt()
@@ -391,10 +460,18 @@ fun MacroSection(
                     ),
                 )
 
-                PieChart(
-                    modifier = Modifier.size(150.dp),
-                    data = { actualRatioData }
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    PieChart(
+                        modifier = Modifier.size(150.dp),
+                        data = { actualRatioData }
+                    )
+
+                    AppText(
+                        modifier = Modifier.padding(top = 8.dp),
+                        text = stringResource(R.string.nutrient_insights_macro_actual_label),
+                        textStyle = Typography.bodyMedium
+                    )
+                }
             } else {
                 val actualRatioData = listOf(
                     PieChartData(
@@ -404,21 +481,53 @@ fun MacroSection(
                     ),
                     PieChartData(
                         value = 0.33f,
-                        color = YellowFB880C.asSolidChartColor(),
+                        color = GreyFAFAFA.asSolidChartColor(),
                         label = ""
                     ),
                     PieChartData(
                         value = 0.33f,
-                        color = Blue05A6F1.asSolidChartColor(),
+                        color = GreyFAFAFA.asSolidChartColor(),
                         label = ""
                     ),
                 )
-                PieChart(
-                    modifier = Modifier.size(150.dp),
-                    data = { actualRatioData }
-                )
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    PieChart(
+                        modifier = Modifier.size(150.dp),
+                        data = { actualRatioData }
+                    )
+
+                    AppText(
+                        modifier = Modifier.padding(top = 8.dp),
+                        text = stringResource(R.string.nutrient_insights_macro_actual_label),
+                        textStyle = Typography.bodyMedium
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+fun MacroNote(
+    label: String,
+    color: Color
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .size(15.dp)
+                .background(
+                    color = color,
+                    shape = CircleShape
+                )
+        )
+
+        AppText(
+            modifier = Modifier.padding(start = 8.dp),
+            text = label,
+            textStyle = Typography.bodySmall
+        )
     }
 }
 
@@ -429,9 +538,8 @@ fun NutrientInfoSection(
     Column(
         modifier = Modifier
             .padding(
-                top = 24.dp,
-                start = 16.dp,
-                end = 16.dp
+                vertical = 24.dp,
+                horizontal = 16.dp
             )
             .fillMaxWidth()
             .background(
@@ -447,7 +555,20 @@ fun NutrientInfoSection(
             textStyle = Typography.labelLarge
         )
 
-        nutrients.forEach { nutrient ->
+        nutrients.forEachIndexed { index, nutrient ->
+            val style = if (
+                listOf(
+                    RECIPE_NUTRIENT_CALORIES_INDEX,
+                    RECIPE_NUTRIENT_CARB_INDEX,
+                    RECIPE_NUTRIENT_PROTEIN_INDEX,
+                    RECIPE_NUTRIENT_FAT_INDEX
+                ).contains(index)
+            ) {
+                Typography.labelMedium
+            } else {
+                Typography.bodyMedium
+            }
+
             Row(
                 modifier = Modifier
                     .padding(top = 8.dp)
@@ -456,7 +577,7 @@ fun NutrientInfoSection(
             ) {
                 AppText(
                     text = nutrient.name,
-                    textStyle = Typography.labelLarge
+                    textStyle = style
                 )
 
                 AppText(
@@ -465,7 +586,7 @@ fun NutrientInfoSection(
                         nutrient.amount,
                         nutrient.unit
                     ),
-                    textStyle = Typography.labelLarge
+                    textStyle = style
                 )
             }
         }
@@ -543,8 +664,8 @@ fun MacroSectionPreview() {
         targetCarbRatio = 0.5f,
         targetProteinRatio = 0.3f,
         targetFatRatio = 0.2f,
-        nutrients = List(4) { NutrientData() }
-        /*nutrients = listOf(
+        //nutrients = List(4) { NutrientData() }
+        nutrients = listOf(
             NutrientData(
                 name = "Carbs",
                 amount = 2000f,
@@ -565,7 +686,7 @@ fun MacroSectionPreview() {
                 amount = 60f,
                 unit = "g"
             ),
-        )*/
+        )
     )
 }
 

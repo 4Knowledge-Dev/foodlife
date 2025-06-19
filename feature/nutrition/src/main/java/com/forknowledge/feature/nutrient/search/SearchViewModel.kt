@@ -99,10 +99,7 @@ class SearchViewModel @Inject constructor(
         logRecipeResult = LogRecipeState.NONE
         viewModelScope.launch {
             foodRepository
-                .searchRecipeForNutrition(
-                    query = query,
-                    includeNutrition = true
-                )
+                .searchRecipeForNutrition(query = query)
                 .asFlowResult()
                 .collect { result ->
                     when (result) {

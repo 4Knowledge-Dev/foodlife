@@ -347,7 +347,7 @@ fun NutrientSection(
                         ?: 0,
                     totalNutrients = caloriesToNutrientAmount(
                         nutrient = NutrientType.CARBOHYDRATE,
-                        calories = (targetNutrition.calories * targetNutrition.carbRatio)
+                        calories = targetNutrition.calories * targetNutrition.carbRatio
                     )
                 )
 
@@ -368,7 +368,7 @@ fun NutrientSection(
                         ?: 0,
                     totalNutrients = caloriesToNutrientAmount(
                         nutrient = NutrientType.PROTEIN,
-                        calories = (targetNutrition.calories * targetNutrition.proteinRatio)
+                        calories = targetNutrition.calories * targetNutrition.proteinRatio
                     )
                 )
 
@@ -388,8 +388,8 @@ fun NutrientSection(
                     progress = intakeNutrition?.get(RECIPE_NUTRIENT_FAT_INDEX)?.amount?.roundToLong()
                         ?: 0,
                     totalNutrients = caloriesToNutrientAmount(
-                        nutrient = NutrientType.CARBOHYDRATE,
-                        calories = (targetNutrition.calories * targetNutrition.fatRatio)
+                        nutrient = NutrientType.FAT,
+                        calories = targetNutrition.calories * targetNutrition.fatRatio
                     )
                 )
 

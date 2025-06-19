@@ -43,7 +43,7 @@ interface FoodRepository {
 
     fun searchRecipeForMeal(
         query: String,
-        includeInformation: Boolean = false,
-        includeNutrition: Boolean = true
+        includeInformation: Boolean = true,
+        includeNutrition: Boolean = false
     ): Flow<PagingData<MealSearchRecipe>>
 }

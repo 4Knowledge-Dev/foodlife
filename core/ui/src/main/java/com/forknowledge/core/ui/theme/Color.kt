@@ -30,6 +30,7 @@ val Green6F8168 = Color(0xFF6F8168)
 val Green9AAD01 = Color(0xFF9AAD01)
 val GreenA1CE50 = Color(0xFFA1CE50)
 val Green86BF3E = Color(0xFF86BF3E)
+val GreenE2F2EC = Color(0xFFE2F2EC)
 
 val RedFF4950 = Color(0xFFFF4950)
 val RedFF3939 = Color(0xFFFF3939)
