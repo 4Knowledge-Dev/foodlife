@@ -48,6 +48,9 @@ class SearchViewModel @Inject constructor(
     var shouldShowItemProcessLoading by mutableStateOf(false)
         private set
 
+    var shouldShowError by mutableStateOf(false)
+        private set
+
     var onProcessItemId by mutableIntStateOf(0)
         private set
 
@@ -63,14 +66,11 @@ class SearchViewModel @Inject constructor(
             .debounce(SEARCH_DEBOUNCE)
             .filter { it.isNotBlank() }
             .flatMapLatest { query ->
-                foodRepository
-                    .searchRecipeForNutrition(
-                        query = query,
-                        includeNutrition = true
-                    )
+                foodRepository.searchRecipeForNutrition(query = query)
             }
             .asFlowResult()
             .onEach { result ->
+                shouldShowError = false
                 logRecipeResult = LogRecipeState.NONE
                 if (_searchQuery.value.isNotEmpty()) {
                     when (result) {
@@ -82,6 +82,7 @@ class SearchViewModel @Inject constructor(
 
                         is Result.Error -> {
                             isLoading = false
+                            shouldShowError = true
                         }
                     }
                 }
@@ -94,13 +95,11 @@ class SearchViewModel @Inject constructor(
     }
 
     fun search(query: String) {
+        shouldShowError = false
         logRecipeResult = LogRecipeState.NONE
         viewModelScope.launch {
             foodRepository
-                .searchRecipeForNutrition(
-                    query = query,
-                    includeNutrition = true
-                )
+                .searchRecipeForNutrition(query = query)
                 .asFlowResult()
                 .collect { result ->
                     when (result) {
@@ -110,7 +109,10 @@ class SearchViewModel @Inject constructor(
                             _recipes.update { result.data }
                         }
 
-                        is Result.Error -> isLoading = false
+                        is Result.Error -> {
+                            shouldShowError = true
+                            isLoading = false
+                        }
                     }
                 }
         }

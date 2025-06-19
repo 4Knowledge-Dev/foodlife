@@ -4,11 +4,17 @@ import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import kotlinx.serialization.Serializable
 
-@Serializable object NutrientRoute
+@Serializable
+object NutrientRoute
 
 @Serializable
 data class SearchRoute(
     val mealPosition: Int,
+    val dateInMillis: Long
+)
+
+@Serializable
+data class InsightsRoute(
     val dateInMillis: Long
 )
 

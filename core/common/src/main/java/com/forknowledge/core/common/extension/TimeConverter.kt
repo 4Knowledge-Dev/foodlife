@@ -43,8 +43,25 @@ fun Date.endOfDay(): Date {
 }
 
 fun Date.toDayMonthDateString(): String {
-    val formatter = SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault())
-    return formatter.format(this)
+    val firstCalendar = Calendar.getInstance()
+    firstCalendar.time = this
+    firstCalendar.set(Calendar.HOUR_OF_DAY, 0)
+    firstCalendar.set(Calendar.MINUTE, 0)
+    firstCalendar.set(Calendar.SECOND, 0)
+    firstCalendar.set(Calendar.MILLISECOND, 0)
+    val secondCalendar = Calendar.getInstance()
+    secondCalendar.time = Date()
+    secondCalendar.set(Calendar.HOUR_OF_DAY, 0)
+    secondCalendar.set(Calendar.MINUTE, 0)
+    secondCalendar.set(Calendar.SECOND, 0)
+    secondCalendar.set(Calendar.MILLISECOND, 0)
+    val formatter = SimpleDateFormat("EEE, MMMM dd", Locale.getDefault())
+    val formatDate = formatter.format(this)
+    return if (firstCalendar == secondCalendar) {
+        formatDate.replaceRange(0, 3, "Today")
+    } else {
+        formatDate
+    }
 }
 
 fun Date.nextDate(): Date {
@@ -76,7 +93,7 @@ fun Date.toFirestoreDocumentIdByDate(): String {
 }
 
 /**
- * Convert time in milliseconds to Date for working with firestore.
+ * Convert time in milliseconds to Date for working with firestore. Use this function when log recipe.
  * @return [Date] object.
  */
 fun Long.toFirestoreDateTime(): Date {

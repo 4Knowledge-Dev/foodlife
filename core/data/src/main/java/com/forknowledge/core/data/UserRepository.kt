@@ -1,10 +1,10 @@
 package com.forknowledge.core.data
 
 import com.forknowledge.core.common.Result
-import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.data.datatype.UserAuthState
+import com.forknowledge.core.data.model.DailyNutritionDisplayData
+import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.feature.model.NutritionSearchRecipe
-import com.forknowledge.feature.model.SearchRecipe
 import com.forknowledge.feature.model.userdata.TargetNutrition
 import com.forknowledge.feature.model.userdata.User
 import com.forknowledge.feature.model.userdata.UserToken
@@ -82,4 +82,12 @@ interface UserRepository {
         mealPosition: Int,
         recipe: NutritionSearchRecipe
     ): Result<Unit>
+
+
+    /**
+     * Get nutrition info of a specific date.
+     * @param [date] the date to get nutrition info.
+     * @return [DailyNutritionDisplayData] to display nutrition info.
+     */
+    suspend fun getDailyNutritionInfo(date: Date): Result<DailyNutritionDisplayData>
 }
