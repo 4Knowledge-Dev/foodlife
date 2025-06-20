@@ -98,7 +98,7 @@ import kotlin.math.roundToLong
 fun NutrientScreen(
     onNavigateToLogFood: (Int, Long) -> Unit,
     onNavigateToDailyInsights: (Long) -> Unit,
-    onNavigateToStatistics: () -> Unit,
+    onNavigateToNutrientGroup: () -> Unit,
     viewModel: NutritionViewModel = hiltViewModel()
 ) {
     val date = viewModel.date
@@ -111,7 +111,7 @@ fun NutrientScreen(
             AppBarDateSelector(
                 date = date,
                 onDateChanged = viewModel::updateDate,
-                onNavigateToStatistics = onNavigateToStatistics
+                onNavigateToStatistics = onNavigateToNutrientGroup
             )
         }
     ) { innerPadding ->

@@ -52,6 +52,7 @@
     <string name="nutrient_insights_macro_actual_label">Actual</string>
 
     // Statistics
+    <string name="statistics_select_nutrient_header">Statistics</string>
     <string name="statistics_daily_tab_label">Daily</string>
     <string name="statistics_weekly_tab_label">Weekly</string>
     <string name="statistics_monthly_tab_label">Monthly</string>

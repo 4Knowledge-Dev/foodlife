@@ -19,9 +19,12 @@ data class InsightsRoute(
 )
 
 @Serializable
-data object StatisticsRoute/*(
+data object NutrientGroupRoute
+
+@Serializable
+data class StatisticsRoute(
     val type: StatisticsType
-)*/
+)
 
 fun NavController.navigateToNutrient(navOptions: NavOptions? = null) {
     navigate(NutrientRoute, navOptions)

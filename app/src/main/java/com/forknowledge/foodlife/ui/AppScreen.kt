@@ -37,12 +37,14 @@ import com.forknowledge.feature.explore.ExploreSearchRoute
 import com.forknowledge.feature.explore.ui.ExploreScreen
 import com.forknowledge.feature.explore.ui.ExploreSearchScreen
 import com.forknowledge.feature.nutrient.InsightsRoute
+import com.forknowledge.feature.nutrient.NutrientGroupRoute
 import com.forknowledge.feature.nutrient.NutrientRoute
 import com.forknowledge.feature.nutrient.SearchRoute
 import com.forknowledge.feature.nutrient.StatisticsRoute
 import com.forknowledge.feature.nutrient.dailyinsights.DailyInsightsScreen
 import com.forknowledge.feature.nutrient.nutrient.NutrientScreen
 import com.forknowledge.feature.nutrient.search.SearchScreen
+import com.forknowledge.feature.nutrient.statistics.NutrientGroupScreen
 import com.forknowledge.feature.nutrient.statistics.StatisticsScreen
 import com.forknowledge.feature.nutrient.tracking.LogFoodRoute
 import com.forknowledge.feature.nutrient.tracking.LogFoodScreen
@@ -106,8 +108,8 @@ fun AppScreen(
                             InsightsRoute(dateInMillis)
                         )
                     },
-                    onNavigateToStatistics = {
-                        appState.navController.navigate(StatisticsRoute)
+                    onNavigateToNutrientGroup = {
+                        appState.navController.navigate(NutrientGroupRoute)
                     }
                 )
             }
@@ -185,10 +187,18 @@ fun AppScreen(
                     onNavigateBack = appState.navController::popBackStack
                 )
             }
-            composable<StatisticsRoute> { //backStackEntry ->
-                //val data = backStackEntry.toRoute<StatisticsRoute>()
+            composable<NutrientGroupRoute> {
+                NutrientGroupScreen(
+                    onNavigateToStatistics = { type ->
+                        appState.navController.navigate(StatisticsRoute(type))
+                    },
+                    onNavigateBack = appState.navController::popBackStack
+                )
+            }
+            composable<StatisticsRoute> { backStackEntry ->
+                val data = backStackEntry.toRoute<StatisticsRoute>()
                 StatisticsScreen(
-                    //nutritionType = data.type,
+                    nutritionType = data.type,
                     onNavigateBack = appState.navController::popBackStack
                 )
             }

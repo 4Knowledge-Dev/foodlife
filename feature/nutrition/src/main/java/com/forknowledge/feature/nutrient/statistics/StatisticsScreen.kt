@@ -51,7 +51,7 @@ import kotlin.math.roundToInt
 @Composable
 fun StatisticsScreen(
     viewModel: StatisticsViewModel = hiltViewModel(),
-    nutritionType: StatisticsType = StatisticsType.DIETARY_ENERGY,
+    nutritionType: StatisticsType = StatisticsType.ENERGY,
     onNavigateBack: () -> Unit
 ) {
     var selectedTabIndex by remember {
@@ -84,19 +84,21 @@ fun StatisticsScreen(
                         )
                 ) {
                     when (nutritionType) {
-                        StatisticsType.DIETARY_ENERGY -> {
+                        StatisticsType.ENERGY -> {
                             DietaryEnergy(
                                 target = data.targetCalories.toFloat(),
                                 nutritionRecords = data.records
                             )
                         }
 
-                        StatisticsType.DIETARY_INTAKE -> {}
+                        StatisticsType.CARB -> {}
+                        StatisticsType.PROTEIN -> {}
+                        StatisticsType.FAT -> {}
                     }
 
                     IntakeNutritionHistory(
                         nutritionIndex = nutritionType.nutritionIndex,
-                        textColor = nutritionType.textColor,
+                        textColor = nutritionType.color,
                         records = data.records
                     )
 

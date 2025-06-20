@@ -259,12 +259,13 @@ class UserRepositoryImpl @Inject constructor(
                 val newNutrientRecords = mutableListOf<NutrientData>()
                 var newRecipeRecords = emptyList<RecipeData>()
 
+                // Update recipe list, update servings and calories of recipe if it existed, otherwise add new recipe.
                 if (recipeRecords.any { it.mealPosition == mealPosition.toLong() && it.id == recipe.id.toLong() }) {
                     newRecipeRecords = recipeRecords.map { recipeRecord ->
                         if (recipeRecord.id == recipe.id.toLong() && recipeRecord.mealPosition == mealPosition.toLong()) {
                             recipeRecord.copy(
                                 servings = recipeRecord.servings + recipe.servings.toLong(),
-                                calories = recipeRecord.calories + recipe.nutrients[0].amount.toLong()
+                                calories = recipeRecord.calories + recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong()
                             )
                         } else {
                             recipeRecord
@@ -282,14 +283,32 @@ class UserRepositoryImpl @Inject constructor(
                     newRecipeRecords = recipeRecords + newRecipeRecord
                 }
 
-                nutrientRecords.forEachIndexed { index, nutrient ->
+                // Update nutrient list, increase amount of every nutrient added before.
+                nutrientRecords.forEach { nutrient ->
+                    val recipeNutrientAmount = recipe.nutrients.firstOrNull {
+                        it.name == nutrient.name
+                    }?.amount ?: 0f
                     newNutrientRecords.add(
                         NutrientData(
                             name = nutrient.name,
-                            amount = nutrient.amount + recipe.nutrients[index].amount,
+                            amount = nutrient.amount + recipeNutrientAmount,
                             unit = nutrient.unit
                         )
                     )
+                }
+                // Add new nutrients to nutrient list if it doesn't exist.
+                recipe.nutrients.forEach { nutrient ->
+                    if (nutrientRecords.firstOrNull {
+                            it.name == nutrient.name
+                        } == null) {
+                        newNutrientRecords.add(
+                            NutrientData(
+                                name = nutrient.name,
+                                amount = nutrient.amount,
+                                unit = nutrient.unit
+                            )
+                        )
+                    }
                 }
 
                 newIntakeNutrition = intakeNutrition.copy(
