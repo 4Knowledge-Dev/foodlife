@@ -66,7 +66,7 @@ import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.feature.model.Nutrient
 import com.forknowledge.feature.model.NutritionSearchRecipe
-import com.forknowledge.feature.nutrient.LogRecipeState
+import com.forknowledge.feature.nutrient.Utils
 import com.forknowledge.feature.nutrient.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
@@ -203,7 +203,7 @@ fun SearchScreen(
 fun RecipeItem(
     recipe: NutritionSearchRecipe,
     showLoading: Boolean,
-    logRecipeResult: LogRecipeState,
+    logRecipeResult: Utils,
     onLogRecipe: () -> Unit
 ) {
     val successComposition by rememberLottieComposition(
@@ -226,7 +226,7 @@ fun RecipeItem(
         snapshotFlow { showLoading }
             .filter { it == false }
             .collect { isLoading ->
-                if (logRecipeResult != LogRecipeState.NONE) {
+                if (logRecipeResult != Utils.NONE) {
                     showAnim = true
                     delay(1500)
                     showAnim = false
@@ -338,10 +338,10 @@ fun RecipeItem(
             }
             if (showAnim) {
                 when (logRecipeResult) {
-                    LogRecipeState.NONE -> { /* Do nothing */
+                    Utils.NONE -> { /* Do nothing */
                     }
 
-                    LogRecipeState.SUCCESS -> {
+                    Utils.SUCCESS -> {
                         LottieAnimation(
                             modifier = Modifier.fillMaxSize(),
                             composition = successComposition,
@@ -349,7 +349,7 @@ fun RecipeItem(
                         )
                     }
 
-                    LogRecipeState.FAIL -> {
+                    Utils.FAIL -> {
                         LottieAnimation(
                             modifier = Modifier.fillMaxSize(),
                             composition = failComposition,
@@ -521,7 +521,7 @@ fun RecipeItemPreview() {
             )
         ),
         showLoading = false,
-        logRecipeResult = LogRecipeState.NONE,
+        logRecipeResult = Utils.NONE,
         onLogRecipe = {}
     )
 }

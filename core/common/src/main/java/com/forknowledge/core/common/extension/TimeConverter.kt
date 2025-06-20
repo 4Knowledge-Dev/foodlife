@@ -32,6 +32,8 @@ fun Date.startOfDay(): Date {
     val calendar = Calendar.getInstance()
     calendar.time = this
     calendar.set(Calendar.HOUR_OF_DAY, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
     return calendar.time
 }
 
@@ -62,6 +64,20 @@ fun Date.toDayMonthDateString(): String {
     } else {
         formatDate
     }
+}
+
+fun Date.toDayMonthString(): String {
+    val firstCalendar = Calendar.getInstance()
+    firstCalendar.time = this
+    val formatter = SimpleDateFormat("M/dd", Locale.getDefault())
+    return formatter.format(this)
+}
+
+fun Date.toDateMonthString(): String {
+    val firstCalendar = Calendar.getInstance()
+    firstCalendar.time = this
+    val formatter = SimpleDateFormat("MMM dd", Locale.getDefault())
+    return formatter.format(this)
 }
 
 fun Date.nextDate(): Date {

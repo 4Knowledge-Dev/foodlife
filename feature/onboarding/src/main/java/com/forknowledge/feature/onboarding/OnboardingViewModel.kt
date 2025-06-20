@@ -142,11 +142,15 @@ class OnboardingViewModel @Inject constructor(
             )
             viewModelScope.launch {
                 when (userRepository.updateUserInfo(createUserInfo())) {
-                    is Result.Loading -> { /* Do nothing */ }
+                    is Result.Loading -> { /* Do nothing */
+                    }
+
                     is Result.Success -> {
                         onNavigateToPlanner = true
                     }
-                    is Result.Error -> { /* Do nothing */ }
+
+                    is Result.Error -> { /* Do nothing */
+                    }
                 }
             }
             return
@@ -204,6 +208,9 @@ class OnboardingViewModel @Inject constructor(
 
     fun onGoalSelected(userGoal: Goal) {
         goal = userGoal
+        if (goal == Goal.EAT_HEALTHY) {
+            targetWeight = currentWeight
+        }
     }
 
     fun onActivityLevelSelected(userActivityLevel: ActivityLevel) {

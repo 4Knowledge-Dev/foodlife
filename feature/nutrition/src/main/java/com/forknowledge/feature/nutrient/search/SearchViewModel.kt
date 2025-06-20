@@ -13,7 +13,7 @@ import com.forknowledge.core.common.asFlowResult
 import com.forknowledge.core.data.FoodRepository
 import com.forknowledge.core.data.UserRepository
 import com.forknowledge.feature.model.NutritionSearchRecipe
-import com.forknowledge.feature.nutrient.LogRecipeState
+import com.forknowledge.feature.nutrient.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -54,7 +54,7 @@ class SearchViewModel @Inject constructor(
     var onProcessItemId by mutableIntStateOf(0)
         private set
 
-    var logRecipeResult by mutableStateOf<LogRecipeState>(LogRecipeState.NONE)
+    var logRecipeResult by mutableStateOf<Utils>(Utils.NONE)
         private set
 
     init {
@@ -71,7 +71,7 @@ class SearchViewModel @Inject constructor(
             .asFlowResult()
             .onEach { result ->
                 shouldShowError = false
-                logRecipeResult = LogRecipeState.NONE
+                logRecipeResult = Utils.NONE
                 if (_searchQuery.value.isNotEmpty()) {
                     when (result) {
                         is Result.Loading -> isLoading = true
@@ -96,7 +96,7 @@ class SearchViewModel @Inject constructor(
 
     fun search(query: String) {
         shouldShowError = false
-        logRecipeResult = LogRecipeState.NONE
+        logRecipeResult = Utils.NONE
         viewModelScope.launch {
             foodRepository
                 .searchRecipeForNutrition(query = query)
@@ -136,13 +136,13 @@ class SearchViewModel @Inject constructor(
                 is Result.Success -> {
                     shouldShowItemProcessLoading = false
                     onProcessItemId = 0
-                    logRecipeResult = LogRecipeState.SUCCESS
+                    logRecipeResult = Utils.SUCCESS
                 }
 
                 is Result.Error -> {
                     shouldShowItemProcessLoading = false
                     onProcessItemId = 0
-                    logRecipeResult = LogRecipeState.FAIL
+                    logRecipeResult = Utils.FAIL
                 }
             }
         }

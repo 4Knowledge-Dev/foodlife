@@ -4,6 +4,7 @@ import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.datatype.UserAuthState
 import com.forknowledge.core.data.model.DailyNutritionDisplayData
 import com.forknowledge.core.data.model.NutritionDisplayData
+import com.forknowledge.core.data.model.StatisticsDisplayData
 import com.forknowledge.feature.model.NutritionSearchRecipe
 import com.forknowledge.feature.model.userdata.TargetNutrition
 import com.forknowledge.feature.model.userdata.User
@@ -90,4 +91,9 @@ interface UserRepository {
      * @return [DailyNutritionDisplayData] to display nutrition info.
      */
     suspend fun getDailyNutritionInfo(date: Date): Result<DailyNutritionDisplayData>
+
+    suspend fun getNutritionRecordsInAMonth(
+        startDate: Date,
+        endDate: Date
+    ): Result<StatisticsDisplayData>
 }
