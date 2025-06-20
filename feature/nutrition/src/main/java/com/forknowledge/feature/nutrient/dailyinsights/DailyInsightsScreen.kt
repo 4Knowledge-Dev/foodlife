@@ -1,4 +1,4 @@
-package com.forknowledge.feature.nutrient.insights
+package com.forknowledge.feature.nutrient.dailyinsights
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -78,7 +78,7 @@ import java.util.Date
 import kotlin.math.roundToInt
 
 @Composable
-fun InsightsScreen(
+fun DailyInsightsScreen(
     viewModel: InsightsViewModel = hiltViewModel(),
     dateInMillis: Long,
     onNavigateBack: () -> Unit

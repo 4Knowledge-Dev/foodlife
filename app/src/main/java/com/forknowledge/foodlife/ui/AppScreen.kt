@@ -39,9 +39,11 @@ import com.forknowledge.feature.explore.ui.ExploreSearchScreen
 import com.forknowledge.feature.nutrient.InsightsRoute
 import com.forknowledge.feature.nutrient.NutrientRoute
 import com.forknowledge.feature.nutrient.SearchRoute
-import com.forknowledge.feature.nutrient.insights.InsightsScreen
+import com.forknowledge.feature.nutrient.StatisticsRoute
+import com.forknowledge.feature.nutrient.dailyinsights.DailyInsightsScreen
 import com.forknowledge.feature.nutrient.nutrient.NutrientScreen
 import com.forknowledge.feature.nutrient.search.SearchScreen
+import com.forknowledge.feature.nutrient.statistics.StatisticsScreen
 import com.forknowledge.feature.nutrient.tracking.LogFoodRoute
 import com.forknowledge.feature.nutrient.tracking.LogFoodScreen
 import com.forknowledge.feature.onboarding.onboardingNavGraph
@@ -99,10 +101,13 @@ fun AppScreen(
                             LogFoodRoute(mealPosition, date)
                         )
                     },
-                    onNavigateToInsights = { dateInMillis ->
+                    onNavigateToDailyInsights = { dateInMillis ->
                         appState.navController.navigate(
                             InsightsRoute(dateInMillis)
                         )
+                    },
+                    onNavigateToStatistics = {
+                        appState.navController.navigate(StatisticsRoute)
                     }
                 )
             }
@@ -175,8 +180,15 @@ fun AppScreen(
             }
             composable<InsightsRoute> { backStackEntry ->
                 val data = backStackEntry.toRoute<InsightsRoute>()
-                InsightsScreen(
+                DailyInsightsScreen(
                     dateInMillis = data.dateInMillis,
+                    onNavigateBack = appState.navController::popBackStack
+                )
+            }
+            composable<StatisticsRoute> { //backStackEntry ->
+                //val data = backStackEntry.toRoute<StatisticsRoute>()
+                StatisticsScreen(
+                    //nutritionType = data.type,
                     onNavigateBack = appState.navController::popBackStack
                 )
             }

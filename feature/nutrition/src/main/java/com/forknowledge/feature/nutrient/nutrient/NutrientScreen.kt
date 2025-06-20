@@ -81,10 +81,10 @@ import com.forknowledge.core.ui.theme.GreenA1CE50
 import com.forknowledge.core.ui.theme.Grey8A949F
 import com.forknowledge.core.ui.theme.GreyDADADA
 import com.forknowledge.core.ui.theme.GreyFAFAFA
+import com.forknowledge.core.ui.theme.OrangeFB880C
 import com.forknowledge.core.ui.theme.RedFF3939
 import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
-import com.forknowledge.core.ui.theme.YellowFB880C
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.DatePickerModal
 import com.forknowledge.feature.model.userdata.NutrientData
@@ -97,7 +97,8 @@ import kotlin.math.roundToLong
 @Composable
 fun NutrientScreen(
     onNavigateToLogFood: (Int, Long) -> Unit,
-    onNavigateToInsights: (Long) -> Unit,
+    onNavigateToDailyInsights: (Long) -> Unit,
+    onNavigateToStatistics: () -> Unit,
     viewModel: NutritionViewModel = hiltViewModel()
 ) {
     val date = viewModel.date
@@ -109,7 +110,8 @@ fun NutrientScreen(
         topBar = {
             AppBarDateSelector(
                 date = date,
-                onDateChanged = viewModel::updateDate
+                onDateChanged = viewModel::updateDate,
+                onNavigateToStatistics = onNavigateToStatistics
             )
         }
     ) { innerPadding ->
@@ -131,7 +133,7 @@ fun NutrientScreen(
                             end = 16.dp
                         )
                         .fillMaxWidth()
-                        .clickable { onNavigateToInsights(date.time) },
+                        .clickable { onNavigateToDailyInsights(date.time) },
                     text = stringResource(R.string.nutrient_label_detail),
                     textStyle = Typography.labelLarge,
                     textAlign = TextAlign.End,
@@ -159,7 +161,8 @@ fun NutrientScreen(
 @Composable
 fun AppBarDateSelector(
     date: Date,
-    onDateChanged: (Date) -> Unit
+    onDateChanged: (Date) -> Unit,
+    onNavigateToStatistics: () -> Unit
 ) {
     var showDatePickerModal by remember { mutableStateOf(false) }
 
@@ -175,53 +178,71 @@ fun AppBarDateSelector(
         )
     }
 
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(
-                horizontal = 8.dp,
-                vertical = 4.dp
-            ),
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(horizontal = 8.dp)
     ) {
-        IconButton(
-            onClick = { onDateChanged(date.previousDate()) }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
         ) {
-            Icon(
-                painter = painterResource(drawable.ic_back),
-                tint = Grey8A949F,
-                contentDescription = null
-            )
+            IconButton(
+                modifier = Modifier.padding(end = 12.dp),
+                onClick = onNavigateToStatistics
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_timeline),
+                    tint = Black374957,
+                    contentDescription = null
+                )
+            }
+
+            IconButton(onClick = { showDatePickerModal = true }) {
+                Icon(
+                    painter = painterResource(drawable.ic_calendar),
+                    tint = Black374957,
+                    contentDescription = null
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        AppText(
-            modifier = Modifier.clickable { showDatePickerModal = true },
-            text = date.toDayMonthDateString(),
-            textStyle = MaterialTheme.typography.labelLarge
-        )
-
-        Icon(
+        Row(
             modifier = Modifier
-                .padding(start = 12.dp)
-                .clickable { onDateChanged(getCurrentDateTime()) },
-            painter = painterResource(drawable.ic_calendar),
-            tint = Black374957,
-            contentDescription = null
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        IconButton(
-            onClick = { onDateChanged(date.nextDate()) }
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                painter = painterResource(drawable.ic_forward),
-                tint = Grey8A949F,
-                contentDescription = null
+            IconButton(
+                onClick = { onDateChanged(date.previousDate()) }
+            ) {
+                Icon(
+                    painter = painterResource(drawable.ic_back),
+                    tint = Grey8A949F,
+                    contentDescription = null
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            AppText(
+                modifier = Modifier.clickable { onDateChanged(getCurrentDateTime()) },
+                text = date.toDayMonthDateString(),
+                textStyle = MaterialTheme.typography.labelLarge
             )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            IconButton(
+                onClick = { onDateChanged(date.nextDate()) }
+            ) {
+                Icon(
+                    painter = painterResource(drawable.ic_forward),
+                    tint = Grey8A949F,
+                    contentDescription = null
+                )
+            }
         }
     }
 }
@@ -363,7 +384,7 @@ fun NutrientSection(
                 NutrientProgress(
                     modifier = Modifier.size(90.dp),
                     progressBarWidth = 7.dp,
-                    progressIndicatorColor = YellowFB880C,
+                    progressIndicatorColor = OrangeFB880C,
                     progress = intakeNutrition?.get(RECIPE_NUTRIENT_PROTEIN_INDEX)?.amount?.roundToLong()
                         ?: 0,
                     totalNutrients = caloriesToNutrientAmount(
@@ -791,7 +812,11 @@ fun MealCard(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun DateSelectorPreview() {
-    AppBarDateSelector(Date()) {}
+    AppBarDateSelector(
+        date = getCurrentDateTime(),
+        onDateChanged = {},
+        onNavigateToStatistics = {}
+    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)

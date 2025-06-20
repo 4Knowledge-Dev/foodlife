@@ -5,7 +5,7 @@ import androidx.navigation.NavOptions
 import kotlinx.serialization.Serializable
 
 @Serializable
-object NutrientRoute
+data object NutrientRoute
 
 @Serializable
 data class SearchRoute(
@@ -17,6 +17,11 @@ data class SearchRoute(
 data class InsightsRoute(
     val dateInMillis: Long
 )
+
+@Serializable
+data object StatisticsRoute/*(
+    val type: StatisticsType
+)*/
 
 fun NavController.navigateToNutrient(navOptions: NavOptions? = null) {
     navigate(NutrientRoute, navOptions)

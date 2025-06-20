@@ -29,7 +29,8 @@
     <string name="nutrient_log_food_tab_label_saved">Saved</string>
     <string name="nutrient_log_food_search_screen_search_bar_label">Enter food</string>
     <string name="nutrient_log_food_search_screen_button_done">Done</string>
-    <string name="nutrient_log_food_search_screen_no_data_found">We don\'t have that kind of data!</string>¬
+    <string name="nutrient_log_food_search_screen_no_data_found">We don\'t have that kind of data!</string>
+    ¬
     <string name="nutrient_log_food_search_screen_nutrient_amount">%.1f g</string>
     <plurals name="nutrient_log_food_item_amount">
         <item quantity="one">%1$d kcal, %2$d serving</item>
@@ -49,4 +50,18 @@
     <string name="nutrient_insights_error_message">Fail to get insights data!</string>
     <string name="nutrient_insights_macro_recommend_label">Recommend</string>
     <string name="nutrient_insights_macro_actual_label">Actual</string>
+
+    // Statistics
+    <string name="statistics_daily_tab_label">Daily</string>
+    <string name="statistics_weekly_tab_label">Weekly</string>
+    <string name="statistics_monthly_tab_label">Monthly</string>
+    <string name="statistics_daily_label">Last 30 days</string>
+    <string name="statistics_daily_average_calories_label">Daily average:</string>
+    <string name="statistics_daily_average_calories_value">%d kcal</string>
+    <string name="statistics_calories_goal_label">Goal:</string>
+    <string name="statistics_calories_goal_value">%d kcal</string>
+    <string name="statistics_history_title">History</string>
+    <string name="statistics_history_intake_nutrition_value">%d %s</string>
+    <string name="statistics_dietary_energy">Dietary energy</string>
+    <string name="statistics_dietary_intake">Dietary intake</string>
 </resources>

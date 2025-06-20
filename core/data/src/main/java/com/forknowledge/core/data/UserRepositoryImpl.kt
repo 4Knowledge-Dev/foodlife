@@ -11,6 +11,7 @@ import com.forknowledge.core.data.datasource.PreferenceDatastore
 import com.forknowledge.core.data.datatype.UserAuthState
 import com.forknowledge.core.data.model.DailyNutritionDisplayData
 import com.forknowledge.core.data.model.NutritionDisplayData
+import com.forknowledge.core.data.model.StatisticsDisplayData
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_EXCEPTION
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_GET_DATA_EXCEPTION
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_TRANSACTION_EXCEPTION
@@ -38,6 +39,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 const val USER_RECORD_DATE_FIELD = "date"
 const val RECIPE_MEAL_TYPE_BREAKFAST = 1L
@@ -362,6 +364,49 @@ class UserRepositoryImpl @Inject constructor(
                 )
             )
         } catch (e: FirebaseException) {
+            Log.e(FIREBASE_GET_DATA_EXCEPTION, "Get data failed with ", e)
+            Result.Error(e)
+        }
+    }
+
+    override suspend fun getNutritionRecordsInAMonth(
+        startDate: Date,
+        endDate: Date
+    ): Result<StatisticsDisplayData> = withContext(Dispatchers.IO) {
+
+        val docRef = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+
+        return@withContext try {
+            val userSnapshot = async { docRef.get() }.await()
+            val nutritionSnapshot = async {
+                docRef.collection(USER_RECORD_SUB_COLLECTION)
+                    .whereGreaterThan(USER_RECORD_DATE_FIELD, startDate.startOfDay())
+                    .whereLessThan(USER_RECORD_DATE_FIELD, endDate.endOfDay())
+                    .get()
+            }.await()
+            val user = userSnapshot.await().toObject(User::class.java) ?: User()
+            val nutritionRecordsSnapshot = nutritionSnapshot.await()
+            val nutritionRecords = if (!nutritionRecordsSnapshot.isEmpty) {
+                nutritionRecordsSnapshot.documents.map { snapshot ->
+                    snapshot.toObject(IntakeNutrition::class.java) ?: IntakeNutrition()
+                }
+            } else {
+                emptyList()
+            }
+
+            Result.Success(
+                StatisticsDisplayData(
+                    targetCalories = user.targetNutrition.calories.toInt(),
+                    targetCarbs = user.targetNutrition.carbRatio.roundToInt(),
+                    targetProteins = user.targetNutrition.proteinRatio.roundToInt(),
+                    targetFats = user.targetNutrition.fatRatio.roundToInt(),
+                    records = nutritionRecords
+                )
+            )
+        } catch (e: FirebaseException) {
+            Log.e(FIREBASE_GET_DATA_EXCEPTION, "Get data failed with ", e)
+            Result.Error(e)
+        } catch (e: Exception) {
             Log.e(FIREBASE_GET_DATA_EXCEPTION, "Get data failed with ", e)
             Result.Error(e)
         }

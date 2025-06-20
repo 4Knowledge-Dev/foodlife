@@ -13,6 +13,8 @@ const val NUTRIENT_TYPE_NAME_SUGAR = "Sugar"
 const val NUTRIENT_TYPE_NAME_PROTEIN = "Protein"
 const val NUTRIENT_TYPE_NAME_FAT = "Fat"
 const val NUTRIENT_TYPE_NAME_SATURATED_FAT = "Saturated Fat"
+const val NUTRIENT_UNIT_CALORIES = "kcal"
+const val NUTRIENT_UNIT_GRAM = "g"
 
 @InternalSerializationApi
 @Serializable
@@ -37,31 +39,66 @@ data class RecipeResponse(
         val responseNutrients = nutrition?.nutrients ?: emptyList()
         val nutrients = mutableListOf<NutrientResponse>()
 
-        responseNutrients.firstOrNull {
-            it.name == NUTRIENT_TYPE_NAME_CALORIES
-        }?.let { nutrients.add(it) }
-        responseNutrients.firstOrNull {
-            it.name == NUTRIENT_TYPE_NAME_CARBOHYDRATES
-        }?.let { nutrients.add(it) }
-        responseNutrients.firstOrNull {
-            it.name == NUTRIENT_TYPE_NAME_NET_CARBOHYDRATES
-        }?.let { nutrients.add(it) }
-        responseNutrients.firstOrNull {
-            it.name == NUTRIENT_TYPE_NAME_FIBER
-        }?.let { nutrients.add(it) }
-        responseNutrients.firstOrNull {
-            it.name == NUTRIENT_TYPE_NAME_SUGAR
-        }?.let { nutrients.add(it) }
-        responseNutrients.firstOrNull {
-            it.name == NUTRIENT_TYPE_NAME_PROTEIN
-        }?.let { nutrients.add(it) }
-        responseNutrients.firstOrNull {
-            it.name == NUTRIENT_TYPE_NAME_FAT
-        }?.let { nutrients.add(it) }
-        responseNutrients.firstOrNull {
-            it.name == NUTRIENT_TYPE_NAME_SATURATED_FAT
-        }?.let { nutrients.add(it) }
-
+        nutrients.addAll(
+            listOf(
+                responseNutrients.firstOrNull {
+                    it.name == NUTRIENT_TYPE_NAME_CALORIES
+                } ?: NutrientResponse(
+                    name = NUTRIENT_TYPE_NAME_CALORIES,
+                    amount = 0f,
+                    unit = NUTRIENT_UNIT_CALORIES
+                ),
+                responseNutrients.firstOrNull {
+                    it.name == NUTRIENT_TYPE_NAME_CARBOHYDRATES
+                } ?: NutrientResponse(
+                    name = NUTRIENT_TYPE_NAME_CARBOHYDRATES,
+                    amount = 0f,
+                    unit = NUTRIENT_UNIT_GRAM
+                ),
+                responseNutrients.firstOrNull {
+                    it.name == NUTRIENT_TYPE_NAME_NET_CARBOHYDRATES
+                } ?: NutrientResponse(
+                    name = NUTRIENT_TYPE_NAME_NET_CARBOHYDRATES,
+                    amount = 0f,
+                    unit = NUTRIENT_UNIT_GRAM
+                ),
+                responseNutrients.firstOrNull {
+                    it.name == NUTRIENT_TYPE_NAME_FIBER
+                } ?: NutrientResponse(
+                    name = NUTRIENT_TYPE_NAME_FIBER,
+                    amount = 0f,
+                    unit = NUTRIENT_UNIT_GRAM
+                ),
+                responseNutrients.firstOrNull {
+                    it.name == NUTRIENT_TYPE_NAME_SUGAR
+                } ?: NutrientResponse(
+                    name = NUTRIENT_TYPE_NAME_SUGAR,
+                    amount = 0f,
+                    unit = NUTRIENT_UNIT_GRAM
+                ),
+                responseNutrients.firstOrNull {
+                    it.name == NUTRIENT_TYPE_NAME_PROTEIN
+                } ?: NutrientResponse(
+                    name = NUTRIENT_TYPE_NAME_PROTEIN,
+                    amount = 0f,
+                    unit = NUTRIENT_UNIT_GRAM
+                ),
+                responseNutrients.firstOrNull {
+                    it.name == NUTRIENT_TYPE_NAME_FAT
+                } ?: NutrientResponse(
+                    name = NUTRIENT_TYPE_NAME_FAT,
+                    amount = 0f,
+                    unit = NUTRIENT_UNIT_GRAM
+                ),
+                responseNutrients.firstOrNull {
+                    it.name == NUTRIENT_TYPE_NAME_SATURATED_FAT
+                } ?: NutrientResponse(
+                    name = NUTRIENT_TYPE_NAME_SATURATED_FAT,
+                    amount = 0f,
+                    unit = NUTRIENT_UNIT_GRAM
+                ),
+            )
+        )
         nutrients.addAll(
             responseNutrients.filter {
                 it.name != NUTRIENT_TYPE_NAME_CALORIES &&
