@@ -4,8 +4,8 @@ import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.datatype.UserAuthState
 import com.forknowledge.core.data.model.DailyNutritionDisplayData
 import com.forknowledge.core.data.model.NutritionDisplayData
-import com.forknowledge.core.data.model.StatisticsDisplayData
 import com.forknowledge.feature.model.NutritionSearchRecipe
+import com.forknowledge.feature.model.userdata.IntakeNutrition
 import com.forknowledge.feature.model.userdata.TargetNutrition
 import com.forknowledge.feature.model.userdata.User
 import com.forknowledge.feature.model.userdata.UserToken
@@ -84,7 +84,6 @@ interface UserRepository {
         recipe: NutritionSearchRecipe
     ): Result<Unit>
 
-
     /**
      * Get nutrition info of a specific date.
      * @param [date] the date to get nutrition info.
@@ -92,8 +91,20 @@ interface UserRepository {
      */
     suspend fun getDailyNutritionInfo(date: Date): Result<DailyNutritionDisplayData>
 
-    suspend fun getNutritionRecordsInAMonth(
+    /**
+     * Get user's information.
+     * return [User] information
+     */
+    fun getUserInfo(): Flow<User>
+
+    /**
+     * Get user's intake nutrition records in a month.
+     * @param [startDate] the start date of month.
+     * @param [endDate] the end date of month.
+     * @return [List] of [IntakeNutrition]
+     */
+    fun getNutritionRecordsInAMonth(
         startDate: Date,
         endDate: Date
-    ): Result<StatisticsDisplayData>
+    ): Flow<List<IntakeNutrition>>
 }

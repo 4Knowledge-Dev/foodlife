@@ -4,11 +4,14 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
-import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_CALORIES_INDEX
-import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_CARB_INDEX
-import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_FAT_INDEX
-import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_PROTEIN_INDEX
+import com.forknowledge.core.ui.theme.Blue05A6F1
+import com.forknowledge.core.ui.theme.Blue4C5BB5
+import com.forknowledge.core.ui.theme.Blue6ABFFF
+import com.forknowledge.core.ui.theme.Green70BF0C
 import com.forknowledge.core.ui.theme.OrangeFF9524
+import com.forknowledge.core.ui.theme.RedFF3939
+import com.forknowledge.core.ui.theme.YellowFFAE01
+import com.forknowledge.core.ui.theme.YellowFFC04C
 
 enum class Utils {
     SUCCESS, FAIL, NONE
@@ -20,35 +23,41 @@ enum class StatisticsTabRow(@StringRes val title: Int) {
     MONTHLY(R.string.statistics_monthly_tab_label)
 }
 
-enum class StatisticsType(
-    @StringRes val title: Int,
-    val nutritionIndex: Int,
+enum class NutritionGroupType(
     @DrawableRes val icon: Int,
     @ColorRes val color: Color
 
 ) {
     ENERGY(
-        R.string.statistics_dietary_energy,
-        RECIPE_NUTRIENT_CALORIES_INDEX,
-        R.drawable.img_vector_energy,
+        R.drawable.img_energy,
         OrangeFF9524
     ),
     CARB(
-        R.string.statistics_dietary_intake,
-        RECIPE_NUTRIENT_CARB_INDEX,
-        R.drawable.img_vector_carbs,
-        Color.Unspecified
+        R.drawable.img_carbs,
+        RedFF3939
     ),
     PROTEIN(
-        R.string.statistics_dietary_intake,
-        RECIPE_NUTRIENT_PROTEIN_INDEX,
-        R.drawable.img_vector_protein,
-        Color.Unspecified
+        R.drawable.img_protein,
+        Blue05A6F1
     ),
     FAT(
-        R.string.statistics_dietary_intake,
-        RECIPE_NUTRIENT_FAT_INDEX,
-        R.drawable.img_vector_fat,
-        Color.Unspecified
+        R.drawable.img_fat,
+        YellowFFAE01
+    ),
+    OTHER_NUTRIENT(
+        R.drawable.img_other_nutrition,
+        Green70BF0C
+    ),
+    VITAMINS(
+        R.drawable.img_snack,
+        YellowFFC04C
+    ),
+    MINERALS(
+        R.drawable.img_minerals,
+        Blue4C5BB5
+    ),
+    ACTIVITY(
+        R.drawable.img_lunch,
+        Blue6ABFFF
     )
 }

@@ -64,7 +64,10 @@ class SearchViewModel @Inject constructor(
     private fun observeQueryChanges() {
         _searchQuery
             .debounce(SEARCH_DEBOUNCE)
-            .filter { it.isNotBlank() }
+            .filter {
+                isLoading = false
+                it.isNotBlank()
+            }
             .flatMapLatest { query ->
                 foodRepository.searchRecipeForNutrition(query = query)
             }
@@ -91,6 +94,9 @@ class SearchViewModel @Inject constructor(
     }
 
     fun updateSearchQuery(query: String) {
+        if (query.isNotEmpty()) {
+            isLoading = true
+        }
         _searchQuery.update { query }
     }
 

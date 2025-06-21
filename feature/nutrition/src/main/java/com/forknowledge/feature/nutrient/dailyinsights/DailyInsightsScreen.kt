@@ -2,7 +2,6 @@ package com.forknowledge.feature.nutrient.dailyinsights
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,17 +37,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.forknowledge.core.common.AppConstant.NUTRITION_CALORIES_NAME
-import com.forknowledge.core.common.AppConstant.NUTRITION_CARB_NAME
-import com.forknowledge.core.common.AppConstant.NUTRITION_FAT_NAME
-import com.forknowledge.core.common.AppConstant.NUTRITION_PROTEIN_NAME
+import com.forknowledge.core.common.AppConstant.NUTRIENT_CALORIES_NAME
+import com.forknowledge.core.common.AppConstant.NUTRIENT_CARB_NAME
+import com.forknowledge.core.common.AppConstant.NUTRIENT_FAT_NAME
+import com.forknowledge.core.common.AppConstant.NUTRIENT_PROTEIN_NAME
 import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_CALORIES_INDEX
 import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_CARB_INDEX
 import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_FAT_INDEX
@@ -68,6 +66,7 @@ import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.YellowFFAE01
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.core.ui.theme.component.ErrorMessage
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.feature.model.userdata.NutrientData
 import com.forknowledge.feature.nutrient.R
@@ -109,7 +108,7 @@ fun DailyInsightsScreen(
         }
 
         if (shouldShowError) {
-            ErrorMessageSection()
+            ErrorMessage(stringResource(R.string.nutrient_insights_error_message))
         }
 
         dailyNutrition?.let { nutrition ->
@@ -213,10 +212,10 @@ fun DailyProgressSection(
 
         val mainNutrients = if (nutrients.isNotEmpty()) {
             nutrients.filter {
-                it.name == NUTRITION_CALORIES_NAME
-                        || it.name == NUTRITION_CARB_NAME
-                        || it.name == NUTRITION_PROTEIN_NAME
-                        || it.name == NUTRITION_FAT_NAME
+                it.name == NUTRIENT_CALORIES_NAME
+                        || it.name == NUTRIENT_CARB_NAME
+                        || it.name == NUTRIENT_PROTEIN_NAME
+                        || it.name == NUTRIENT_FAT_NAME
             }
         } else {
             listOf(
@@ -594,27 +593,6 @@ fun NutrientInfoSection(
 
 }
 
-@Composable
-fun ErrorMessageSection() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            modifier = Modifier.size(150.dp),
-            painter = painterResource(id = drawable.img_vector_internet_error),
-            contentScale = ContentScale.Crop,
-            contentDescription = null
-        )
-
-        AppText(
-            text = stringResource(R.string.nutrient_insights_error_message),
-            textStyle = Typography.bodyMedium
-        )
-    }
-}
-
 @Preview
 @Composable
 fun InsightsTopBarPreview() {
@@ -712,10 +690,4 @@ fun NutrientInfoSectionPreview() {
             ),
         )
     )
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
-@Composable
-fun ErrorMessageSectionPreview() {
-    ErrorMessageSection()
 }

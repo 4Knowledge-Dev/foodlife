@@ -12,8 +12,11 @@ object AppConstant {
     const val RECIPE_NUTRIENT_FAT_INDEX = 6
     const val RECIPE_NUTRIENT_SATURATED_FAT_INDEX = 7
 
-    const val NUTRITION_CALORIES_NAME = "Calories"
-    const val NUTRITION_CARB_NAME = "Carbohydrates"
-    const val NUTRITION_PROTEIN_NAME = "Protein"
-    const val NUTRITION_FAT_NAME = "Fat"
+    const val NUTRIENT_CALORIES_NAME = "Calories"
+    const val NUTRIENT_CARB_NAME = "Carbohydrates"
+    const val NUTRIENT_PROTEIN_NAME = "Protein"
+    const val NUTRIENT_FAT_NAME = "Fat"
+    const val NUTRIENT_OTHER_NUTRIENT_NAME = "Nutrients"
+    const val NUTRIENT_VITAMINS_NAME = "Vitamins"
+    const val NUTRIENT_MINERALS_NAME = "Minerals"
 }

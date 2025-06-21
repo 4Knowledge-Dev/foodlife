@@ -36,6 +36,7 @@ import com.forknowledge.feature.explore.ExploreRoute
 import com.forknowledge.feature.explore.ExploreSearchRoute
 import com.forknowledge.feature.explore.ui.ExploreScreen
 import com.forknowledge.feature.explore.ui.ExploreSearchScreen
+import com.forknowledge.feature.nutrient.AdditionalNutritionRoute
 import com.forknowledge.feature.nutrient.InsightsRoute
 import com.forknowledge.feature.nutrient.NutrientGroupRoute
 import com.forknowledge.feature.nutrient.NutrientRoute
@@ -44,6 +45,7 @@ import com.forknowledge.feature.nutrient.StatisticsRoute
 import com.forknowledge.feature.nutrient.dailyinsights.DailyInsightsScreen
 import com.forknowledge.feature.nutrient.nutrient.NutrientScreen
 import com.forknowledge.feature.nutrient.search.SearchScreen
+import com.forknowledge.feature.nutrient.statistics.AdditionalNutritionScreen
 import com.forknowledge.feature.nutrient.statistics.NutrientGroupScreen
 import com.forknowledge.feature.nutrient.statistics.StatisticsScreen
 import com.forknowledge.feature.nutrient.tracking.LogFoodRoute
@@ -189,8 +191,26 @@ fun AppScreen(
             }
             composable<NutrientGroupRoute> {
                 NutrientGroupScreen(
-                    onNavigateToStatistics = { type ->
-                        appState.navController.navigate(StatisticsRoute(type))
+                    onNavigateToAdditionalNutrition = { name, type ->
+                        appState.navController.navigate(
+                            AdditionalNutritionRoute(name, type)
+                        )
+                    },
+                    onNavigateToStatistics = { name, type ->
+                        appState.navController.navigate(StatisticsRoute(name, type))
+                    },
+                    onNavigateBack = appState.navController::popBackStack
+                )
+            }
+            composable<AdditionalNutritionRoute> { backStackEntry ->
+                val data = backStackEntry.toRoute<AdditionalNutritionRoute>()
+                AdditionalNutritionScreen(
+                    groupName = data.groupName,
+                    nutritionType = data.nutritionType,
+                    onNavigateToStatistics = { nutritionName, nutritionType ->
+                        appState.navController.navigate(
+                            StatisticsRoute(nutritionName, nutritionType)
+                        )
                     },
                     onNavigateBack = appState.navController::popBackStack
                 )
@@ -198,6 +218,7 @@ fun AppScreen(
             composable<StatisticsRoute> { backStackEntry ->
                 val data = backStackEntry.toRoute<StatisticsRoute>()
                 StatisticsScreen(
+                    nutritionName = data.nutrientName,
                     nutritionType = data.type,
                     onNavigateBack = appState.navController::popBackStack
                 )

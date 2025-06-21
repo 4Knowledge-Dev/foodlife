@@ -58,11 +58,16 @@
     <string name="statistics_monthly_tab_label">Monthly</string>
     <string name="statistics_daily_label">Last 30 days</string>
     <string name="statistics_daily_average_calories_label">Daily average:</string>
-    <string name="statistics_daily_average_calories_value">%d kcal</string>
+    <string name="statistics_daily_average_calories_value">%.1f %s</string>
     <string name="statistics_calories_goal_label">Goal:</string>
-    <string name="statistics_calories_goal_value">%d kcal</string>
+    <string name="statistics_calories_goal_value">%d %s</string>
     <string name="statistics_history_title">History</string>
     <string name="statistics_history_intake_nutrition_value">%d %s</string>
-    <string name="statistics_dietary_energy">Dietary energy</string>
-    <string name="statistics_dietary_intake">Dietary intake</string>
+    <string name="statistics_not_enough_data_message">Not enough data available!</string>
+    <string name="statistics_nutrition_group_energy">Energy</string>
+    <string name="statistics_nutrition_group_carbs">Carbohydrates</string>
+    <string name="statistics_nutrition_group_other_nutrition">Nutrients</string>
+    <string name="statistics_nutrition_group_vitamins">Vitamins</string>
+    <string name="statistics_nutrition_group_minerals">Minerals</string>
+    <string name="statistics_nutrition_group_other">Others</string>
 </resources>

@@ -22,8 +22,15 @@ data class InsightsRoute(
 data object NutrientGroupRoute
 
 @Serializable
+data class AdditionalNutritionRoute(
+    val groupName: String,
+    val nutritionType: NutritionGroupType
+)
+
+@Serializable
 data class StatisticsRoute(
-    val type: StatisticsType
+    val nutrientName: String,
+    val type: NutritionGroupType
 )
 
 fun NavController.navigateToNutrient(navOptions: NavOptions? = null) {

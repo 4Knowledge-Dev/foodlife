@@ -181,7 +181,7 @@ fun PlannerScreen(
                     actions = listOf(
                         FloatingAction(
                             label = stringResource(R.string.meal_planner_meal_plan_breakfast_label),
-                            icon = drawable.ic_breakfast,
+                            icon = drawable.img_breakfast,
                             action = {
                                 onNavigateToExplore(
                                     weekDays[selectedTab].toEpochSeconds(),
@@ -191,7 +191,7 @@ fun PlannerScreen(
                         ),
                         FloatingAction(
                             label = stringResource(R.string.meal_planner_meal_plan_lunch_label),
-                            icon = drawable.ic_lunch,
+                            icon = drawable.img_lunch,
                             action = {
                                 onNavigateToExplore(
                                     weekDays[selectedTab].toEpochSeconds(),
@@ -201,7 +201,7 @@ fun PlannerScreen(
                         ),
                         FloatingAction(
                             label = stringResource(R.string.meal_planner_meal_plan_dinner_label),
-                            icon = drawable.ic_dinner,
+                            icon = drawable.img_dinner,
                             action = {
                                 onNavigateToExplore(
                                     weekDays[selectedTab].toEpochSeconds(),

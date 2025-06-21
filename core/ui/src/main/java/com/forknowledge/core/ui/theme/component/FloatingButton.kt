@@ -146,7 +146,7 @@ fun AppFloatingButtonPreview() {
 fun FloatingActionSectionPreview() {
     FloatingActionSection(
         label = "Breakfast",
-        icon = R.drawable.ic_breakfast,
+        icon = R.drawable.img_breakfast,
         onClick = {}
     )
 }
