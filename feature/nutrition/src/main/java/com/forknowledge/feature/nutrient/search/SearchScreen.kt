@@ -3,7 +3,6 @@ package com.forknowledge.feature.nutrient.search
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -63,11 +62,12 @@ import com.forknowledge.core.ui.theme.GreyDADADA
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppButtonSmall
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.core.ui.theme.component.ErrorMessage
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.feature.model.Nutrient
 import com.forknowledge.feature.model.NutritionSearchRecipe
-import com.forknowledge.feature.nutrient.Utils
 import com.forknowledge.feature.nutrient.R
+import com.forknowledge.feature.nutrient.Utils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlin.math.roundToInt
@@ -144,7 +144,7 @@ fun SearchScreen(
             }
 
             if (shouldShowError) {
-                ErrorMessage()
+                ErrorMessage(stringResource(R.string.nutrient_insights_error_message))
             }
 
             if (!isLoading && !shouldShowError) {
@@ -178,10 +178,10 @@ fun SearchScreen(
                             }
                         }
                     }
-                }
-
-                if (recipes.itemCount == 0 && searchQuery.isNotEmpty()) {
-                    NoDataFoundMessage()
+                } else {
+                    if (searchQuery.isNotEmpty()) {
+                        NoDataFoundMessage()
+                    }
                 }
             }
         }
@@ -467,27 +467,6 @@ fun NoDataFoundMessage() {
     }
 }
 
-@Composable
-fun ErrorMessage() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            modifier = Modifier.size(150.dp),
-            painter = painterResource(id = drawable.img_vector_internet_error),
-            contentScale = ContentScale.Crop,
-            contentDescription = null
-        )
-
-        AppText(
-            text = stringResource(R.string.nutrient_insights_error_message),
-            textStyle = Typography.bodyMedium
-        )
-    }
-}
-
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun RecipeItemPreview() {
@@ -530,10 +509,4 @@ fun RecipeItemPreview() {
 @Composable
 fun NoDataFoundMessagePreview() {
     NoDataFoundMessage()
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
-@Composable
-fun ErrorMessagePreview() {
-    ErrorMessage()
 }

@@ -53,7 +53,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -86,6 +85,7 @@ import com.forknowledge.core.ui.theme.RedFF3939
 import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.core.ui.theme.component.AppTextButton
 import com.forknowledge.core.ui.theme.component.DatePickerModal
 import com.forknowledge.feature.model.userdata.NutrientData
 import com.forknowledge.feature.model.userdata.TargetNutrition
@@ -120,24 +120,22 @@ fun NutrientScreen(
                 .fillMaxSize()
                 .background(color = GreyFAFAFA)
                 .verticalScroll(rememberScrollState())
-                .padding(innerPadding)
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.End
         ) {
             targetNutrition?.let { nutrition ->
                 viewModel.getIntakeNutritionByDate()
 
-                AppText(
-                    modifier = Modifier
-                        .padding(
-                            top = 24.dp,
-                            start = 16.dp,
-                            end = 16.dp
-                        )
-                        .fillMaxWidth()
-                        .clickable { onNavigateToDailyInsights(date.time) },
+                AppTextButton(
+                    modifier = Modifier.padding(
+                        top = 24.dp,
+                        start = 16.dp,
+                        end = 16.dp
+                    ),
                     text = stringResource(R.string.nutrient_label_detail),
                     textStyle = Typography.labelLarge,
-                    textAlign = TextAlign.End,
-                    color = Green91C747
+                    color = Green91C747,
+                    onClick = { onNavigateToDailyInsights(date.time) }
                 )
 
                 NutrientSection(
@@ -256,7 +254,7 @@ fun NutrientSection(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                top = 16.dp,
+                top = 12.dp,
                 start = 16.dp,
                 end = 16.dp
             )
@@ -518,7 +516,7 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_breakfast),
             calories = intakeNutrition.mealCalories[0],
             totalCalories = (targetNutrition.calories * targetNutrition.breakfastRatio).roundToLong(),
-            image = drawable.ic_breakfast,
+            image = R.drawable.img_breakfast,
             onNavigateToLogFood = { onNavigateToLogFood(1) }
         )
 
@@ -534,7 +532,7 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_lunch),
             calories = intakeNutrition.mealCalories[1],
             totalCalories = (targetNutrition.calories * targetNutrition.lunchRatio).roundToLong(),
-            image = drawable.ic_lunch,
+            image = R.drawable.img_lunch,
             onNavigateToLogFood = { onNavigateToLogFood(2) }
         )
 
@@ -550,7 +548,7 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_dinner),
             calories = intakeNutrition.mealCalories[2],
             totalCalories = (targetNutrition.calories * targetNutrition.dinnerRatio).roundToLong(),
-            image = drawable.ic_dinner,
+            image = R.drawable.img_dinner,
             onNavigateToLogFood = { onNavigateToLogFood(3) }
         )
 
@@ -566,7 +564,7 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_snack),
             calories = intakeNutrition.mealCalories[3],
             totalCalories = (targetNutrition.calories * targetNutrition.snacksRatio).roundToLong(),
-            image = drawable.ic_snack,
+            image = R.drawable.img_snack,
             onNavigateToLogFood = { onNavigateToLogFood(4) }
         )
     }
@@ -877,7 +875,7 @@ fun MealCardPreview() {
         label = "Breakfast",
         calories = 1500,
         totalCalories = 2000,
-        image = drawable.ic_snack,
+        image = R.drawable.img_snack,
         onNavigateToLogFood = {}
     )
 }
