@@ -55,7 +55,7 @@ import com.forknowledge.feature.planner.PlannerRoute
 import com.forknowledge.feature.planner.navigateToPlannerRoute
 import com.forknowledge.feature.planner.ui.PlannerScreen
 import com.forknowledge.feature.recipe.RecipeRoute
-import com.forknowledge.feature.recipe.RecipeScreen
+import com.forknowledge.feature.recipe.screen.RecipeScreen
 import com.forknowledge.foodlife.R
 
 @Composable

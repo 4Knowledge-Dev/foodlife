@@ -13,7 +13,7 @@ val WhiteF9F9F9 = Color(0xFFF5F5F5)
 
 val GreyFAFAFA = Color(0xFFFAFAFA)
 val GreyF4F5F5 = Color(0xFFF4F5F5)
-val GreyDADADA = Color(0xFFDADADA)
+val GreyDADADA = Color(0xFFDADADA) // Divider
 val GreyEBEBEB = Color(0xFFEBEBEB)
 val Grey808993 = Color(0xFF808993) // Additional text
 val GreyB7BDC4 = Color(0xFFB7BDC4) // Border

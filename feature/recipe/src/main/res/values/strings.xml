@@ -3,8 +3,15 @@
     <string name="recipe_ingredients_tab_title">Ingredients</string>
     <string name="recipe_instructions_tab_title">Instructions</string>
     <string name="recipe_health_tab_title">Health</string>
+    <string name="recipe_ready_in_minutes">Ready in:</string>
     <plurals name="recipe_ingredients_servings">
         <item quantity="one">%d Serving</item>
         <item quantity="other">%d Servings</item>
     </plurals>
+    <plurals name="recipe_cook_time">
+        <item quantity="one">%d min</item>
+        <item quantity="other">%d mins</item>
+    </plurals>
+    <string name="recipe_instruction_step_number">Step %d</string>
+    <string name="recipe_instruction_equipment_header">Equipments</string>
 </resources>

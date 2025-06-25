@@ -1,7 +1,9 @@
 package com.forknowledge.core.api.model
 
 import com.forknowledge.core.api.getImageUrl
+import com.forknowledge.feature.model.Equipment
 import com.forknowledge.feature.model.Ingredient
+import com.forknowledge.feature.model.Step
 import com.forknowledge.feature.model.Measure
 import com.forknowledge.feature.model.Recipe
 import kotlinx.serialization.InternalSerializationApi
@@ -9,6 +11,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 const val TYPE_INGREDIENTS = "INGREDIENTS"
+const val TYPE_EQUIPMENTS = "EQUIPMENT"
 
 @InternalSerializationApi
 @Serializable
@@ -41,7 +44,8 @@ data class RecipeDetailResponse(
         sourceName = sourceName,
         sourceUrl = sourceUrl,
         healthScore = healthScore,
-        ingredients = ingredients.map { it.toIngredient() }
+        ingredients = ingredients.map { it.toIngredient() },
+        steps = instruction.firstOrNull()?.steps?.map { it.toInstruction() } ?: emptyList()
     )
 }
 
@@ -107,16 +111,24 @@ data class Us(
 @InternalSerializationApi
 @Serializable
 data class AnalyzedInstruction(
-    val steps: List<Step>
+    val steps: List<StepResponse>
 )
 
 @InternalSerializationApi
 @Serializable
-data class Step(
+data class StepResponse(
+    val number: Int,
+    val step: String,
     val equipment: List<EquipmentResponse>,
-    val ingredients: List<IngredientResponse>,
-    val step: String
-)
+    val ingredients: List<IngredientResponse>
+) {
+    fun toInstruction() = Step(
+        stepNumber = number,
+        description = step,
+        equipments = equipment.map { it.toEquipment() },
+        ingredients = ingredients.map { it.toIngredient() }
+    )
+}
 
 @InternalSerializationApi
 @Serializable
@@ -124,7 +136,16 @@ data class EquipmentResponse(
     val id: Int,
     val image: String,
     val name: String
-)
+) {
+    fun toEquipment() = Equipment(
+        equipmentId = id,
+        equipmentName = name,
+        imageUrl = getImageUrl(
+            image = image,
+            mealType = TYPE_EQUIPMENTS
+        )
+    )
+}
 
 @InternalSerializationApi
 @Serializable
@@ -132,4 +153,13 @@ data class IngredientResponse(
     val id: Int,
     val image: String,
     val name: String
-)
+) {
+    fun toIngredient() = Ingredient(
+        ingredientId = id,
+        ingredientName = name,
+        imageUrl = getImageUrl(
+            image = image,
+            mealType = TYPE_INGREDIENTS
+        )
+    )
+}
