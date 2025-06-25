@@ -79,11 +79,11 @@ fun SurveyScreen(
                 onNextClicked = viewModel::onNextClicked
             )
         }
-    ) { padding ->
+    ) { innerPadding ->
         AnimatedContent(
             modifier = Modifier
                 .background(WhiteF9F9F9)
-                .padding(padding)
+                .padding(innerPadding)
                 .padding(horizontal = 16.dp),
             targetState = question,
             transitionSpec = {
