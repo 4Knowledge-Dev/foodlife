@@ -19,6 +19,7 @@ import com.forknowledge.feature.model.NutritionSearchRecipe
 import com.forknowledge.feature.model.userdata.UserToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.InternalSerializationApi
@@ -28,6 +29,7 @@ const val SEARCH_PAGE_SIZE = 30
 const val SEARCH_PREFETCH_DISTANCE = SEARCH_PAGE_SIZE
 const val GET_MEAL_PLAN_EXCEPTION = "GetMealPlanException"
 const val CONNECT_USER_EXCEPTION = "ConnectUserException"
+const val GET_RECIPE_EXCEPTION = "GetRecipeException"
 
 @OptIn(InternalSerializationApi::class)
 class FoodRepositoryImpl @Inject constructor(
@@ -37,7 +39,7 @@ class FoodRepositoryImpl @Inject constructor(
 
     override suspend fun connectUser(user: ConnectUser): Result<UserToken> {
         return try {
-            val response = service.connectUser(user)
+            val response = dataSource.connectUser(user)
             if (response.isSuccessful && response.body() != null) {
                 Result.Success(response.body()!!.toUserToken())
             } else {
@@ -175,5 +177,14 @@ class FoodRepositoryImpl @Inject constructor(
                 pagingData.map { it.toMealSearchRecipe() }
             }
             .flowOn(Dispatchers.IO)
+    }
+
+    override fun getRecipeInformation(recipeId: Int) = flow {
+        val response = dataSource.getRecipeInformation(recipeId)
+        if (response.isSuccessful && response.body() != null) {
+            emit(response.body()!!.toRecipe())
+        } else {
+            emit(null)
+        }
     }
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recipe_ingredients_tab_title">Ingredients</string>
+    <string name="recipe_instructions_tab_title">Instructions</string>
+    <string name="recipe_health_tab_title">Health</string>
+    <plurals name="recipe_ingredients_servings">
+        <item quantity="one">%d Serving</item>
+        <item quantity="other">%d Servings</item>
+    </plurals>
+</resources>

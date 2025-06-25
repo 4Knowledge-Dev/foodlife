@@ -77,6 +77,7 @@ dependencies {
     implementation(project(":feature:nutrition"))
     implementation(project(":feature:planner"))
     implementation(project(":feature:explore"))
+    implementation(project(":feature:recipe"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
