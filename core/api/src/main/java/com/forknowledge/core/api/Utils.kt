@@ -1,6 +1,7 @@
 package com.forknowledge.core.api
 
 import com.forknowledge.core.api.datatype.MealType
+import com.forknowledge.core.api.model.TYPE_INGREDIENTS
 
 const val INGREDIENT_IMAGE_SIZE = "500x500"
 const val MEAL_IMAGE_SIZE = "636x393"
@@ -20,12 +21,12 @@ fun String.toMealType() = when (this) {
 }
 
 fun getImageUrl(
-    id: String,
+    id: String = "",
     image: String,
     mealType: String,
-    imageType: String
+    imageType: String = ""
 ): String {
-    if (image.isNotEmpty()) {
+    if (image.isNotEmpty() && mealType != TYPE_INGREDIENTS) {
         return image
     }
     return when (mealType.toMealType()) {

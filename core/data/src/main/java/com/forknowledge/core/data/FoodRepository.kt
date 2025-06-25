@@ -1,11 +1,13 @@
 package com.forknowledge.core.data
 
 import androidx.paging.PagingData
+import com.forknowledge.core.api.model.RecipeDetailResponse
 import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.model.MealPlanDisplayData
 import com.forknowledge.feature.model.MealSearchRecipe
 import com.forknowledge.feature.model.NutritionSearchRecipe
+import com.forknowledge.feature.model.Recipe
 import com.forknowledge.feature.model.userdata.UserToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.InternalSerializationApi
@@ -46,4 +48,6 @@ interface FoodRepository {
         includeInformation: Boolean = true,
         includeNutrition: Boolean = false
     ): Flow<PagingData<MealSearchRecipe>>
+
+    fun getRecipeInformation(recipeId: Int): Flow<Recipe?>
 }

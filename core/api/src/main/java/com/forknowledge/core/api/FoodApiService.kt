@@ -2,6 +2,8 @@ package com.forknowledge.core.api
 
 import com.forknowledge.core.api.model.GenerateMealPlanResponse
 import com.forknowledge.core.api.model.MealPlanResponse
+import com.forknowledge.core.api.model.RecipeDetailResponse
+import com.forknowledge.core.api.model.RecipeResponse
 import com.forknowledge.core.api.model.SearchResponse
 import com.forknowledge.core.api.model.UserResponse
 import com.forknowledge.core.api.model.post.ConnectUser
@@ -64,4 +66,10 @@ interface FoodApiService {
         @Query("addRecipeInformation") includeInformation: Boolean,
         @Query("addRecipeNutrition") includeNutrition: Boolean
     ): SearchResponse
+
+    @GET("$API_HEADER_RECIPE/{id}/information")
+    suspend fun getRecipeInformation(
+        @Path("id") recipeId: Int,
+        @Query("includeNutrition") includeNutrition: Boolean = true
+    ): Response<RecipeDetailResponse>
 }
