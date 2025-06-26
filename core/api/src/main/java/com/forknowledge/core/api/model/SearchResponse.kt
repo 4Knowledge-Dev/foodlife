@@ -46,56 +46,64 @@ data class RecipeResponse(
                 } ?: NutrientResponse(
                     name = NUTRIENT_TYPE_NAME_CALORIES,
                     amount = 0f,
-                    unit = NUTRIENT_UNIT_CALORIES
+                    unit = NUTRIENT_UNIT_CALORIES,
+                    percentOfDailyNeeds = 0f
                 ),
                 responseNutrients.firstOrNull {
                     it.name == NUTRIENT_TYPE_NAME_CARBOHYDRATES
                 } ?: NutrientResponse(
                     name = NUTRIENT_TYPE_NAME_CARBOHYDRATES,
                     amount = 0f,
-                    unit = NUTRIENT_UNIT_GRAM
+                    unit = NUTRIENT_UNIT_GRAM,
+                    percentOfDailyNeeds = 0f
                 ),
                 responseNutrients.firstOrNull {
                     it.name == NUTRIENT_TYPE_NAME_NET_CARBOHYDRATES
                 } ?: NutrientResponse(
                     name = NUTRIENT_TYPE_NAME_NET_CARBOHYDRATES,
                     amount = 0f,
-                    unit = NUTRIENT_UNIT_GRAM
+                    unit = NUTRIENT_UNIT_GRAM,
+                    percentOfDailyNeeds = 0f
                 ),
                 responseNutrients.firstOrNull {
                     it.name == NUTRIENT_TYPE_NAME_FIBER
                 } ?: NutrientResponse(
                     name = NUTRIENT_TYPE_NAME_FIBER,
                     amount = 0f,
-                    unit = NUTRIENT_UNIT_GRAM
+                    unit = NUTRIENT_UNIT_GRAM,
+                    percentOfDailyNeeds = 0f
                 ),
                 responseNutrients.firstOrNull {
                     it.name == NUTRIENT_TYPE_NAME_SUGAR
                 } ?: NutrientResponse(
                     name = NUTRIENT_TYPE_NAME_SUGAR,
                     amount = 0f,
-                    unit = NUTRIENT_UNIT_GRAM
+                    unit = NUTRIENT_UNIT_GRAM,
+                    percentOfDailyNeeds = 0f
                 ),
                 responseNutrients.firstOrNull {
                     it.name == NUTRIENT_TYPE_NAME_PROTEIN
                 } ?: NutrientResponse(
                     name = NUTRIENT_TYPE_NAME_PROTEIN,
                     amount = 0f,
-                    unit = NUTRIENT_UNIT_GRAM
+                    unit = NUTRIENT_UNIT_GRAM,
+                    percentOfDailyNeeds = 0f
                 ),
                 responseNutrients.firstOrNull {
                     it.name == NUTRIENT_TYPE_NAME_FAT
                 } ?: NutrientResponse(
                     name = NUTRIENT_TYPE_NAME_FAT,
                     amount = 0f,
-                    unit = NUTRIENT_UNIT_GRAM
+                    unit = NUTRIENT_UNIT_GRAM,
+                    percentOfDailyNeeds = 0f
                 ),
                 responseNutrients.firstOrNull {
                     it.name == NUTRIENT_TYPE_NAME_SATURATED_FAT
                 } ?: NutrientResponse(
                     name = NUTRIENT_TYPE_NAME_SATURATED_FAT,
                     amount = 0f,
-                    unit = NUTRIENT_UNIT_GRAM
+                    unit = NUTRIENT_UNIT_GRAM,
+                    percentOfDailyNeeds = 0f
                 ),
             )
         )

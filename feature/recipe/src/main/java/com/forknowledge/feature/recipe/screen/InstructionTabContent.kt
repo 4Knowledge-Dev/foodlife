@@ -70,6 +70,7 @@ fun InstructionTabContent(
                     )
 
                     AppText(
+                        modifier = Modifier.padding(start = 8.dp),
                         text = stringResource(R.string.recipe_ready_in_minutes),
                         textStyle = Typography.bodyMedium,
                         color = Grey8A949F
@@ -91,19 +92,21 @@ fun InstructionTabContent(
                     modifier = Modifier
                         .padding(vertical = 24.dp)
                         .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_timer),
+                            painter = painterResource(R.drawable.ic_prep_time),
                             tint = Black374957,
                             contentDescription = null
                         )
 
                         AppText(
-                            text = stringResource(R.string.recipe_ready_in_minutes),
+                            modifier = Modifier.padding(start = 8.dp),
+                            text = stringResource(R.string.recipe_prep_time),
                             textStyle = Typography.bodyMedium,
                             color = Grey8A949F
                         )
@@ -119,20 +122,21 @@ fun InstructionTabContent(
                     }
 
                     VerticalDivider(
-                        modifier = Modifier.height(15.dp),
+                        modifier = Modifier.height(25.dp),
                     )
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_timer),
+                            painter = painterResource(R.drawable.ic_cook_time),
                             tint = Black374957,
                             contentDescription = null
                         )
 
                         AppText(
-                            text = stringResource(R.string.recipe_ready_in_minutes),
+                            modifier = Modifier.padding(start = 8.dp),
+                            text = stringResource(R.string.recipe_cook_time),
                             textStyle = Typography.bodyMedium,
                             color = Grey8A949F
                         )
@@ -141,8 +145,8 @@ fun InstructionTabContent(
                             modifier = Modifier.padding(start = 4.dp),
                             text = pluralStringResource(
                                 R.plurals.recipe_cook_time,
-                                prepTime,
-                                readyInMinutes
+                                cookTime,
+                                cookTime
                             )
                         )
                     }

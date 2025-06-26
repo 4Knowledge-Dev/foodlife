@@ -224,7 +224,7 @@ fun RecipeItem(
 
     LaunchedEffect(showLoading) {
         snapshotFlow { showLoading }
-            .filter { it == false }
+            .filter { !it }
             .collect { isLoading ->
                 if (logRecipeResult != Utils.NONE) {
                     showAnim = true
@@ -476,28 +476,14 @@ fun RecipeItemPreview() {
             name = "Spaghetti Bolognese",
             imageUrl = "",
             servings = 2,
-            nutrients = listOf(
+            nutrients = List(4) {
                 Nutrient(
                     name = "Calories",
                     amount = 90f,
                     unit = "kcal",
-                ),
-                Nutrient(
-                    name = "Calories",
-                    amount = 90f,
-                    unit = "kcal",
-                ),
-                Nutrient(
-                    name = "Calories",
-                    amount = 90f,
-                    unit = "kcal",
-                ),
-                Nutrient(
-                    name = "Calories",
-                    amount = 90f,
-                    unit = "kcal",
+                    dailyPercentValue = 35
                 )
-            )
+            }
         ),
         showLoading = false,
         logRecipeResult = Utils.NONE,

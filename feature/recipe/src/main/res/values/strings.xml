@@ -4,6 +4,8 @@
     <string name="recipe_instructions_tab_title">Instructions</string>
     <string name="recipe_health_tab_title">Health</string>
     <string name="recipe_ready_in_minutes">Ready in:</string>
+    <string name="recipe_prep_time">Prep time:</string>
+    <string name="recipe_cook_time">Cook time:</string>
     <plurals name="recipe_ingredients_servings">
         <item quantity="one">%d Serving</item>
         <item quantity="other">%d Servings</item>
@@ -14,4 +16,16 @@
     </plurals>
     <string name="recipe_instruction_step_number">Step %d</string>
     <string name="recipe_instruction_equipment_header">Equipments</string>
+    <string name="recipe_health_score_label">Health score</string>
+    <string name="recipe_health_score_core_label">Score</string>
+    <string name="recipe_health_score_max_point">/100</string>
+    <string name="recipe_health_score_glycemic_index">Glycemic Index</string>
+    <string name="recipe_health_score_glycemic_load">Glycemic Load</string>
+    <string name="recipe_health_score_glycemic_evaluate_high">High</string>
+    <string name="recipe_health_score_glycemic_evaluate_medium">Medium</string>
+    <string name="recipe_health_score_glycemic_evaluate_low">Low</string>
+    <string name="recipe_health_score_nutrition_label">Nutrition</string>
+    <string name="recipe_health_score_nutrition_amount">%.1f%s</string>
+    <string name="recipe_health_score_nutrition_daily_percentage">%d%%</string>
+    <string name="recipe_health_score_nutrition_table_note">* Percent Daily Values based on a 2,000 calorie diet.</string>
 </resources>

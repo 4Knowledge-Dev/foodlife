@@ -71,10 +71,10 @@ fun RecipeScreen(
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {
-                BackLayerSection(
+                /*BackLayerSection(
                     recipeImageUrl = recipe!!.imageUrl,
                     recipeName = recipe!!.recipeName
-                )
+                )*/
                 FrontLayerSection(recipe = recipe!!)
             }
         }
@@ -224,8 +224,8 @@ fun FrontLayerSection(
             beyondViewportPageCount = 2,
             verticalAlignment = Alignment.Top
         ) { pageIndex ->
-            when (pageIndex) {
-                RecipeTab.INGREDIENTS.ordinal -> {
+            when (RecipeTab.entries[pageIndex]) {
+                RecipeTab.INGREDIENTS -> {
                     IngredientTabContent(
                         summary = recipe.summary,
                         originalServings = recipe.servings,
@@ -233,7 +233,7 @@ fun FrontLayerSection(
                     )
                 }
 
-                RecipeTab.INSTRUCTIONS.ordinal -> {
+                RecipeTab.INSTRUCTIONS -> {
                     InstructionTabContent(
                         sourceUrl = recipe.sourceUrl,
                         readyInMinutes = recipe.readyInMinutes,
@@ -243,7 +243,13 @@ fun FrontLayerSection(
                     )
                 }
 
-                RecipeTab.HEALTH.ordinal -> {}
+                RecipeTab.HEALTH -> {
+                    HealthTabContent(
+                        healthScore = recipe.healthScore,
+                        nutrition = recipe.nutrition,
+                        properties = recipe.properties
+                    )
+                }
             }
         }
     }
