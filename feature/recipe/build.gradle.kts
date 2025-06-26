@@ -47,4 +47,5 @@ dependencies {
     kapt(libs.androidx.hilt.compiler)
     implementation(libs.io.coil.compose)
     implementation(libs.io.coil.network.okhttp)
+    implementation(libs.androidx.webkit)
 }
