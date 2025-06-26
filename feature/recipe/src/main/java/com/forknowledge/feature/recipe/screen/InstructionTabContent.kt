@@ -1,5 +1,7 @@
 package com.forknowledge.feature.recipe.screen
 
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,8 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.VerticalDivider
@@ -25,6 +29,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.AsyncImage
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Grey8A949F
@@ -39,52 +44,22 @@ import com.forknowledge.feature.recipe.R
 
 @Composable
 fun InstructionTabContent(
+    sourceUrl: String,
     readyInMinutes: Int,
     prepTime: Int,
     cookTime: Int,
     steps: List<Step>
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(White)
-            .padding(vertical = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (readyInMinutes > 0) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_timer),
-                    tint = Black374957,
-                    contentDescription = null
-                )
-
-                AppText(
-                    text = stringResource(R.string.recipe_ready_in_minutes),
-                    textStyle = Typography.bodyMedium,
-                    color = Grey8A949F
-                )
-
-                AppText(
-                    modifier = Modifier.padding(start = 4.dp),
-                    text = pluralStringResource(
-                        R.plurals.recipe_cook_time,
-                        readyInMinutes,
-                        readyInMinutes
-                    )
-                )
-            }
-        }
-
-        if (prepTime > 0 && cookTime > 0) {
-            Row(
-                modifier = Modifier
-                    .padding(vertical = 24.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
+    if (steps.isNotEmpty()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(White)
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = 24.dp, horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (readyInMinutes > 0) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -104,44 +79,87 @@ fun InstructionTabContent(
                         modifier = Modifier.padding(start = 4.dp),
                         text = pluralStringResource(
                             R.plurals.recipe_cook_time,
-                            prepTime,
-                            prepTime
-                        )
-                    )
-                }
-
-                VerticalDivider(
-                    modifier = Modifier.height(15.dp),
-                )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_timer),
-                        tint = Black374957,
-                        contentDescription = null
-                    )
-
-                    AppText(
-                        text = stringResource(R.string.recipe_ready_in_minutes),
-                        textStyle = Typography.bodyMedium,
-                        color = Grey8A949F
-                    )
-
-                    AppText(
-                        modifier = Modifier.padding(start = 4.dp),
-                        text = pluralStringResource(
-                            R.plurals.recipe_cook_time,
-                            prepTime,
+                            readyInMinutes,
                             readyInMinutes
                         )
                     )
                 }
             }
-        }
 
-        StepSection(steps)
+            if (prepTime > 0 && cookTime > 0) {
+                Row(
+                    modifier = Modifier
+                        .padding(vertical = 24.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_timer),
+                            tint = Black374957,
+                            contentDescription = null
+                        )
+
+                        AppText(
+                            text = stringResource(R.string.recipe_ready_in_minutes),
+                            textStyle = Typography.bodyMedium,
+                            color = Grey8A949F
+                        )
+
+                        AppText(
+                            modifier = Modifier.padding(start = 4.dp),
+                            text = pluralStringResource(
+                                R.plurals.recipe_cook_time,
+                                prepTime,
+                                prepTime
+                            )
+                        )
+                    }
+
+                    VerticalDivider(
+                        modifier = Modifier.height(15.dp),
+                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_timer),
+                            tint = Black374957,
+                            contentDescription = null
+                        )
+
+                        AppText(
+                            text = stringResource(R.string.recipe_ready_in_minutes),
+                            textStyle = Typography.bodyMedium,
+                            color = Grey8A949F
+                        )
+
+                        AppText(
+                            modifier = Modifier.padding(start = 4.dp),
+                            text = pluralStringResource(
+                                R.plurals.recipe_cook_time,
+                                prepTime,
+                                readyInMinutes
+                            )
+                        )
+                    }
+                }
+            }
+
+            StepSection(steps)
+        }
+    } else {
+        AndroidView(
+            factory = {
+                WebView(it).apply {
+                    webViewClient = WebViewClient()
+                    loadUrl(sourceUrl)
+                }
+            }
+        )
     }
 }
 

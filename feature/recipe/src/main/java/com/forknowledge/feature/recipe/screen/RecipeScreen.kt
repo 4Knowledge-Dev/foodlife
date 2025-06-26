@@ -3,7 +3,6 @@ package com.forknowledge.feature.recipe.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,9 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -73,7 +70,6 @@ fun RecipeScreen(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
             ) {
                 BackLayerSection(
                     recipeImageUrl = recipe!!.imageUrl,
@@ -223,15 +219,12 @@ fun FrontLayerSection(
         }
 
         HorizontalPager(
-            modifier = Modifier.padding(top = 24.dp),
+            modifier = Modifier.fillMaxWidth(),
             state = pagerState,
-            beyondViewportPageCount = RecipeTab.entries.size,
-            contentPadding = PaddingValues(
-                vertical = 24.dp,
-                horizontal = 16.dp
-            )
-        ) {
-            when (selectedTabIndex) {
+            beyondViewportPageCount = 2,
+            verticalAlignment = Alignment.Top
+        ) { pageIndex ->
+            when (pageIndex) {
                 RecipeTab.INGREDIENTS.ordinal -> {
                     IngredientTabContent(
                         summary = recipe.summary,
@@ -242,6 +235,7 @@ fun FrontLayerSection(
 
                 RecipeTab.INSTRUCTIONS.ordinal -> {
                     InstructionTabContent(
+                        sourceUrl = recipe.sourceUrl,
                         readyInMinutes = recipe.readyInMinutes,
                         prepTime = recipe.preparationMinutes,
                         cookTime = recipe.cookingMinutes,

@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.semantics.Role
@@ -58,7 +59,6 @@ import com.forknowledge.feature.model.Ingredient
 import com.forknowledge.feature.model.Measure
 import com.forknowledge.feature.recipe.MeasureType
 import com.forknowledge.feature.recipe.R
-import kotlin.collections.forEach
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,8 +92,9 @@ fun IngredientTabContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(White),
-        horizontalAlignment = Alignment.Start
+            .background(White)
+            .padding(horizontal = 16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         ExpandableText(
             modifier = Modifier
@@ -106,7 +107,7 @@ fun IngredientTabContent(
 
         Row(
             modifier = Modifier.padding(
-                top = 24.dp,
+                top = 16.dp,
                 bottom = 8.dp
             ),
             verticalAlignment = Alignment.CenterVertically,
