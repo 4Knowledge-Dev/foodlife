@@ -11,7 +11,9 @@ data class Recipe(
     val servings: Int,
     val sourceName: String,
     val sourceUrl: String,
-    val healthScore: Float,
+    val healthScore: Int,
+    val nutrition: List<Nutrient>,
+    val properties: List<Property>,
     val ingredients: List<Ingredient>,
     val steps: List<Step>
 )
@@ -41,4 +43,9 @@ data class Equipment(
     val equipmentId: Int,
     val equipmentName: String,
     val imageUrl: String
+)
+
+data class Property(
+    val name: String,
+    val value: Int
 )

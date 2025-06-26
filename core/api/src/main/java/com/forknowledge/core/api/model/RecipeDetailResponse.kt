@@ -3,12 +3,14 @@ package com.forknowledge.core.api.model
 import com.forknowledge.core.api.getImageUrl
 import com.forknowledge.feature.model.Equipment
 import com.forknowledge.feature.model.Ingredient
-import com.forknowledge.feature.model.Step
 import com.forknowledge.feature.model.Measure
+import com.forknowledge.feature.model.Property
 import com.forknowledge.feature.model.Recipe
+import com.forknowledge.feature.model.Step
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlin.math.roundToInt
 
 const val TYPE_INGREDIENTS = "INGREDIENTS"
 const val TYPE_EQUIPMENTS = "EQUIPMENT"
@@ -27,6 +29,7 @@ data class RecipeDetailResponse(
     val sourceName: String,
     val sourceUrl: String,
     val healthScore: Float,
+    val nutrition: RecipeNutritionResponse,
     @SerialName("extendedIngredients")
     val ingredients: List<ExtendedIngredient>,
     @SerialName("analyzedInstructions")
@@ -43,7 +46,9 @@ data class RecipeDetailResponse(
         servings = servings,
         sourceName = sourceName,
         sourceUrl = sourceUrl,
-        healthScore = healthScore,
+        healthScore = healthScore.roundToInt(),
+        nutrition = nutrition.nutrients.map { it.toNutrient() },
+        properties = nutrition.properties.map { it.toProperty() },
         ingredients = ingredients.map { it.toIngredient() },
         steps = instruction.firstOrNull()?.steps?.map { it.toInstruction() } ?: emptyList()
     )
@@ -161,5 +166,24 @@ data class IngredientResponse(
             image = image,
             mealType = TYPE_INGREDIENTS
         )
+    )
+}
+
+@InternalSerializationApi
+@Serializable
+data class RecipeNutritionResponse(
+    val nutrients: List<NutrientResponse>,
+    val properties: List<PropertiesResponse>
+)
+
+@InternalSerializationApi
+@Serializable
+data class PropertiesResponse(
+    val name: String,
+    val amount: Float,
+) {
+    fun toProperty() = Property(
+        name = name,
+        value = amount.roundToInt()
     )
 }
