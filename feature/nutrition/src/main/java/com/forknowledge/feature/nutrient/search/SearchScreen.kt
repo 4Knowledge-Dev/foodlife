@@ -47,11 +47,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import coil3.compose.AsyncImage
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.forknowledge.core.common.extension.toFirestoreDateTime
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
 import com.forknowledge.core.ui.theme.Black374957
@@ -134,66 +134,64 @@ fun SearchScreen(
             ),
             onExpandedChange = { },
         ) {
-            if (isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    LoadingIndicator()
-                }
-            }
-
-            if (shouldShowError) {
-                ErrorMessage(stringResource(R.string.nutrient_insights_error_message))
-            }
-
-            if (!isLoading && !shouldShowError) {
-                if (recipes.itemCount > 0) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.background),
-                        contentPadding = PaddingValues(
-                            vertical = 8.dp,
-                            horizontal = 16.dp
-                        )
+            Box(modifier = Modifier.fillMaxSize()) {
+                if (isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        items(
-                            count = recipes.itemCount,
-                            key = recipes.itemKey { it.id }
-                        ) { index ->
-                            recipes[index]?.let {
-                                RecipeItem(
-                                    recipe = it,
-                                    showLoading = shouldShowItemProcessLoading && it.id == onProcessItemId,
-                                    logRecipeResult = logRecipeResult,
-                                    onLogRecipe = {
-                                        viewModel.logRecipe(
-                                            date = dateInMillis.toFirestoreDateTime(),
-                                            mealPosition = mealPosition,
-                                            recipe = it
-                                        )
-                                    }
-                                )
+                        LoadingIndicator()
+                    }
+                }
+
+                if (shouldShowError) {
+                    ErrorMessage(stringResource(R.string.nutrient_insights_error_message))
+                }
+
+                if (!isLoading && !shouldShowError) {
+                    if (recipes.itemCount > 0) {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.background),
+                            contentPadding = PaddingValues(
+                                vertical = 8.dp,
+                                horizontal = 16.dp
+                            )
+                        ) {
+                            items(
+                                count = recipes.itemCount,
+                                key = recipes.itemKey { it.id }
+                            ) { index ->
+                                recipes[index]?.let {
+                                    RecipeItem(
+                                        recipe = it,
+                                        showLoading = shouldShowItemProcessLoading && it.id == onProcessItemId,
+                                        logRecipeResult = logRecipeResult,
+                                        onLogRecipe = {
+                                            viewModel.logRecipe(
+                                                dateInMillis = dateInMillis,
+                                                mealPosition = mealPosition,
+                                                recipe = it
+                                            )
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
-                } else {
-                    if (searchQuery.isNotEmpty()) {
-                        NoDataFoundMessage()
-                    }
+                }
+
+                if (!isLoading) {
+                    AppButtonSmall(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 24.dp),
+                        text = stringResource(R.string.nutrient_log_food_search_screen_button_done),
+                        onClicked = { onNavigateToNutrient() }
+                    )
                 }
             }
-        }
-
-        if (!isLoading && recipes.itemCount > 0) {
-            AppButtonSmall(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 24.dp),
-                text = stringResource(R.string.nutrient_log_food_search_screen_button_done),
-                onClicked = onNavigateToNutrient
-            )
         }
     }
 }
@@ -262,7 +260,7 @@ fun RecipeItem(
     ) {
         val (recipeImage, icon, recipeName, recipeAmount, divider, carbs, protein, fat) = createRefs()
 
-        Image(
+        AsyncImage(
             modifier = Modifier
                 .size(60.dp)
                 .background(
@@ -274,9 +272,11 @@ fun RecipeItem(
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                 },
-            painter = painterResource(drawable.img_sample),
+            model = recipe.imageUrl,
+            placeholder = painterResource(drawable.img_vector_loading),
+            error = painterResource(drawable.img_vector_loading),
             contentScale = ContentScale.Crop,
-            contentDescription = null
+            contentDescription = null,
         )
 
         AppText(

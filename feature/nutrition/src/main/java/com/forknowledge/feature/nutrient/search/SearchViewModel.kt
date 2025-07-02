@@ -10,6 +10,7 @@ import androidx.paging.PagingData
 import com.forknowledge.core.common.AppConstant.SEARCH_DEBOUNCE
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.asFlowResult
+import com.forknowledge.core.common.extension.toFirestoreDateTime
 import com.forknowledge.core.data.FoodRepository
 import com.forknowledge.core.data.UserRepository
 import com.forknowledge.feature.model.NutritionSearchRecipe
@@ -26,7 +27,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -36,7 +36,7 @@ class SearchViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val _searchQuery = MutableStateFlow<String>("")
+    private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
     private val _recipes = MutableStateFlow<PagingData<NutritionSearchRecipe>>(PagingData.empty())
@@ -54,7 +54,7 @@ class SearchViewModel @Inject constructor(
     var onProcessItemId by mutableIntStateOf(0)
         private set
 
-    var logRecipeResult by mutableStateOf<Utils>(Utils.NONE)
+    var logRecipeResult by mutableStateOf(Utils.NONE)
         private set
 
     init {
@@ -125,7 +125,7 @@ class SearchViewModel @Inject constructor(
     }
 
     fun logRecipe(
-        date: Date,
+        dateInMillis: Long,
         mealPosition: Int,
         recipe: NutritionSearchRecipe
     ) {
@@ -134,9 +134,9 @@ class SearchViewModel @Inject constructor(
 
         viewModelScope.launch {
             when (userRepository.updateRecipeList(
-                date = date,
+                date = dateInMillis.toFirestoreDateTime(),
                 mealPosition = mealPosition,
-                recipe = recipe
+                recipe = recipe.toLogRecipe()
             )) {
                 is Result.Loading -> Unit
                 is Result.Success -> {

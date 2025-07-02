@@ -133,6 +133,10 @@ fun LocalDate.toEpochSeconds(): Long {
     return this.atStartOfDay(ZoneId.of("UTC")).toEpochSecond()
 }
 
+fun LocalDate.toEpochMillis(): Long {
+    return this.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+}
+
 fun LocalDate.toDayAndDateString(): String {
     val formatter = DateTimeFormatter.ofPattern("dd EEE", Locale.getDefault())
     return formatter.format(this)

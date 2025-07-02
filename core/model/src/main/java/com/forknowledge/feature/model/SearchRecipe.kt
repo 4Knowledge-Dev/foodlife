@@ -1,5 +1,7 @@
 package com.forknowledge.feature.model
 
+import com.forknowledge.feature.model.userdata.LogRecipe
+
 data class SearchRecipe(
     val id: Int,
     val name: String,
@@ -32,7 +34,15 @@ data class NutritionSearchRecipe(
     val imageUrl: String,
     val servings: Int,
     val nutrients: List<Nutrient>
-)
+) {
+    fun toLogRecipe() = LogRecipe(
+        id = id,
+        name = name,
+        imageUrl = imageUrl,
+        servings = servings,
+        nutrients = nutrients
+    )
+}
 
 data class MealSearchRecipe(
     val id: Int,

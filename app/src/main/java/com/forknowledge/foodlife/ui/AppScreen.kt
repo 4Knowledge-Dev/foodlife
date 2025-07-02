@@ -119,17 +119,23 @@ fun AppScreen(
             }
             composable<PlannerRoute> {
                 PlannerScreen(
-                    onNavigateToExplore = { date, mealPosition ->
+                    onNavigateToExplore = { dateInMillis, mealPosition ->
                         appState.navController.navigate(
                             ExploreRoute(
                                 isAddMealPlanProcess = true,
                                 mealPosition = mealPosition,
-                                dateInMillis = date
+                                dateInMillis = dateInMillis
                             )
                         )
                     },
-                    onNavigateToRecipeDetail = { recipeId ->
-                        appState.navController.navigate(RecipeRoute(recipeId))
+                    onNavigateToRecipeDetail = { dateInMillis, mealPosition, recipeId ->
+                        appState.navController.navigate(
+                            RecipeRoute(
+                                dateInMillis = dateInMillis,
+                                mealPosition = mealPosition,
+                                recipeId = recipeId
+                            )
+                        )
                     }
                 )
             }
@@ -229,9 +235,11 @@ fun AppScreen(
                 )
             }
             composable<RecipeRoute> { backStackEntry ->
-                val recipeId = backStackEntry.toRoute<RecipeRoute>().recipeId
+                val data = backStackEntry.toRoute<RecipeRoute>()
                 RecipeScreen(
-                    recipeId = recipeId,
+                    dateInMillis = data.dateInMillis,
+                    mealPosition = data.mealPosition,
+                    recipeId = data.recipeId,
                     onNavigateBack = appState.navController::popBackStack
                 )
             }

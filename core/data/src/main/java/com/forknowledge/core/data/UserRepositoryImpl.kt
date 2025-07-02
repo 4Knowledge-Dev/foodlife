@@ -17,8 +17,8 @@ import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_TRANSACTI
 import com.forknowledge.core.data.reference.FirestoreReference
 import com.forknowledge.core.data.reference.FirestoreReference.USER_COLLECTION
 import com.forknowledge.core.data.reference.FirestoreReference.USER_RECORD_SUB_COLLECTION
-import com.forknowledge.feature.model.NutritionSearchRecipe
 import com.forknowledge.feature.model.userdata.IntakeNutrition
+import com.forknowledge.feature.model.userdata.LogRecipe
 import com.forknowledge.feature.model.userdata.NutrientData
 import com.forknowledge.feature.model.userdata.RecipeData
 import com.forknowledge.feature.model.userdata.User
@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import okhttp3.internal.notify
 import java.util.Date
 import javax.inject.Inject
 
@@ -88,7 +87,7 @@ class UserRepositoryImpl @Inject constructor(
         username: String,
         hashKey: String
     ) = withContext(Dispatchers.IO) {
-        val updateUser = mapOf<String, String>(
+        val updateUser = mapOf(
             FirestoreReference.USER_DOCUMENT_USERNAME_FIELD to username,
             FirestoreReference.USER_DOCUMENT_HASH_KEY_FIELD to hashKey
         )
@@ -206,9 +205,7 @@ class UserRepositoryImpl @Inject constructor(
                                     )
                                     channel.trySend(
                                         NutritionDisplayData(
-                                            nutrients = if (nutrition.nutrients.isNotEmpty()) {
-                                                nutrition.nutrients
-                                            } else {
+                                            nutrients = nutrition.nutrients.ifEmpty {
                                                 null
                                             },
                                             mealCalories = mealCalories
@@ -239,9 +236,8 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun updateRecipeList(
         date: Date,
         mealPosition: Int,
-        recipe: NutritionSearchRecipe
+        recipe: LogRecipe
     ) = withContext(Dispatchers.IO) {
-
         val documentId = date.toFirestoreDocumentIdByDate()
         val collectionRef = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
             .collection(USER_RECORD_SUB_COLLECTION)
@@ -253,18 +249,18 @@ class UserRepositoryImpl @Inject constructor(
             if (snapshot.exists()) {
                 val intakeNutrition =
                     snapshot.toObject(IntakeNutrition::class.java) ?: IntakeNutrition()
-                val nutrientRecords = intakeNutrition.nutrients
-                val recipeRecords = intakeNutrition.recipes
+                val oldNutrientRecords = intakeNutrition.nutrients
+                val oldRecipeRecords = intakeNutrition.recipes
                 val newNutrientRecords = mutableListOf<NutrientData>()
                 var newRecipeRecords = emptyList<RecipeData>()
 
                 // Update recipe list, update servings and calories of recipe if it existed, otherwise add new recipe.
-                if (recipeRecords.any { it.mealPosition == mealPosition.toLong() && it.id == recipe.id.toLong() }) {
-                    newRecipeRecords = recipeRecords.map { recipeRecord ->
+                if (oldRecipeRecords.any { it.mealPosition == mealPosition.toLong() && it.id == recipe.id.toLong() }) {
+                    newRecipeRecords = oldRecipeRecords.map { recipeRecord ->
                         if (recipeRecord.id == recipe.id.toLong() && recipeRecord.mealPosition == mealPosition.toLong()) {
                             recipeRecord.copy(
                                 servings = recipeRecord.servings + recipe.servings.toLong(),
-                                calories = recipeRecord.calories + recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong()
+                                calories = recipeRecord.calories + recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong() * recipe.servings
                             )
                         } else {
                             recipeRecord
@@ -277,33 +273,33 @@ class UserRepositoryImpl @Inject constructor(
                         imageUrl = recipe.imageUrl,
                         mealPosition = mealPosition.toLong(),
                         servings = recipe.servings.toLong(),
-                        calories = recipe.nutrients[0].amount.toLong()
+                        calories = recipe.nutrients[0].amount.toLong() * recipe.servings
                     )
-                    newRecipeRecords = recipeRecords + newRecipeRecord
+                    newRecipeRecords = oldRecipeRecords + newRecipeRecord
                 }
 
                 // Update nutrient list, increase amount of every nutrient added before.
-                nutrientRecords.forEach { nutrient ->
+                oldNutrientRecords.forEach { nutrient ->
                     val recipeNutrientAmount = recipe.nutrients.firstOrNull {
                         it.name == nutrient.name
                     }?.amount ?: 0f
                     newNutrientRecords.add(
                         NutrientData(
                             name = nutrient.name,
-                            amount = nutrient.amount + recipeNutrientAmount,
+                            amount = nutrient.amount + recipeNutrientAmount * recipe.servings,
                             unit = nutrient.unit
                         )
                     )
                 }
                 // Add new nutrients to nutrient list if it doesn't exist.
                 recipe.nutrients.forEach { nutrient ->
-                    if (nutrientRecords.firstOrNull {
+                    if (oldNutrientRecords.firstOrNull {
                             it.name == nutrient.name
                         } == null) {
                         newNutrientRecords.add(
                             NutrientData(
                                 name = nutrient.name,
-                                amount = nutrient.amount,
+                                amount = nutrient.amount * recipe.servings,
                                 unit = nutrient.unit
                             )
                         )
@@ -318,7 +314,7 @@ class UserRepositoryImpl @Inject constructor(
                 val newNutrientRecords = recipe.nutrients.map { nutrient ->
                     NutrientData(
                         name = nutrient.name,
-                        amount = nutrient.amount,
+                        amount = nutrient.amount * recipe.servings,
                         unit = nutrient.unit
                     )
                 }
@@ -332,7 +328,7 @@ class UserRepositoryImpl @Inject constructor(
                             imageUrl = recipe.imageUrl,
                             mealPosition = mealPosition.toLong(),
                             servings = recipe.servings.toLong(),
-                            calories = recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong()
+                            calories = recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong() * recipe.servings
                         )
                     )
                 )

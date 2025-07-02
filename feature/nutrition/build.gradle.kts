@@ -48,5 +48,7 @@ dependencies {
     implementation(libs.androidx.paging)
     implementation(libs.androidx.paging.compose)
     implementation(libs.com.airbnb.android.lottie)
+    implementation(libs.io.coil.compose)
+    implementation(libs.io.coil.network.okhttp)
     implementation(libs.charty)
 }

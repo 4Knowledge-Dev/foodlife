@@ -57,15 +57,16 @@ import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.ExpandableText
 import com.forknowledge.feature.model.Ingredient
 import com.forknowledge.feature.model.Measure
-import com.forknowledge.feature.recipe.type.MeasureType
 import com.forknowledge.feature.recipe.R
+import com.forknowledge.feature.recipe.type.MeasureType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IngredientTabContent(
     summary: String,
     originalServings: Int,
-    ingredients: List<Ingredient>
+    ingredients: List<Ingredient>,
+    onServingsChange: (Int) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState()
     var isBottomSheetVisible by remember { mutableStateOf(false) }
@@ -118,7 +119,10 @@ fun IngredientTabContent(
                 colors = IconButtonDefaults.iconButtonColors(
                     contentColor = Black374957
                 ),
-                onClick = { servings-- }
+                onClick = {
+                    servings -= 1
+                    onServingsChange(servings)
+                }
             ) {
                 Icon(
                     painter = painterResource(id = drawable.ic_reduce_solid),
@@ -138,7 +142,10 @@ fun IngredientTabContent(
             )
 
             IconButton(
-                onClick = { servings++ }
+                onClick = {
+                    servings += 1
+                    onServingsChange(servings)
+                }
             ) {
                 Icon(
                     painter = painterResource(id = drawable.ic_add_solid),
@@ -289,7 +296,8 @@ fun IngredientTabContentPreview() {
                 usMeasures = Measure(amount = 2f, unit = "pieces"),
                 metricMeasures = Measure(amount = 2f, unit = "pieces"),
             ),
-        )
+        ),
+        onServingsChange = {}
     )
 }
 

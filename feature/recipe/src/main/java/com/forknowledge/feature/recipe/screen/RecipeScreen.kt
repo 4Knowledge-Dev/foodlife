@@ -2,6 +2,7 @@ package com.forknowledge.feature.recipe.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.runtime.Composable
@@ -40,42 +44,125 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.forknowledge.core.common.ResultState
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black374957
+import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.GreenA1CE50
+import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.Typography
+import com.forknowledge.core.ui.theme.component.AppButton
+import com.forknowledge.core.ui.theme.component.AppButtonLoading
+import com.forknowledge.core.ui.theme.component.AppSnackBar
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.core.ui.theme.component.LoadingIndicator
+import com.forknowledge.core.ui.theme.state.SnackBarState
 import com.forknowledge.feature.model.Recipe
-import com.forknowledge.feature.recipe.type.RecipeTab
+import com.forknowledge.feature.recipe.R
 import com.forknowledge.feature.recipe.RecipeViewModel
+import com.forknowledge.feature.recipe.type.RecipeTab
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 @Composable
 fun RecipeScreen(
     viewModel: RecipeViewModel = hiltViewModel(),
+    dateInMillis: Long = 0,
+    mealPosition: Int = 0,
     recipeId: Int,
     onNavigateBack: () -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
     val recipe by viewModel.recipe.collectAsStateWithLifecycle()
+    val shouldShowLoading = viewModel.shouldShowLoading
+    val shouldShowCompleteLoading = viewModel.shouldShowCompleteLoading
+    val logRecipeResult = viewModel.logRecipeResult
+    var servings = 0
+
+    val successMessge = stringResource(R.string.recipe_snackbar_to_recipe_success)
+    val failMessage = stringResource(R.string.recipe_snackbar_fail_to_log_recipe)
 
     LaunchedEffect(Unit) {
         viewModel.getRecipe(recipeId)
+        snapshotFlow { logRecipeResult }
+            .filterNotNull()
+            .collect { resultState ->
+                when (resultState) {
+                    ResultState.SUCCESS -> {
+                        snackbarHostState.showSnackbar(
+                            message = successMessge,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+
+                    ResultState.FAILURE -> {
+                        snackbarHostState.showSnackbar(
+                            message = failMessage,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                }
+            }
     }
 
     Scaffold(
-        topBar = { RecipeTopBar(onNavigateBack) }
+        topBar = { RecipeTopBar(onNavigateBack) },
+        bottomBar = {
+            if (recipe != null && dateInMillis != 0L && mealPosition != 0) {
+                RecipeBottomBar(
+                    isLoading = shouldShowCompleteLoading,
+                    onClick = { viewModel.completeRecipe(dateInMillis, mealPosition, servings) }
+                )
+            }
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
+                        AppSnackBar(
+                            modifier = Modifier.padding(top = 50.dp),
+                            message = it.visuals.message,
+                            state = when (logRecipeResult) {
+                                ResultState.SUCCESS -> SnackBarState.SUCCESS
+                                else -> SnackBarState.FAILURE
+                            }
+                        )
+                    }
+                }
+            )
+        }
     ) { innerPadding ->
-        if (recipe != null) {
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
+        if (shouldShowLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                /*BackLayerSection(
-                    recipeImageUrl = recipe!!.imageUrl,
-                    recipeName = recipe!!.recipeName
-                )*/
-                FrontLayerSection(recipe = recipe!!)
+                LoadingIndicator()
+            }
+        }
+
+        recipe?.let { recipe ->
+            if (!shouldShowLoading) {
+                servings = recipe.servings
+                Column(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize()
+                ) {
+                    /*BackLayerSection(
+                        recipeImageUrl = recipe!!.imageUrl,
+                        recipeName = recipe!!.recipeName
+                    )*/
+                    FrontLayerSection(
+                        recipe = recipe,
+                        onServingsChange = { servings = it }
+                    )
+                }
             }
         }
     }
@@ -108,6 +195,41 @@ fun RecipeTopBar(
                 painter = painterResource(id = drawable.ic_options),
                 tint = Black374957,
                 contentDescription = null
+            )
+        }
+    }
+}
+
+@Composable
+fun RecipeBottomBar(
+    isLoading: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+            .background(GreyEBEBEB),
+        contentAlignment = Alignment.Center
+    ) {
+        if (isLoading) {
+            AppButtonLoading(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(45.dp)
+                    .padding(horizontal = 16.dp),
+                buttonColor = Green91C747
+            )
+        } else {
+            AppButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(45.dp)
+                    .padding(horizontal = 16.dp),
+                buttonText = stringResource(R.string.recipe_button_made_it),
+                buttonColor = Green91C747,
+                icon = drawable.ic_complete,
+                onClicked = onClick
             )
         }
     }
@@ -155,7 +277,8 @@ fun BackLayerSection(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FrontLayerSection(
-    recipe: Recipe
+    recipe: Recipe,
+    onServingsChange: (Int) -> Unit
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(RecipeTab.INGREDIENTS.ordinal) }
     val pagerState = rememberPagerState(pageCount = { RecipeTab.entries.size })
@@ -229,7 +352,8 @@ fun FrontLayerSection(
                     IngredientTabContent(
                         summary = recipe.summary,
                         originalServings = recipe.servings,
-                        ingredients = recipe.ingredients
+                        ingredients = recipe.ingredients,
+                        onServingsChange = { onServingsChange(it) }
                     )
                 }
 
@@ -260,6 +384,15 @@ fun FrontLayerSection(
 fun RecipeTopBarPreview() {
     RecipeTopBar(
         onNavigateBack = {}
+    )
+}
+
+@Preview
+@Composable
+fun RecipeBottomBarPreview() {
+    RecipeBottomBar(
+        isLoading = false,
+        onClick = {}
     )
 }
 
