@@ -1,6 +1,7 @@
-package com.forknowledge.feature.recipe
+package com.forknowledge.feature.recipe.type
 
 import androidx.annotation.StringRes
+import com.forknowledge.feature.recipe.R
 
 enum class RecipeTab(@StringRes val title: Int) {
     INGREDIENTS(R.string.recipe_ingredients_tab_title),

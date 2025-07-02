@@ -57,7 +57,7 @@ import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.ExpandableText
 import com.forknowledge.feature.model.Ingredient
 import com.forknowledge.feature.model.Measure
-import com.forknowledge.feature.recipe.MeasureType
+import com.forknowledge.feature.recipe.type.MeasureType
 import com.forknowledge.feature.recipe.R
 
 @OptIn(ExperimentalMaterial3Api::class)

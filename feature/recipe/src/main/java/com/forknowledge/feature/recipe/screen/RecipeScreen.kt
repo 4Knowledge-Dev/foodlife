@@ -46,7 +46,7 @@ import com.forknowledge.core.ui.theme.GreenA1CE50
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.feature.model.Recipe
-import com.forknowledge.feature.recipe.RecipeTab
+import com.forknowledge.feature.recipe.type.RecipeTab
 import com.forknowledge.feature.recipe.RecipeViewModel
 import kotlinx.coroutines.launch
 

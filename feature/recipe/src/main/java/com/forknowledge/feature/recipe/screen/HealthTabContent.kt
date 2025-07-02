@@ -36,7 +36,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
-import com.forknowledge.core.ui.theme.Green86BF3E
 import com.forknowledge.core.ui.theme.Grey8A949F
 import com.forknowledge.core.ui.theme.GreyDADADA
 import com.forknowledge.core.ui.theme.GreyF4F5F5
@@ -45,8 +44,11 @@ import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.feature.model.Nutrient
 import com.forknowledge.feature.model.Property
-import com.forknowledge.feature.recipe.HealthScoreEvaluate
 import com.forknowledge.feature.recipe.R
+import com.forknowledge.feature.recipe.type.GlycemicEvaluate
+import com.forknowledge.feature.recipe.type.toGlycemicIndexEvaluate
+import com.forknowledge.feature.recipe.type.toGlycemicLoadEvaluate
+import com.forknowledge.feature.recipe.type.toHealthScoreEvaluate
 
 @Composable
 fun HealthTabContent(
@@ -153,8 +155,9 @@ fun HealthScoreCard(
         val (scoreLabel, score, divider, glycemicIndexRow, glycemicLoadRow) = createRefs()
         val guideline = createGuidelineFromStart(0.3f)
 
+        val healthScoreEvaluate = healthScore.toHealthScoreEvaluate()
         val annotatedScore = buildAnnotatedString {
-            withStyle(SpanStyle(color = Green86BF3E)) { append(healthScore.toString()) }
+            withStyle(SpanStyle(color = healthScoreEvaluate.color)) { append(healthScore.toString()) }
             withStyle(SpanStyle(color = Grey8A949F)) {
                 append(stringResource(R.string.recipe_health_score_max_point))
             }
@@ -206,7 +209,7 @@ fun HealthScoreCard(
                 },
             label = stringResource(R.string.recipe_health_score_glycemic_index),
             value = glycemicIndex,
-            evaluate = HealthScoreEvaluate.HIGH
+            evaluate = glycemicIndex.toGlycemicIndexEvaluate()
         )
 
         GlycemicSection(
@@ -220,7 +223,7 @@ fun HealthScoreCard(
                 },
             label = stringResource(R.string.recipe_health_score_glycemic_load),
             value = glycemicLoad,
-            evaluate = HealthScoreEvaluate.LOW
+            evaluate = glycemicLoad.toGlycemicLoadEvaluate()
         )
     }
 }
@@ -230,7 +233,7 @@ fun GlycemicSection(
     modifier: Modifier = Modifier,
     label: String,
     value: Int,
-    evaluate: HealthScoreEvaluate
+    evaluate: GlycemicEvaluate
 ) {
     ConstraintLayout(modifier = modifier) {
         val (glycemicLabel, glycemicValue, glycemicEvaluate) = createRefs()

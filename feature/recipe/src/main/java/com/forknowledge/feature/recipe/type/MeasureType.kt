@@ -1,4 +1,4 @@
-package com.forknowledge.feature.recipe
+package com.forknowledge.feature.recipe.type
 
 enum class MeasureType(val title: String) {
     ORIGINAL("Original"),
