@@ -16,15 +16,58 @@
     <string name="nutrient_meal_label_snack">Snack</string>
     <string name="nutrient_date_picker_headline">Select date</string>
     <string name="nutrient_date_picker_button_confirm_text">OK</string>
+    <string name="nutrient_label_calories">Calories</string>
     <string name="nutrient_label_carb">Carbs</string>
     <string name="nutrient_label_protein">Protein</string>
     <string name="nutrient_label_fat">Fat</string>
+    <string name="nutrient_label_detail">Detail</string>
 
+    // Log Food
     <string name="nutrient_log_food_search_bar_label">What did you eat?</string>
     <string name="nutrient_log_food_tab_label_frequent">Frequent</string>
     <string name="nutrient_log_food_tab_label_plan">Plan</string>
     <string name="nutrient_log_food_tab_label_saved">Saved</string>
-    <string name="nutrient_log_food_food_item_amount">%1$d kcal, %2$d score</string>
     <string name="nutrient_log_food_search_screen_search_bar_label">Enter food</string>
+    <string name="nutrient_log_food_search_screen_button_done">Done</string>
+    <string name="nutrient_log_food_search_screen_no_data_found">We don\'t have that kind of data!</string>
+    ¬
     <string name="nutrient_log_food_search_screen_nutrient_amount">%.1f g</string>
+    <plurals name="nutrient_log_food_item_amount">
+        <item quantity="one">%1$d kcal, %2$d serving</item>
+        <item quantity="other">%1$d kcal, %2$d servings</item>
+    </plurals>
+
+    // Insights
+    <string name="nutrient_insights_header">Today</string>
+    <string name="nutrient_insights_goal_label">Goal</string>
+    <string name="nutrient_insights_macro_info">Macro</string>
+    <string name="nutrient_insights_nutrition_info">Nutrition</string>
+    <string name="nutrient_insights_amount_unit">%.1f %s</string>
+    <string name="nutrient_insights_pie_chart_label">%d%%</string>
+    <string name="nutrient_insights_daily_progress">%1$d / %2$d %3$s</string>
+    <string name="nutrient_insights_daily_progress_unit_kcal">kcal</string>
+    <string name="nutrient_insights_daily_progress_unit_gram">g</string>
+    <string name="nutrient_insights_error_message">Fail to get insights data!</string>
+    <string name="nutrient_insights_macro_recommend_label">Recommend</string>
+    <string name="nutrient_insights_macro_actual_label">Actual</string>
+
+    // Statistics
+    <string name="statistics_select_nutrient_header">Statistics</string>
+    <string name="statistics_daily_tab_label">Daily</string>
+    <string name="statistics_weekly_tab_label">Weekly</string>
+    <string name="statistics_monthly_tab_label">Monthly</string>
+    <string name="statistics_daily_label">Last 30 days</string>
+    <string name="statistics_daily_average_calories_label">Daily average:</string>
+    <string name="statistics_daily_average_calories_value">%.1f %s</string>
+    <string name="statistics_calories_goal_label">Goal:</string>
+    <string name="statistics_calories_goal_value">%d %s</string>
+    <string name="statistics_history_title">History</string>
+    <string name="statistics_history_intake_nutrition_value">%d %s</string>
+    <string name="statistics_not_enough_data_message">Not enough data available!</string>
+    <string name="statistics_nutrition_group_energy">Energy</string>
+    <string name="statistics_nutrition_group_carbs">Carbohydrates</string>
+    <string name="statistics_nutrition_group_other_nutrition">Nutrients</string>
+    <string name="statistics_nutrition_group_vitamins">Vitamins</string>
+    <string name="statistics_nutrition_group_minerals">Minerals</string>
+    <string name="statistics_nutrition_group_other">Others</string>
 </resources>

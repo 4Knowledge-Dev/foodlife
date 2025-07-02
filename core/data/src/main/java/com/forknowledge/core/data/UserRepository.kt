@@ -1,10 +1,11 @@
 package com.forknowledge.core.data
 
 import com.forknowledge.core.common.Result
-import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.data.datatype.UserAuthState
+import com.forknowledge.core.data.model.DailyNutritionDisplayData
+import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.feature.model.NutritionSearchRecipe
-import com.forknowledge.feature.model.SearchRecipe
+import com.forknowledge.feature.model.userdata.IntakeNutrition
 import com.forknowledge.feature.model.userdata.TargetNutrition
 import com.forknowledge.feature.model.userdata.User
 import com.forknowledge.feature.model.userdata.UserToken
@@ -72,27 +73,38 @@ interface UserRepository {
     fun getUserNutritionRecordByDate(date: Date): Flow<NutritionDisplayData>
 
     /**
-     * Log recipe to a day and create a new firestore document.
-     * @param [documentId] the id of document to create.
-     * @param [date] the date to log recipe.
-     * @param [recipe] the recipe to add.
+     * Update the logged recipe list of a day.
+     * @param [date] the date to update.
+     * @param [recipe] a recipe to add or remove.
      * @return [Result] of operation.
      */
-    suspend fun createNewTrackDay(
-        documentId: String,
+    suspend fun updateRecipeList(
         date: Date,
+        mealPosition: Int,
         recipe: NutritionSearchRecipe
     ): Result<Unit>
 
     /**
-     * Update the logged recipe list of a day.
-     * @param [documentId] the id of document updated.
-     * @param [recipe] the recipe to add or remove.
-     * @return [Result] of operation.
+     * Get nutrition info of a specific date.
+     * @param [date] the date to get nutrition info.
+     * @return [DailyNutritionDisplayData] to display nutrition info.
      */
-    suspend fun updateRecipeList(
-        documentId: String,
-        recipe: NutritionSearchRecipe,
-        isAdd: Boolean
-    ): Result<Unit>
+    suspend fun getDailyNutritionInfo(date: Date): Result<DailyNutritionDisplayData>
+
+    /**
+     * Get user's information.
+     * return [User] information
+     */
+    fun getUserInfo(): Flow<User>
+
+    /**
+     * Get user's intake nutrition records in a month.
+     * @param [startDate] the start date of month.
+     * @param [endDate] the end date of month.
+     * @return [List] of [IntakeNutrition]
+     */
+    fun getNutritionRecordsInAMonth(
+        startDate: Date,
+        endDate: Date
+    ): Flow<List<IntakeNutrition>>
 }

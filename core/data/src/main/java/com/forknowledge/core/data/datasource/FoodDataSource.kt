@@ -64,4 +64,8 @@ class FoodDataSource @Inject constructor(
             mealId = mealId,
         )
     }
+
+    suspend fun getRecipeInformation(recipeId: Int) = withContext(Dispatchers.IO) {
+        apiService.getRecipeInformation(recipeId)
+    }
 }

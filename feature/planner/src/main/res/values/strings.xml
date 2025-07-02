@@ -20,7 +20,6 @@
     <string name="meal_planner_meal_plan_snackbar_delete_fail_message">Fail to delete!</string>
 
     // Bottom sheet
-    <string name="meal_planner_bottom_sheet_add_recipe_label">Complete</string>
     <string name="meal_planner_bottom_sheet_swap_recipe_label">Swap</string>
     <string name="meal_planner_bottom_sheet_delete_recipe_label">Delete</string>
 </resources>

@@ -43,7 +43,7 @@ fun AppFloatingButton(
 ) {
     val rotationAngle by animateFloatAsState(
         targetValue = if (isExpanded) 135f else 0f,
-        animationSpec = tween(500)
+        animationSpec = tween(300)
     )
 
     Column(
@@ -146,7 +146,7 @@ fun AppFloatingButtonPreview() {
 fun FloatingActionSectionPreview() {
     FloatingActionSection(
         label = "Breakfast",
-        icon = R.drawable.ic_breakfast,
+        icon = R.drawable.img_breakfast,
         onClick = {}
     )
 }

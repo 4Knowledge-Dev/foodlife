@@ -10,7 +10,7 @@ data class SearchRecipe(
 ) {
 
     fun toNutritionSearchRecipe() = NutritionSearchRecipe(
-        id = id.toInt(),
+        id = id,
         name = name,
         imageUrl = imageUrl,
         servings = servings,
@@ -18,7 +18,7 @@ data class SearchRecipe(
     )
 
     fun toMealSearchRecipe() = MealSearchRecipe(
-        id = id.toInt(),
+        id = id,
         name = name,
         imageUrl = imageUrl,
         servings = servings,
@@ -42,7 +42,7 @@ data class MealSearchRecipe(
     val cookTime: Int
 )
 
-val logRecipes = listOf<SearchRecipe>(
+val logRecipes = listOf(
     SearchRecipe(
         id = 10,
         name = "Spaghetti Bolognese",
@@ -54,6 +54,7 @@ val logRecipes = listOf<SearchRecipe>(
                 name = "Calories",
                 amount = 1200f,
                 unit = "kcal",
+                dailyPercentValue = 5
             )
         )
     )

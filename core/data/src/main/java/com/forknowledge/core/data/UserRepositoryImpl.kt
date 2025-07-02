@@ -2,27 +2,33 @@ package com.forknowledge.core.data
 
 import android.util.Log
 import androidx.datastore.core.IOException
+import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_CALORIES_INDEX
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.extension.endOfDay
 import com.forknowledge.core.common.extension.startOfDay
+import com.forknowledge.core.common.extension.toFirestoreDocumentIdByDate
 import com.forknowledge.core.data.datasource.PreferenceDatastore
 import com.forknowledge.core.data.datatype.UserAuthState
+import com.forknowledge.core.data.model.DailyNutritionDisplayData
 import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_EXCEPTION
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_GET_DATA_EXCEPTION
+import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_TRANSACTION_EXCEPTION
+import com.forknowledge.core.data.reference.FirestoreReference
 import com.forknowledge.core.data.reference.FirestoreReference.USER_COLLECTION
 import com.forknowledge.core.data.reference.FirestoreReference.USER_RECORD_SUB_COLLECTION
 import com.forknowledge.feature.model.NutritionSearchRecipe
-import com.forknowledge.feature.model.SearchRecipe
 import com.forknowledge.feature.model.userdata.IntakeNutrition
+import com.forknowledge.feature.model.userdata.NutrientData
+import com.forknowledge.feature.model.userdata.RecipeData
 import com.forknowledge.feature.model.userdata.User
 import com.forknowledge.feature.model.userdata.UserToken
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
@@ -30,18 +36,15 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import okhttp3.internal.notify
 import java.util.Date
 import javax.inject.Inject
 
 const val USER_RECORD_DATE_FIELD = "date"
-const val USER_RECORD_RECIPE_LIST_FIELD = "recipes"
 const val RECIPE_MEAL_TYPE_BREAKFAST = 1L
 const val RECIPE_MEAL_TYPE_LUNCH = 2L
 const val RECIPE_MEAL_TYPE_DINNER = 3L
 const val RECIPE_MEAL_TYPE_SNACKS = 4L
-const val RECIPE_NUTRIENT_CARB_INDEX = 3
-const val RECIPE_NUTRIENT_PROTEIN_INDEX = 10
-const val RECIPE_NUTRIENT_FAT_INDEX = 1
 
 class UserRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
@@ -85,9 +88,13 @@ class UserRepositoryImpl @Inject constructor(
         username: String,
         hashKey: String
     ) = withContext(Dispatchers.IO) {
+        val updateUser = mapOf<String, String>(
+            FirestoreReference.USER_DOCUMENT_USERNAME_FIELD to username,
+            FirestoreReference.USER_DOCUMENT_HASH_KEY_FIELD to hashKey
+        )
         return@withContext try {
             firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
-                .set(User(username = username, hashKey = hashKey), SetOptions.merge())
+                .update(updateUser)
                 .await()
             Result.Success(Unit)
         } catch (e: Exception) {
@@ -199,10 +206,11 @@ class UserRepositoryImpl @Inject constructor(
                                     )
                                     channel.trySend(
                                         NutritionDisplayData(
-                                            calories = nutrition.calories,
-                                            carbs = nutrition.carbs,
-                                            proteins = nutrition.proteins,
-                                            fats = nutrition.fats,
+                                            nutrients = if (nutrition.nutrients.isNotEmpty()) {
+                                                nutrition.nutrients
+                                            } else {
+                                                null
+                                            },
                                             mealCalories = mealCalories
                                         )
                                     )
@@ -228,27 +236,191 @@ class UserRepositoryImpl @Inject constructor(
         .flowOn(Dispatchers.IO)
         .conflate()
 
-    override suspend fun createNewTrackDay(
-        documentId: String,
-        date: Date,
-        recipe: NutritionSearchRecipe
-    ): Result<Unit> {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun updateRecipeList(
-        documentId: String,
-        recipe: NutritionSearchRecipe,
-        isAdd: Boolean
+        date: Date,
+        mealPosition: Int,
+        recipe: NutritionSearchRecipe
     ) = withContext(Dispatchers.IO) {
+
+        val documentId = date.toFirestoreDocumentIdByDate()
+        val collectionRef = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+            .collection(USER_RECORD_SUB_COLLECTION)
+        var newIntakeNutrition = IntakeNutrition()
+
+        val transaction = firestore.runTransaction { transaction ->
+            val snapshot = transaction.get(collectionRef.document(documentId))
+
+            if (snapshot.exists()) {
+                val intakeNutrition =
+                    snapshot.toObject(IntakeNutrition::class.java) ?: IntakeNutrition()
+                val nutrientRecords = intakeNutrition.nutrients
+                val recipeRecords = intakeNutrition.recipes
+                val newNutrientRecords = mutableListOf<NutrientData>()
+                var newRecipeRecords = emptyList<RecipeData>()
+
+                // Update recipe list, update servings and calories of recipe if it existed, otherwise add new recipe.
+                if (recipeRecords.any { it.mealPosition == mealPosition.toLong() && it.id == recipe.id.toLong() }) {
+                    newRecipeRecords = recipeRecords.map { recipeRecord ->
+                        if (recipeRecord.id == recipe.id.toLong() && recipeRecord.mealPosition == mealPosition.toLong()) {
+                            recipeRecord.copy(
+                                servings = recipeRecord.servings + recipe.servings.toLong(),
+                                calories = recipeRecord.calories + recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong()
+                            )
+                        } else {
+                            recipeRecord
+                        }
+                    }
+                } else {
+                    val newRecipeRecord = RecipeData(
+                        id = recipe.id.toLong(),
+                        name = recipe.name,
+                        imageUrl = recipe.imageUrl,
+                        mealPosition = mealPosition.toLong(),
+                        servings = recipe.servings.toLong(),
+                        calories = recipe.nutrients[0].amount.toLong()
+                    )
+                    newRecipeRecords = recipeRecords + newRecipeRecord
+                }
+
+                // Update nutrient list, increase amount of every nutrient added before.
+                nutrientRecords.forEach { nutrient ->
+                    val recipeNutrientAmount = recipe.nutrients.firstOrNull {
+                        it.name == nutrient.name
+                    }?.amount ?: 0f
+                    newNutrientRecords.add(
+                        NutrientData(
+                            name = nutrient.name,
+                            amount = nutrient.amount + recipeNutrientAmount,
+                            unit = nutrient.unit
+                        )
+                    )
+                }
+                // Add new nutrients to nutrient list if it doesn't exist.
+                recipe.nutrients.forEach { nutrient ->
+                    if (nutrientRecords.firstOrNull {
+                            it.name == nutrient.name
+                        } == null) {
+                        newNutrientRecords.add(
+                            NutrientData(
+                                name = nutrient.name,
+                                amount = nutrient.amount,
+                                unit = nutrient.unit
+                            )
+                        )
+                    }
+                }
+
+                newIntakeNutrition = intakeNutrition.copy(
+                    nutrients = newNutrientRecords,
+                    recipes = newRecipeRecords
+                )
+            } else {
+                val newNutrientRecords = recipe.nutrients.map { nutrient ->
+                    NutrientData(
+                        name = nutrient.name,
+                        amount = nutrient.amount,
+                        unit = nutrient.unit
+                    )
+                }
+                newIntakeNutrition = IntakeNutrition(
+                    date = date,
+                    nutrients = newNutrientRecords,
+                    recipes = listOf(
+                        RecipeData(
+                            id = recipe.id.toLong(),
+                            name = recipe.name,
+                            imageUrl = recipe.imageUrl,
+                            mealPosition = mealPosition.toLong(),
+                            servings = recipe.servings.toLong(),
+                            calories = recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong()
+                        )
+                    )
+                )
+            }
+
+            transaction.set(
+                collectionRef.document(documentId),
+                newIntakeNutrition,
+                SetOptions.merge()
+            )
+        }
+
         return@withContext try {
-            firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
-                .collection(USER_RECORD_SUB_COLLECTION).document(documentId.toString())
-                .update(USER_RECORD_RECIPE_LIST_FIELD, FieldValue.arrayUnion(recipe))
-                .await()
+            transaction.await()
             Result.Success(Unit)
-        } catch (e: Exception) {
+        } catch (e: FirebaseException) {
+            Log.e(FIREBASE_TRANSACTION_EXCEPTION, "Update data failed with ", e)
             Result.Error(e)
         }
     }
+
+    override suspend fun getDailyNutritionInfo(date: Date) = withContext(Dispatchers.IO) {
+        val docRef = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+        return@withContext try {
+            val userInfoDeferred = async { docRef.get() }.await()
+            val intakeNutritionDeferred = async {
+                docRef.collection(USER_RECORD_SUB_COLLECTION)
+                    .whereGreaterThanOrEqualTo(USER_RECORD_DATE_FIELD, date.startOfDay())
+                    .whereLessThan(USER_RECORD_DATE_FIELD, date.endOfDay())
+                    .get()
+            }.await()
+            val userInfo = userInfoDeferred.await().toObject(User::class.java) ?: User()
+            val nutritionRecordDocument = intakeNutritionDeferred.await()
+            val intakeNutrition = if (!nutritionRecordDocument.isEmpty) {
+                nutritionRecordDocument.documents[0].toObject(IntakeNutrition::class.java)
+            } else {
+                null
+            }
+            val intakeNutrients = intakeNutrition?.nutrients ?: emptyList()
+            Result.Success(
+                DailyNutritionDisplayData(
+                    targetCalories = userInfo.targetNutrition.calories.toInt(),
+                    targetCarbRatio = userInfo.targetNutrition.carbRatio.toFloat(),
+                    targetFatRatio = userInfo.targetNutrition.fatRatio.toFloat(),
+                    targetProteinRatio = userInfo.targetNutrition.proteinRatio.toFloat(),
+                    nutrients = intakeNutrients
+                )
+            )
+        } catch (e: FirebaseException) {
+            Log.e(FIREBASE_GET_DATA_EXCEPTION, "Get data failed with ", e)
+            Result.Error(e)
+        }
+    }
+
+    override fun getUserInfo() = callbackFlow {
+        firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+            .get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful && task.result.exists()) {
+                    val user = task.result.toObject(User::class.java)!!
+                    channel.trySend(user)
+                } else {
+                    channel.trySend(User())
+                }
+            }
+        awaitClose()
+    }.flowOn(Dispatchers.IO)
+
+    override fun getNutritionRecordsInAMonth(
+        startDate: Date,
+        endDate: Date
+    ) = callbackFlow {
+        val docRef = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+        docRef.collection(USER_RECORD_SUB_COLLECTION)
+            .whereGreaterThan(USER_RECORD_DATE_FIELD, startDate.startOfDay())
+            .whereLessThan(USER_RECORD_DATE_FIELD, endDate.endOfDay())
+            .get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful && !task.result.isEmpty) {
+                    val nutritionRecords = task.result.documents.map { snapshot ->
+                        snapshot.toObject(IntakeNutrition::class.java) ?: IntakeNutrition()
+                    }
+                    channel.trySend(nutritionRecords)
+                } else {
+                    Log.e(FIREBASE_GET_DATA_EXCEPTION, "Get data failed with ", task.exception)
+                    channel.trySend(emptyList())
+                }
+            }
+        awaitClose()
+    }.flowOn(Dispatchers.IO)
 }

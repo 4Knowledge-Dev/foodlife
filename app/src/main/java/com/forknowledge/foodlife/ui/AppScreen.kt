@@ -36,16 +36,26 @@ import com.forknowledge.feature.explore.ExploreRoute
 import com.forknowledge.feature.explore.ExploreSearchRoute
 import com.forknowledge.feature.explore.ui.ExploreScreen
 import com.forknowledge.feature.explore.ui.ExploreSearchScreen
+import com.forknowledge.feature.nutrient.AdditionalNutritionRoute
+import com.forknowledge.feature.nutrient.InsightsRoute
+import com.forknowledge.feature.nutrient.NutrientGroupRoute
 import com.forknowledge.feature.nutrient.NutrientRoute
 import com.forknowledge.feature.nutrient.SearchRoute
+import com.forknowledge.feature.nutrient.StatisticsRoute
+import com.forknowledge.feature.nutrient.dailyinsights.DailyInsightsScreen
 import com.forknowledge.feature.nutrient.nutrient.NutrientScreen
 import com.forknowledge.feature.nutrient.search.SearchScreen
+import com.forknowledge.feature.nutrient.statistics.AdditionalNutritionScreen
+import com.forknowledge.feature.nutrient.statistics.NutrientGroupScreen
+import com.forknowledge.feature.nutrient.statistics.StatisticsScreen
 import com.forknowledge.feature.nutrient.tracking.LogFoodRoute
 import com.forknowledge.feature.nutrient.tracking.LogFoodScreen
 import com.forknowledge.feature.onboarding.onboardingNavGraph
 import com.forknowledge.feature.planner.PlannerRoute
 import com.forknowledge.feature.planner.navigateToPlannerRoute
 import com.forknowledge.feature.planner.ui.PlannerScreen
+import com.forknowledge.feature.recipe.RecipeRoute
+import com.forknowledge.feature.recipe.screen.RecipeScreen
 import com.forknowledge.foodlife.R
 
 @Composable
@@ -92,10 +102,18 @@ fun AppScreen(
             onboardingNavGraph(navController = appState.navController)
             composable<NutrientRoute> {
                 NutrientScreen(
-                    onNavigateToLogFood = { meal, hasLoggedFood, date ->
+                    onNavigateToLogFood = { mealPosition, date ->
                         appState.navController.navigate(
-                            LogFoodRoute(meal, hasLoggedFood, date)
+                            LogFoodRoute(mealPosition, date)
                         )
+                    },
+                    onNavigateToDailyInsights = { dateInMillis ->
+                        appState.navController.navigate(
+                            InsightsRoute(dateInMillis)
+                        )
+                    },
+                    onNavigateToNutrientGroup = {
+                        appState.navController.navigate(NutrientGroupRoute)
                     }
                 )
             }
@@ -109,6 +127,9 @@ fun AppScreen(
                                 dateInMillis = date
                             )
                         )
+                    },
+                    onNavigateToRecipeDetail = { recipeId ->
+                        appState.navController.navigate(RecipeRoute(recipeId))
                     }
                 )
             }
@@ -131,12 +152,11 @@ fun AppScreen(
             composable<LogFoodRoute> { backStackEntry ->
                 val meal = backStackEntry.toRoute<LogFoodRoute>()
                 LogFoodScreen(
-                    meal = meal.meal,
-                    hasLoggedFood = meal.hasLoggedRecipe,
+                    mealPosition = meal.mealPosition,
                     dateInMillis = meal.dateInMillis,
-                    onNavigateToSearch = { meal, hasLoggedFood, date ->
+                    onNavigateToSearch = { mealPosition, date ->
                         appState.navController.navigate(
-                            SearchRoute(meal, hasLoggedFood, date)
+                            SearchRoute(mealPosition, date)
                         )
                     },
                     onNavigateBack = { appState.navController.popBackStack() }
@@ -145,10 +165,14 @@ fun AppScreen(
             composable<SearchRoute> { backStackEntry ->
                 val data = backStackEntry.toRoute<SearchRoute>()
                 SearchScreen(
-                    meal = data.meal,
-                    hasLoggedFood = data.hasLoggedFood,
+                    mealPosition = data.mealPosition,
                     dateInMillis = data.dateInMillis,
-                    onNavigateBack = { appState.navController.popBackStack() }
+                    onNavigateBack = { appState.navController.popBackStack() },
+                    onNavigateToNutrient = {
+                        appState.navigateToTopLevelDestination(
+                            TopLevelDestination.NUTRIENT
+                        )
+                    }
                 )
             }
             composable<ExploreSearchRoute> { backStackEntry ->
@@ -161,6 +185,54 @@ fun AppScreen(
                         appState.navController.navigateToPlannerRoute()
                     },
                     onNavigateBack = { appState.navController.popBackStack() }
+                )
+            }
+            composable<InsightsRoute> { backStackEntry ->
+                val data = backStackEntry.toRoute<InsightsRoute>()
+                DailyInsightsScreen(
+                    dateInMillis = data.dateInMillis,
+                    onNavigateBack = appState.navController::popBackStack
+                )
+            }
+            composable<NutrientGroupRoute> {
+                NutrientGroupScreen(
+                    onNavigateToAdditionalNutrition = { name, type ->
+                        appState.navController.navigate(
+                            AdditionalNutritionRoute(name, type)
+                        )
+                    },
+                    onNavigateToStatistics = { name, type ->
+                        appState.navController.navigate(StatisticsRoute(name, type))
+                    },
+                    onNavigateBack = appState.navController::popBackStack
+                )
+            }
+            composable<AdditionalNutritionRoute> { backStackEntry ->
+                val data = backStackEntry.toRoute<AdditionalNutritionRoute>()
+                AdditionalNutritionScreen(
+                    groupName = data.groupName,
+                    nutritionType = data.nutritionType,
+                    onNavigateToStatistics = { nutritionName, nutritionType ->
+                        appState.navController.navigate(
+                            StatisticsRoute(nutritionName, nutritionType)
+                        )
+                    },
+                    onNavigateBack = appState.navController::popBackStack
+                )
+            }
+            composable<StatisticsRoute> { backStackEntry ->
+                val data = backStackEntry.toRoute<StatisticsRoute>()
+                StatisticsScreen(
+                    nutritionName = data.nutrientName,
+                    nutritionType = data.type,
+                    onNavigateBack = appState.navController::popBackStack
+                )
+            }
+            composable<RecipeRoute> { backStackEntry ->
+                val recipeId = backStackEntry.toRoute<RecipeRoute>().recipeId
+                RecipeScreen(
+                    recipeId = recipeId,
+                    onNavigateBack = appState.navController::popBackStack
                 )
             }
         }

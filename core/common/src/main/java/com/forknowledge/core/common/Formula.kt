@@ -1,7 +1,7 @@
 package com.forknowledge.core.common
 
 import com.forknowledge.core.common.healthtype.Goal
-import com.forknowledge.core.common.healthtype.Nutrient
+import com.forknowledge.core.common.healthtype.NutrientType
 import kotlin.math.roundToLong
 
 /**
@@ -42,9 +42,22 @@ fun getDeficitOrExcessCaloriesPerDay(weightPerWeek: Double) = weightPerWeek / 0.
  * @return calories from nutrient amount.
  */
 fun nutrientAmountToCalories(
-    nutrient: Nutrient,
-    amount: Long
-): Long = amount * nutrient.kcal
+    nutrient: NutrientType,
+    amount: Float
+): Float = amount * nutrient.kcal
+
+/**
+ * Calculate calories from nutrient amount.
+ * @param nutrient nutrient type.
+ * @param amount nutrient amount by gram.
+ * @param totalCalories of the day.
+ * @return nutrient ratio.
+ */
+fun nutrientAmountToCaloriesRatio(
+    nutrient: NutrientType,
+    amount: Float,
+    totalCalories: Float
+): Float = amount * nutrient.kcal / totalCalories
 
 /**
  * Calculate nutrient amount(g) from calories.
@@ -53,6 +66,6 @@ fun nutrientAmountToCalories(
  * @return nutrient amount(g) from calories.
  */
 fun caloriesToNutrientAmount(
-    nutrient: Nutrient,
+    nutrient: NutrientType,
     calories: Double
 ): Long = (calories / nutrient.kcal).roundToLong()

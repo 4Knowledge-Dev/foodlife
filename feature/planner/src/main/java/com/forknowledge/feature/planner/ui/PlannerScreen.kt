@@ -86,7 +86,8 @@ import java.time.LocalDate
 @Composable
 fun PlannerScreen(
     viewModel: MealPlannerViewModel = hiltViewModel(),
-    onNavigateToExplore: (Long, Int) -> Unit
+    onNavigateToExplore: (Long, Int) -> Unit,
+    onNavigateToRecipeDetail: (Int) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var isAddMealPlanOptionsExpanded by remember { mutableStateOf(false) }
@@ -181,7 +182,7 @@ fun PlannerScreen(
                     actions = listOf(
                         FloatingAction(
                             label = stringResource(R.string.meal_planner_meal_plan_breakfast_label),
-                            icon = drawable.ic_breakfast,
+                            icon = drawable.img_breakfast,
                             action = {
                                 onNavigateToExplore(
                                     weekDays[selectedTab].toEpochSeconds(),
@@ -191,7 +192,7 @@ fun PlannerScreen(
                         ),
                         FloatingAction(
                             label = stringResource(R.string.meal_planner_meal_plan_lunch_label),
-                            icon = drawable.ic_lunch,
+                            icon = drawable.img_lunch,
                             action = {
                                 onNavigateToExplore(
                                     weekDays[selectedTab].toEpochSeconds(),
@@ -201,7 +202,7 @@ fun PlannerScreen(
                         ),
                         FloatingAction(
                             label = stringResource(R.string.meal_planner_meal_plan_dinner_label),
-                            icon = drawable.ic_dinner,
+                            icon = drawable.img_dinner,
                             action = {
                                 onNavigateToExplore(
                                     weekDays[selectedTab].toEpochSeconds(),
@@ -260,6 +261,7 @@ fun PlannerScreen(
                                         1
                                     )
                                 },
+                                onNavigateToRecipeDetail = { onNavigateToRecipeDetail(it) },
                                 onDeleteRecipe = {
                                     viewModel.deleteRecipeFromMealPlan(
                                         meal.date,
@@ -280,6 +282,7 @@ fun PlannerScreen(
                                         2
                                     )
                                 },
+                                onNavigateToRecipeDetail = { onNavigateToRecipeDetail(it) },
                                 onDeleteRecipe = {
                                     viewModel.deleteRecipeFromMealPlan(
                                         meal.date,
@@ -300,6 +303,7 @@ fun PlannerScreen(
                                         3
                                     )
                                 },
+                                onNavigateToRecipeDetail = { onNavigateToRecipeDetail(it) },
                                 onDeleteRecipe = {
                                     viewModel.deleteRecipeFromMealPlan(
                                         meal.date,
@@ -400,6 +404,7 @@ fun MealSection(
     recipes: List<MealRecipe>,
     onProcessItem: Int,
     onNavigateToExplore: () -> Unit,
+    onNavigateToRecipeDetail: (Int) -> Unit,
     onDeleteRecipe: (Int) -> Unit
 ) {
     ConstraintLayout(
@@ -447,6 +452,7 @@ fun MealSection(
                 MealItem(
                     recipe = recipe,
                     showLoading = recipe.mealId == onProcessItem,
+                    onRecipeClick = { onNavigateToRecipeDetail(it) },
                     onDeleteRecipe = { onDeleteRecipe(recipe.mealId) }
                 )
             }
@@ -459,6 +465,7 @@ fun MealSection(
 fun MealItem(
     recipe: MealRecipe,
     showLoading: Boolean,
+    onRecipeClick: (Int) -> Unit,
     onDeleteRecipe: () -> Unit
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -495,7 +502,7 @@ fun MealItem(
             )
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.background)
-            .clickable {}
+            .clickable { onRecipeClick(recipe.recipeId) }
 
     ) {
         val (recipeImage, recipeName, cookTime, servings, actionIcon) = createRefs()
@@ -597,7 +604,7 @@ fun MealItem(
                         bottom.linkTo(parent.bottom)
                         end.linkTo(parent.end, margin = 12.dp)
                     },
-                painter = painterResource(R.drawable.ic_options),
+                painter = painterResource(drawable.ic_options),
                 tint = Black374957,
                 contentDescription = null
             )
@@ -622,7 +629,6 @@ fun ActionBottomSheet(
                     .height(50.dp)
                     .clickable {
                         when (action) {
-                            MealAction.COMPLETE -> {}
                             MealAction.SWAP -> {}
                             MealAction.DELETE -> onDeleteRecipe()
                         }
@@ -726,6 +732,7 @@ fun MealItemPreview() {
             servings = 4,
         ),
         showLoading = true,
+        onRecipeClick = {},
         onDeleteRecipe = {}
     )
 }
@@ -747,6 +754,7 @@ fun MealSectionPreview() {
             )
         ),
         onNavigateToExplore = {},
+        onNavigateToRecipeDetail = {},
         onDeleteRecipe = {}
     )
 }

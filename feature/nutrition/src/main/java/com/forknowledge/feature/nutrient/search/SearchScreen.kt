@@ -16,12 +16,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +37,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,47 +47,57 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.forknowledge.core.common.extension.toFirestoreDateTime
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
 import com.forknowledge.core.ui.theme.Black374957
+import com.forknowledge.core.ui.theme.Grey7F000000
 import com.forknowledge.core.ui.theme.Grey808993
 import com.forknowledge.core.ui.theme.Grey8A949F
 import com.forknowledge.core.ui.theme.GreyDADADA
 import com.forknowledge.core.ui.theme.Typography
+import com.forknowledge.core.ui.theme.component.AppButtonSmall
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.core.ui.theme.component.ErrorMessage
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.feature.model.Nutrient
 import com.forknowledge.feature.model.NutritionSearchRecipe
 import com.forknowledge.feature.nutrient.R
-import java.util.Date
+import com.forknowledge.feature.nutrient.Utils
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filter
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    meal: Long,
-    hasLoggedFood: Boolean,
+    mealPosition: Int,
     dateInMillis: Long,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToNutrient: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
     val isLoading = viewModel.isLoading
+    val shouldShowItemProcessLoading = viewModel.shouldShowItemProcessLoading
+    val shouldShowError = viewModel.shouldShowError
+    val onProcessItemId = viewModel.onProcessItemId
     val logRecipeResult = viewModel.logRecipeResult
-    val loggedRecipeId = viewModel.loggedRecipeId
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val recipes = viewModel.recipes.collectAsLazyPagingItems()
 
     LaunchedEffect(Unit) {
-        viewModel.updateHasLoggedFood(hasLoggedFood)
         focusRequester.requestFocus()
     }
 
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize()
     ) {
         SearchBar(
             modifier = Modifier.align(Alignment.TopCenter),
@@ -120,34 +135,65 @@ fun SearchScreen(
             onExpandedChange = { },
         ) {
             if (isLoading) {
-                LoadingIndicator()
-            } else {
-                LazyColumn(
+                Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(
-                        vertical = 8.dp,
-                        horizontal = 16.dp
-                    )
+                    contentAlignment = Alignment.Center
                 ) {
-                    items(
-                        count = recipes.itemCount,
-                        key = recipes.itemKey { it.id }
-                    ) { index ->
-                        recipes[index]?.let {
-                            RecipeItem(
-                                recipe = it,
-                                onLogRecipe = {
-                                    viewModel.logRecipe(
-                                        meal = meal,
-                                        date = Date(dateInMillis),
-                                        recipe = it
-                                    )
-                                }
-                            )
+                    LoadingIndicator()
+                }
+            }
+
+            if (shouldShowError) {
+                ErrorMessage(stringResource(R.string.nutrient_insights_error_message))
+            }
+
+            if (!isLoading && !shouldShowError) {
+                if (recipes.itemCount > 0) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background),
+                        contentPadding = PaddingValues(
+                            vertical = 8.dp,
+                            horizontal = 16.dp
+                        )
+                    ) {
+                        items(
+                            count = recipes.itemCount,
+                            key = recipes.itemKey { it.id }
+                        ) { index ->
+                            recipes[index]?.let {
+                                RecipeItem(
+                                    recipe = it,
+                                    showLoading = shouldShowItemProcessLoading && it.id == onProcessItemId,
+                                    logRecipeResult = logRecipeResult,
+                                    onLogRecipe = {
+                                        viewModel.logRecipe(
+                                            date = dateInMillis.toFirestoreDateTime(),
+                                            mealPosition = mealPosition,
+                                            recipe = it
+                                        )
+                                    }
+                                )
+                            }
                         }
+                    }
+                } else {
+                    if (searchQuery.isNotEmpty()) {
+                        NoDataFoundMessage()
                     }
                 }
             }
+        }
+
+        if (!isLoading && recipes.itemCount > 0) {
+            AppButtonSmall(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp),
+                text = stringResource(R.string.nutrient_log_food_search_screen_button_done),
+                onClicked = onNavigateToNutrient
+            )
         }
     }
 }
@@ -156,8 +202,38 @@ fun SearchScreen(
 @Composable
 fun RecipeItem(
     recipe: NutritionSearchRecipe,
+    showLoading: Boolean,
+    logRecipeResult: Utils,
     onLogRecipe: () -> Unit
 ) {
+    val successComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.anim_success)
+    )
+    val failComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.anim_fail)
+    )
+    var showAnim by remember { mutableStateOf(false) }
+    val successProgress by animateLottieCompositionAsState(
+        composition = successComposition,
+        isPlaying = showAnim
+    )
+    val failProgress by animateLottieCompositionAsState(
+        composition = failComposition,
+        isPlaying = showAnim
+    )
+
+    LaunchedEffect(showLoading) {
+        snapshotFlow { showLoading }
+            .filter { !it }
+            .collect { isLoading ->
+                if (logRecipeResult != Utils.NONE) {
+                    showAnim = true
+                    delay(1500)
+                    showAnim = false
+                }
+            }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .padding(top = 16.dp)
@@ -169,7 +245,7 @@ fun RecipeItem(
                     bottomStart = 8.dp,
                     bottomEnd = 8.dp
                 )
-                shadowElevation = 3.dp.toPx()
+                shadowElevation = 2.dp.toPx()
                 spotShadowColor = Black063336
                 clip = true
             }
@@ -225,28 +301,64 @@ fun RecipeItem(
                 end.linkTo(icon.start)
                 horizontalBias = 0F
             },
-            text = stringResource(
-                R.string.nutrient_log_food_food_item_amount,
+            text = pluralStringResource(
+                id = R.plurals.nutrient_log_food_item_amount,
+                count = recipe.servings,
                 recipe.nutrients[0].amount.roundToInt(),
-                recipe.nutrients[0].amount.roundToInt()
+                recipe.servings
             ),
             textStyle = Typography.bodySmall,
             color = Grey808993
         )
 
-        Icon(
+        Box(
             modifier = Modifier
                 .size(28.dp)
-                .clickable { onLogRecipe() }
                 .constrainAs(icon) {
                     top.linkTo(recipeImage.top)
                     bottom.linkTo(recipeImage.bottom)
                     end.linkTo(parent.end, margin = 16.dp)
-                },
-            painter = painterResource(drawable.ic_add_solid),
-            tint = Black374957,
-            contentDescription = null
-        )
+                }
+        ) {
+            if (!showLoading && !showAnim) {
+                Icon(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable { onLogRecipe() },
+                    painter = painterResource(drawable.ic_add_solid),
+                    tint = Black374957,
+                    contentDescription = null
+                )
+            }
+            if (showLoading) {
+                LoadingIndicator(
+                    modifier = Modifier.fillMaxSize(),
+                    strokeWidth = 3.dp
+                )
+            }
+            if (showAnim) {
+                when (logRecipeResult) {
+                    Utils.NONE -> { /* Do nothing */
+                    }
+
+                    Utils.SUCCESS -> {
+                        LottieAnimation(
+                            modifier = Modifier.fillMaxSize(),
+                            composition = successComposition,
+                            progress = { successProgress },
+                        )
+                    }
+
+                    Utils.FAIL -> {
+                        LottieAnimation(
+                            modifier = Modifier.fillMaxSize(),
+                            composition = failComposition,
+                            progress = { failProgress },
+                        )
+                    }
+                }
+            }
+        }
 
         HorizontalDivider(
             modifier = Modifier
@@ -270,7 +382,7 @@ fun RecipeItem(
             AppText(
                 text = stringResource(
                     R.string.nutrient_log_food_search_screen_nutrient_amount,
-                    60.5
+                    recipe.nutrients[1].amount
                 ),
                 textStyle = Typography.labelSmall
             )
@@ -293,7 +405,7 @@ fun RecipeItem(
             AppText(
                 text = stringResource(
                     R.string.nutrient_log_food_search_screen_nutrient_amount,
-                    60.5
+                    recipe.nutrients[2].amount
                 ),
                 textStyle = Typography.labelSmall
             )
@@ -316,7 +428,7 @@ fun RecipeItem(
             AppText(
                 text = stringResource(
                     R.string.nutrient_log_food_search_screen_nutrient_amount,
-                    60.5
+                    recipe.nutrients[3].amount
                 ),
                 textStyle = Typography.labelSmall
             )
@@ -325,6 +437,31 @@ fun RecipeItem(
                 text = stringResource(R.string.nutrient_label_fat),
                 textStyle = Typography.bodySmall,
                 color = Grey808993
+            )
+        }
+    }
+}
+
+@Composable
+fun NoDataFoundMessage() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                modifier = Modifier.size(250.dp),
+                painter = painterResource(drawable.img_vector_no_data_found),
+                contentDescription = null
+            )
+
+            AppText(
+                text = stringResource(R.string.nutrient_log_food_search_screen_no_data_found),
+                textStyle = Typography.bodyLarge,
+                color = Grey7F000000
             )
         }
     }
@@ -339,14 +476,23 @@ fun RecipeItemPreview() {
             name = "Spaghetti Bolognese",
             imageUrl = "",
             servings = 2,
-            nutrients = listOf(
+            nutrients = List(4) {
                 Nutrient(
                     name = "Calories",
-                    amount = 1200f,
+                    amount = 90f,
                     unit = "kcal",
+                    dailyPercentValue = 35
                 )
-            )
+            }
         ),
+        showLoading = false,
+        logRecipeResult = Utils.NONE,
         onLogRecipe = {}
     )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+fun NoDataFoundMessagePreview() {
+    NoDataFoundMessage()
 }

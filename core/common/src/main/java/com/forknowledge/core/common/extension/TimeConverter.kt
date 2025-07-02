@@ -32,6 +32,8 @@ fun Date.startOfDay(): Date {
     val calendar = Calendar.getInstance()
     calendar.time = this
     calendar.set(Calendar.HOUR_OF_DAY, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
     return calendar.time
 }
 
@@ -43,7 +45,38 @@ fun Date.endOfDay(): Date {
 }
 
 fun Date.toDayMonthDateString(): String {
-    val formatter = SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault())
+    val firstCalendar = Calendar.getInstance()
+    firstCalendar.time = this
+    firstCalendar.set(Calendar.HOUR_OF_DAY, 0)
+    firstCalendar.set(Calendar.MINUTE, 0)
+    firstCalendar.set(Calendar.SECOND, 0)
+    firstCalendar.set(Calendar.MILLISECOND, 0)
+    val secondCalendar = Calendar.getInstance()
+    secondCalendar.time = Date()
+    secondCalendar.set(Calendar.HOUR_OF_DAY, 0)
+    secondCalendar.set(Calendar.MINUTE, 0)
+    secondCalendar.set(Calendar.SECOND, 0)
+    secondCalendar.set(Calendar.MILLISECOND, 0)
+    val formatter = SimpleDateFormat("EEE, MMMM dd", Locale.getDefault())
+    val formatDate = formatter.format(this)
+    return if (firstCalendar == secondCalendar) {
+        formatDate.replaceRange(0, 3, "Today")
+    } else {
+        formatDate
+    }
+}
+
+fun Date.toDayMonthString(): String {
+    val firstCalendar = Calendar.getInstance()
+    firstCalendar.time = this
+    val formatter = SimpleDateFormat("M/dd", Locale.getDefault())
+    return formatter.format(this)
+}
+
+fun Date.toDateMonthString(): String {
+    val firstCalendar = Calendar.getInstance()
+    firstCalendar.time = this
+    val formatter = SimpleDateFormat("MMM dd", Locale.getDefault())
     return formatter.format(this)
 }
 
@@ -63,7 +96,7 @@ fun Date.previousDate(): Date {
 
 /**
  * Get firestore document id by getting date in millis.
- * @return firestore document id.
+ * @return firestore document id should be used when create a new nutrition track date.
  */
 fun Date.toFirestoreDocumentIdByDate(): String {
     val calendar = Calendar.getInstance()
@@ -73,6 +106,17 @@ fun Date.toFirestoreDocumentIdByDate(): String {
     calendar.set(Calendar.SECOND, 0)
     calendar.set(Calendar.MILLISECOND, 0)
     return calendar.timeInMillis.toString()
+}
+
+/**
+ * Convert time in milliseconds to Date for working with firestore. Use this function when log recipe.
+ * @return [Date] object.
+ */
+fun Long.toFirestoreDateTime(): Date {
+    val calendar = Calendar.getInstance()
+    calendar.time = Date(this)
+    calendar.set(Calendar.HOUR_OF_DAY, 12)
+    return calendar.time
 }
 
 /**
@@ -86,7 +130,7 @@ fun Long.toLocalDate(): LocalDate {
 }
 
 fun LocalDate.toEpochSeconds(): Long {
-    return this.atStartOfDay(ZoneId.of("GMT")).toEpochSecond()
+    return this.atStartOfDay(ZoneId.of("UTC")).toEpochSecond()
 }
 
 fun LocalDate.toDayAndDateString(): String {

@@ -59,27 +59,35 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_CALORIES_INDEX
+import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_CARB_INDEX
+import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_FAT_INDEX
+import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_PROTEIN_INDEX
 import com.forknowledge.core.common.caloriesToNutrientAmount
 import com.forknowledge.core.common.extension.nextDate
 import com.forknowledge.core.common.extension.previousDate
 import com.forknowledge.core.common.extension.toDayMonthDateString
-import com.forknowledge.core.common.getCurrentDate
-import com.forknowledge.core.common.healthtype.Nutrient
+import com.forknowledge.core.common.extension.toFirestoreDateTime
+import com.forknowledge.core.common.getCurrentDateTime
+import com.forknowledge.core.common.healthtype.NutrientType
 import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Blue05A6F1
+import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.GreenA1CE50
 import com.forknowledge.core.ui.theme.Grey8A949F
 import com.forknowledge.core.ui.theme.GreyDADADA
 import com.forknowledge.core.ui.theme.GreyFAFAFA
+import com.forknowledge.core.ui.theme.OrangeFB880C
 import com.forknowledge.core.ui.theme.RedFF3939
 import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
-import com.forknowledge.core.ui.theme.YellowFB880C
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.core.ui.theme.component.AppTextButton
 import com.forknowledge.core.ui.theme.component.DatePickerModal
+import com.forknowledge.feature.model.userdata.NutrientData
 import com.forknowledge.feature.model.userdata.TargetNutrition
 import com.forknowledge.feature.nutrient.R
 import java.util.Date
@@ -88,7 +96,9 @@ import kotlin.math.roundToLong
 
 @Composable
 fun NutrientScreen(
-    onNavigateToLogFood: (Long, Boolean, Long) -> Unit,
+    onNavigateToLogFood: (Int, Long) -> Unit,
+    onNavigateToDailyInsights: (Long) -> Unit,
+    onNavigateToNutrientGroup: () -> Unit,
     viewModel: NutritionViewModel = hiltViewModel()
 ) {
     val date = viewModel.date
@@ -100,7 +110,8 @@ fun NutrientScreen(
         topBar = {
             AppBarDateSelector(
                 date = date,
-                onDateChanged = viewModel::updateDate
+                onDateChanged = viewModel::updateDate,
+                onNavigateToStatistics = onNavigateToNutrientGroup
             )
         }
     ) { innerPadding ->
@@ -109,21 +120,34 @@ fun NutrientScreen(
                 .fillMaxSize()
                 .background(color = GreyFAFAFA)
                 .verticalScroll(rememberScrollState())
-                .padding(innerPadding)
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.End
         ) {
             targetNutrition?.let { nutrition ->
                 viewModel.getIntakeNutritionByDate()
 
+                AppTextButton(
+                    modifier = Modifier.padding(
+                        top = 24.dp,
+                        start = 16.dp,
+                        end = 16.dp
+                    ),
+                    text = stringResource(R.string.nutrient_label_detail),
+                    textStyle = Typography.labelLarge,
+                    color = Green91C747,
+                    onClick = { onNavigateToDailyInsights(date.time) }
+                )
+
                 NutrientSection(
                     targetNutrition = nutrition,
-                    intakeNutrition = intakeNutrition
+                    intakeNutrition = intakeNutrition.nutrients
                 )
 
                 MealSection(
                     targetNutrition = nutrition,
                     intakeNutrition = intakeNutrition,
                     onNavigateToLogFood = {
-                        onNavigateToLogFood(it, intakeNutrition.calories != 0L, date.time)
+                        onNavigateToLogFood(it, date.time)
                     }
                 )
             }
@@ -135,7 +159,8 @@ fun NutrientScreen(
 @Composable
 fun AppBarDateSelector(
     date: Date,
-    onDateChanged: (Date) -> Unit
+    onDateChanged: (Date) -> Unit,
+    onNavigateToStatistics: () -> Unit
 ) {
     var showDatePickerModal by remember { mutableStateOf(false) }
 
@@ -145,59 +170,77 @@ fun AppBarDateSelector(
             confirmText = stringResource(R.string.nutrient_date_picker_button_confirm_text),
             date = date.time,
             onDateSelected = { date ->
-                date?.let { onDateChanged(Date(it)) }
+                date?.let { onDateChanged(it.toFirestoreDateTime()) }
             },
             onDismiss = { showDatePickerModal = false }
         )
     }
 
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .padding(
-                horizontal = 8.dp,
-                vertical = 4.dp
-            ),
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(horizontal = 8.dp)
     ) {
-        IconButton(
-            onClick = { onDateChanged(date.previousDate()) }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
         ) {
-            Icon(
-                painter = painterResource(drawable.ic_back),
-                tint = Grey8A949F,
-                contentDescription = null
-            )
+            IconButton(
+                modifier = Modifier.padding(end = 12.dp),
+                onClick = onNavigateToStatistics
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_timeline),
+                    tint = Black374957,
+                    contentDescription = null
+                )
+            }
+
+            IconButton(onClick = { showDatePickerModal = true }) {
+                Icon(
+                    painter = painterResource(drawable.ic_calendar),
+                    tint = Black374957,
+                    contentDescription = null
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        AppText(
-            modifier = Modifier.clickable { showDatePickerModal = true },
-            text = date.toDayMonthDateString(),
-            textStyle = MaterialTheme.typography.labelLarge
-        )
-
-        Icon(
+        Row(
             modifier = Modifier
-                .padding(start = 12.dp)
-                .clickable { onDateChanged(getCurrentDate()) },
-            painter = painterResource(drawable.ic_calendar),
-            tint = Black374957,
-            contentDescription = null
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        IconButton(
-            onClick = { onDateChanged(date.nextDate()) }
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                painter = painterResource(drawable.ic_forward),
-                tint = Grey8A949F,
-                contentDescription = null
+            IconButton(
+                onClick = { onDateChanged(date.previousDate()) }
+            ) {
+                Icon(
+                    painter = painterResource(drawable.ic_back),
+                    tint = Grey8A949F,
+                    contentDescription = null
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            AppText(
+                modifier = Modifier.clickable { onDateChanged(getCurrentDateTime()) },
+                text = date.toDayMonthDateString(),
+                textStyle = MaterialTheme.typography.labelLarge
             )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            IconButton(
+                onClick = { onDateChanged(date.nextDate()) }
+            ) {
+                Icon(
+                    painter = painterResource(drawable.ic_forward),
+                    tint = Grey8A949F,
+                    contentDescription = null
+                )
+            }
         }
     }
 }
@@ -205,13 +248,13 @@ fun AppBarDateSelector(
 @Composable
 fun NutrientSection(
     targetNutrition: TargetNutrition,
-    intakeNutrition: NutritionDisplayData
+    intakeNutrition: List<NutrientData>?
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                top = 24.dp,
+                top = 12.dp,
                 start = 16.dp,
                 end = 16.dp
             )
@@ -249,10 +292,13 @@ fun NutrientSection(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround
         ) {
+            val intakeCalories =
+                intakeNutrition?.get(RECIPE_NUTRIENT_CALORIES_INDEX)?.amount?.roundToLong() ?: 0
+
             // Eaten
             ActivityCard(
                 activityLabel = stringResource(R.string.nutrient_activity_calories_label_eaten),
-                activityValue = intakeNutrition.calories,
+                activityValue = intakeCalories,
                 activityUnit = stringResource(R.string.nutrient_activity_calories_unit)
             )
 
@@ -260,12 +306,12 @@ fun NutrientSection(
                 modifier = Modifier.size(130.dp),
                 isDailyCalories = true,
                 progressBarWidth = 9.dp,
-                progressIndicatorColor = if (intakeNutrition.calories <= targetNutrition.calories) {
+                progressIndicatorColor = if (intakeCalories <= targetNutrition.calories) {
                     GreenA1CE50
                 } else {
                     RedFF3939
                 },
-                progress = intakeNutrition.calories,
+                progress = intakeCalories,
                 totalNutrients = targetNutrition.calories
             )
 
@@ -316,10 +362,11 @@ fun NutrientSection(
                     modifier = Modifier.size(90.dp),
                     progressBarWidth = 7.dp,
                     progressIndicatorColor = RedFF4950,
-                    progress = intakeNutrition.carbs,
+                    progress = intakeNutrition?.get(RECIPE_NUTRIENT_CARB_INDEX)?.amount?.roundToLong()
+                        ?: 0,
                     totalNutrients = caloriesToNutrientAmount(
-                        nutrient = Nutrient.CARBOHYDRATE,
-                        calories = (targetNutrition.calories * targetNutrition.carbRatio)
+                        nutrient = NutrientType.CARBOHYDRATE,
+                        calories = targetNutrition.calories * targetNutrition.carbRatio
                     )
                 )
 
@@ -335,11 +382,12 @@ fun NutrientSection(
                 NutrientProgress(
                     modifier = Modifier.size(90.dp),
                     progressBarWidth = 7.dp,
-                    progressIndicatorColor = YellowFB880C,
-                    progress = intakeNutrition.proteins,
+                    progressIndicatorColor = OrangeFB880C,
+                    progress = intakeNutrition?.get(RECIPE_NUTRIENT_PROTEIN_INDEX)?.amount?.roundToLong()
+                        ?: 0,
                     totalNutrients = caloriesToNutrientAmount(
-                        nutrient = Nutrient.PROTEIN,
-                        calories = (targetNutrition.calories * targetNutrition.proteinRatio)
+                        nutrient = NutrientType.PROTEIN,
+                        calories = targetNutrition.calories * targetNutrition.proteinRatio
                     )
                 )
 
@@ -356,10 +404,11 @@ fun NutrientSection(
                     modifier = Modifier.size(90.dp),
                     progressBarWidth = 7.dp,
                     progressIndicatorColor = Blue05A6F1,
-                    progress = intakeNutrition.fats,
+                    progress = intakeNutrition?.get(RECIPE_NUTRIENT_FAT_INDEX)?.amount?.roundToLong()
+                        ?: 0,
                     totalNutrients = caloriesToNutrientAmount(
-                        nutrient = Nutrient.CARBOHYDRATE,
-                        calories = (targetNutrition.calories * targetNutrition.fatRatio)
+                        nutrient = NutrientType.FAT,
+                        calories = targetNutrition.calories * targetNutrition.fatRatio
                     )
                 )
 
@@ -426,7 +475,7 @@ fun NutrientSection(
 fun MealSection(
     targetNutrition: TargetNutrition,
     intakeNutrition: NutritionDisplayData,
-    onNavigateToLogFood: (Long) -> Unit
+    onNavigateToLogFood: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -467,8 +516,8 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_breakfast),
             calories = intakeNutrition.mealCalories[0],
             totalCalories = (targetNutrition.calories * targetNutrition.breakfastRatio).roundToLong(),
-            image = drawable.ic_breakfast,
-            onNavigateToLogFood = { onNavigateToLogFood(0) }
+            image = R.drawable.img_breakfast,
+            onNavigateToLogFood = { onNavigateToLogFood(1) }
         )
 
         HorizontalDivider(
@@ -483,8 +532,8 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_lunch),
             calories = intakeNutrition.mealCalories[1],
             totalCalories = (targetNutrition.calories * targetNutrition.lunchRatio).roundToLong(),
-            image = drawable.ic_lunch,
-            onNavigateToLogFood = { onNavigateToLogFood(1) }
+            image = R.drawable.img_lunch,
+            onNavigateToLogFood = { onNavigateToLogFood(2) }
         )
 
         HorizontalDivider(
@@ -499,8 +548,8 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_dinner),
             calories = intakeNutrition.mealCalories[2],
             totalCalories = (targetNutrition.calories * targetNutrition.dinnerRatio).roundToLong(),
-            image = drawable.ic_dinner,
-            onNavigateToLogFood = { onNavigateToLogFood(2) }
+            image = R.drawable.img_dinner,
+            onNavigateToLogFood = { onNavigateToLogFood(3) }
         )
 
         HorizontalDivider(
@@ -515,8 +564,8 @@ fun MealSection(
             label = stringResource(R.string.nutrient_meal_label_snack),
             calories = intakeNutrition.mealCalories[3],
             totalCalories = (targetNutrition.calories * targetNutrition.snacksRatio).roundToLong(),
-            image = drawable.ic_snack,
-            onNavigateToLogFood = { onNavigateToLogFood(3) }
+            image = R.drawable.img_snack,
+            onNavigateToLogFood = { onNavigateToLogFood(4) }
         )
     }
 }
@@ -761,7 +810,11 @@ fun MealCard(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun DateSelectorPreview() {
-    AppBarDateSelector(Date()) {}
+    AppBarDateSelector(
+        date = getCurrentDateTime(),
+        onDateChanged = {},
+        onNavigateToStatistics = {}
+    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
@@ -774,7 +827,7 @@ fun NutrientSectionPreview() {
             proteinRatio = 0.3,
             fatRatio = 0.2
         ),
-        intakeNutrition = NutritionDisplayData()
+        intakeNutrition = NutritionDisplayData().nutrients
     )
 }
 
@@ -822,7 +875,7 @@ fun MealCardPreview() {
         label = "Breakfast",
         calories = 1500,
         totalCalories = 2000,
-        image = drawable.ic_snack,
+        image = R.drawable.img_snack,
         onNavigateToLogFood = {}
     )
 }
