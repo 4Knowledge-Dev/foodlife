@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.forknowledge.core.common.Result
+import com.forknowledge.core.common.ResultState
 import com.forknowledge.core.common.extension.toYearMonthDateString
 import com.forknowledge.core.data.model.MealPlanDisplayData
 import com.forknowledge.core.domain.di.DeleteFromMealPlanInteractor
@@ -35,7 +36,7 @@ class MealPlannerViewModel @Inject constructor(
     var shouldShowError by mutableStateOf(false)
         private set
 
-    var deleteRecipeState by mutableStateOf<Result<Unit>>(Result.Loading)
+    var deleteRecipeState by mutableStateOf<ResultState?>(null)
         private set
 
     var onProcessItem by mutableIntStateOf(0)
@@ -119,12 +120,12 @@ class MealPlannerViewModel @Inject constructor(
     ) {
         onProcessItem = mealId
         viewModelScope.launch {
-            when (val result = deleteFromMealPlanInteractor(mealId)) {
+            when (deleteFromMealPlanInteractor(mealId)) {
                 is Result.Loading -> { /* Do nothing */
                 }
 
                 is Result.Success -> {
-                    deleteRecipeState = Result.Success(Unit)
+                    deleteRecipeState = ResultState.SUCCESS
                     onProcessItem = 0
                     updateMealPlanState(
                         date = date,
@@ -135,7 +136,7 @@ class MealPlannerViewModel @Inject constructor(
 
                 is Result.Error -> {
                     onProcessItem = 0
-                    deleteRecipeState = Result.Error(result.exception)
+                    deleteRecipeState = ResultState.FAILURE
                 }
             }
         }

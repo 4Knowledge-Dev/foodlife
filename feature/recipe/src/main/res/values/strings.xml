@@ -6,6 +6,9 @@
     <string name="recipe_ready_in_minutes">Ready in:</string>
     <string name="recipe_prep_time">Prep time:</string>
     <string name="recipe_cook_time">Cook time:</string>
+    <string name="recipe_button_made_it">Made it</string>
+    <string name="recipe_snackbar_to_recipe_success">You made it!</string>
+    <string name="recipe_snackbar_fail_to_log_recipe">Fail to log recipe!</string>
     <plurals name="recipe_ingredients_servings">
         <item quantity="one">%d Serving</item>
         <item quantity="other">%d Servings</item>

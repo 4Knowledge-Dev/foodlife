@@ -87,22 +87,22 @@ class FoodRepositoryImpl @Inject constructor(
         username: String,
         hashKey: String,
         dateInMillis: Long,
+        mealSlot: Int,
         mealPosition: Int,
         recipes: List<MealSearchRecipe>
     ) {
         val meals = recipes.map { recipe ->
             MealItem(
                 date = dateInMillis,
-                slot = mealPosition,
-                position = 0,
+                slot = mealSlot,
+                position = mealPosition,
                 type = "RECIPE",
                 recipe = MealRecipeItem(
                     id = recipe.id,
                     title = recipe.name,
                     image = recipe.imageUrl,
                     servings = recipe.servings,
-                    readyInMinutes = recipe.cookTime,
-                    isComplete = false
+                    readyInMinutes = recipe.cookTime
                 )
             )
         }

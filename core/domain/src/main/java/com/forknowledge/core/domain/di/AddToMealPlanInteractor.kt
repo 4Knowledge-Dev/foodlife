@@ -18,7 +18,7 @@ class AddToMealPlanInteractor @Inject constructor(
             username = token.username,
             hashKey = token.hashKey,
             dateInMillis = dateInMillis,
-            mealPosition = mealPosition,
+            mealSlot = mealPosition,
             recipes = recipes
         )
     }

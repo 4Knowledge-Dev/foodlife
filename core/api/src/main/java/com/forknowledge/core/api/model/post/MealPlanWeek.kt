@@ -22,6 +22,5 @@ data class MealRecipeItem(
     val title: String,
     val image: String,
     val servings: Int,
-    val readyInMinutes: Int,
-    val isComplete: Boolean,
+    val readyInMinutes: Int
 )

@@ -1,7 +1,6 @@
 package com.forknowledge.core.data
 
 import androidx.paging.PagingData
-import com.forknowledge.core.api.model.RecipeDetailResponse
 import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.model.MealPlanDisplayData
@@ -27,7 +26,8 @@ interface FoodRepository {
         username: String,
         hashKey: String,
         dateInMillis: Long,
-        mealPosition: Int,
+        mealSlot: Int,
+        mealPosition: Int = 0,
         recipes: List<MealSearchRecipe>
     )
 

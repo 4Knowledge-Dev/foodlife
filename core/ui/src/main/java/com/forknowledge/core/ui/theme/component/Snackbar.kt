@@ -26,7 +26,7 @@ import com.forknowledge.core.ui.theme.state.SnackBarState
 fun AppSnackBar(
     modifier: Modifier = Modifier,
     message: String,
-    state: SnackBarState = SnackBarState.NONE,
+    state: SnackBarState = SnackBarState.DEFAULT,
     actionLabel: String? = null,
     onAction: () -> Unit = {}
 ) {
@@ -39,7 +39,7 @@ fun AppSnackBar(
                 color = when (state) {
                     SnackBarState.SUCCESS -> GreenA1CE50
                     SnackBarState.FAILURE -> RedF44336
-                    SnackBarState.NONE -> Black212121
+                    SnackBarState.DEFAULT -> Black212121
                 },
                 shape = RoundedCornerShape(4.dp)
             )

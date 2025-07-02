@@ -5,6 +5,10 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
+enum class ResultState {
+    SUCCESS, FAILURE
+}
+
 sealed interface Result<out T> {
 
     data class Success<T>(val data: T) : Result<T>

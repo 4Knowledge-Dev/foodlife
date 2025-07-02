@@ -6,6 +6,7 @@ import com.forknowledge.core.data.model.DailyNutritionDisplayData
 import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.feature.model.NutritionSearchRecipe
 import com.forknowledge.feature.model.userdata.IntakeNutrition
+import com.forknowledge.feature.model.userdata.LogRecipe
 import com.forknowledge.feature.model.userdata.TargetNutrition
 import com.forknowledge.feature.model.userdata.User
 import com.forknowledge.feature.model.userdata.UserToken
@@ -81,7 +82,7 @@ interface UserRepository {
     suspend fun updateRecipeList(
         date: Date,
         mealPosition: Int,
-        recipe: NutritionSearchRecipe
+        recipe: LogRecipe
     ): Result<Unit>
 
     /**

@@ -8,6 +8,5 @@ enum class MealAction(
     @StringRes val label: Int,
     @DrawableRes val icon: Int
 ) {
-    SWAP(R.string.meal_planner_bottom_sheet_swap_recipe_label, drawable.ic_swap),
     DELETE(R.string.meal_planner_bottom_sheet_delete_recipe_label, drawable.ic_delete)
 }
