@@ -24,8 +24,14 @@
     <string name="recipe_health_score_glycemic_evaluate_high">High</string>
     <string name="recipe_health_score_glycemic_evaluate_medium">Medium</string>
     <string name="recipe_health_score_glycemic_evaluate_low">Low</string>
-    <string name="recipe_health_score_nutrition_label">Nutrition</string>
+    <string name="recipe_health_score_evaluate_excellent">Excellent</string>
+    <string name="recipe_health_score_evaluate_good">Good</string>
+    <string name="recipe_health_score_evaluate_fair">Fair</string>
+    <string name="recipe_health_score_evaluate_poor">Poor</string>
+    <string name="recipe_health_score_evaluate_bad">Bad</string>
+    <string name="recipe_health_score_nutrition_label">Nutrition per serving</string>
     <string name="recipe_health_score_nutrition_amount">%.1f%s</string>
     <string name="recipe_health_score_nutrition_daily_percentage">%d%%</string>
     <string name="recipe_health_score_nutrition_table_note">* Percent Daily Values based on a 2,000 calorie diet.</string>
+    <string name="recipe_health_score_nutrition_impact_guide">Health Scores are calculated based on nutrient density. A higher Health Score means a higher density of positive impact nutrients and lower density of negative impact nutrients.</string>
 </resources>
