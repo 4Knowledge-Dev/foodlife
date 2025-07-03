@@ -38,10 +38,7 @@ class MealPlannerViewModel @Inject constructor(
     var shouldShowError by mutableStateOf(false)
         private set
 
-    var shouldShowCreateMealPlanError by mutableStateOf(false)
-        private set
-
-    var deleteRecipeState by mutableStateOf<ResultState?>(null)
+    var deleteRecipeState by mutableStateOf(ResultState.NONE)
         private set
 
     var onProcessItem by mutableIntStateOf(0)
@@ -98,14 +95,19 @@ class MealPlannerViewModel @Inject constructor(
     }
 
     fun createMealPlan() {
+        shouldShowLoading = true
         viewModelScope.launch {
-            generateMealPlanInteractor().collect { result ->
-                when (result) {
-                    is Result.Loading -> Unit
-                    is Result.Success -> getMealPlan()
-                    is Result.Error -> {
-                        shouldShowCreateMealPlanError = true
-                    }
+            when (val result = generateMealPlanInteractor(_mealPlan.value)) {
+                is Result.Loading -> { /* Do nothing */
+                }
+
+                is Result.Success -> {
+                    shouldShowLoading = false
+                    _mealPlan.update { result.data }
+                }
+
+                is Result.Error -> {
+                    shouldShowLoading = false
                 }
             }
         }
@@ -138,6 +140,7 @@ class MealPlannerViewModel @Inject constructor(
         mealId: Int
     ) {
         onProcessItem = mealId
+        deleteRecipeState = ResultState.NONE
         viewModelScope.launch {
             when (deleteFromMealPlanInteractor(mealId)) {
                 is Result.Loading -> { /* Do nothing */
@@ -161,16 +164,22 @@ class MealPlannerViewModel @Inject constructor(
         }
     }
 
-    fun clearMealPlan(){
-        viewModelScope.launch {
-            when(clearMealPlanInteractor(_mealPlan.value)) {
-                is Result.Loading -> { /* Do nothing */
-                }
-                is Result.Success -> {
+    fun clearMealPlan() {
+        if (_mealPlan.value.isNotEmpty()) {
+            shouldShowLoading = true
+            viewModelScope.launch {
+                when (clearMealPlanInteractor(_mealPlan.value)) {
+                    is Result.Loading -> { /* Do nothing */
+                    }
 
-                }
-                is Result.Error -> {
+                    is Result.Success -> {
+                        _mealPlan.update { emptyList() }
+                        shouldShowLoading = false
+                    }
 
+                    is Result.Error -> {
+                        shouldShowLoading = false
+                    }
                 }
             }
         }

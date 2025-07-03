@@ -6,12 +6,9 @@ import com.forknowledge.core.data.FoodRepository
 import com.forknowledge.core.data.UserRepository
 import com.forknowledge.core.data.model.MealPlanDisplayData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 class GenerateMealPlanInteractor @Inject constructor(
@@ -23,30 +20,35 @@ class GenerateMealPlanInteractor @Inject constructor(
 ) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    suspend operator fun invoke(mealPlan: List<MealPlanDisplayData>): Flow<List<MealPlanDisplayData>> =
-        when (val result = clearMealPlanInteractor(mealPlan)) {
-            is Result.Loading -> flowOf(emptyList())
-            is Result.Success -> {
-                userRepository.getUserInfo()
-                    .flatMapConcat { user ->
-                        foodRepository.generateMealPlan(
-                            targetCalories = user.targetNutrition.calories.toInt(),
-                            diet = user.diet.toDiet().typeUrl,
-                            excludeIngredients = user.excludes.joinToString(", ")
-                        )
-                    }
-                    .map { recipes ->
-                        addToMealPlanInteractor(recipes = recipes)
-                    }
-                    .map { result ->
-                        when (result) {
-                            is Result.Loading -> Unit
-                            is Result.Success -> getMealPlanInteractor()
-                            is Result.Error -> emptyList()
+    suspend operator fun invoke(mealPlan: List<MealPlanDisplayData>): Result<List<MealPlanDisplayData>> =
+        try{
+            when (val result = clearMealPlanInteractor(mealPlan)) {
+                is Result.Loading -> Result.Loading
+                is Result.Success -> {
+                    userRepository.getUserInfo()
+                        .flatMapConcat { user ->
+                            foodRepository.generateMealPlan(
+                                targetCalories = user.targetNutrition.calories.toInt(),
+                                diet = user.diet.toDiet().typeUrl,
+                                excludeIngredients = user.excludes.joinToString(", ")
+                            )
                         }
-                    }
-            }
+                        .map { recipes ->
+                            addToMealPlanInteractor(recipes = recipes)
+                        }
+                        .map { result ->
+                            when (result) {
+                                is Result.Loading -> Result.Loading
+                                is Result.Success -> getMealPlanInteractor()
+                                is Result.Error -> Result.Error(result.exception)
+                            }
+                        }
+                        .first()
+                }
 
-            is Result.Error -> flowOf(emptyList())
+                is Result.Error -> Result.Error(result.exception)
+            }
+        } catch (e: Exception) {
+            Result.Error(e)
         }
 }

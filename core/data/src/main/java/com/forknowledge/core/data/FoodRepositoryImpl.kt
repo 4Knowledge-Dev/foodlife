@@ -6,6 +6,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.forknowledge.core.api.FoodApiService
+import com.forknowledge.core.api.MEAL_TYPE_RECIPE
+import com.forknowledge.core.api.getImageUrl
 import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.api.model.post.MealItem
 import com.forknowledge.core.api.model.post.MealRecipeItem
@@ -28,7 +30,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.InternalSerializationApi
 import javax.inject.Inject
 
-const val MEAL_TYPE_RECIPE = "RECIPE"
+const val API_MEAL_TYPE_RECIPE = "RECIPE"
 const val SEARCH_PAGE_SIZE = 30
 const val SEARCH_PREFETCH_DISTANCE = SEARCH_PAGE_SIZE
 const val GET_MEAL_PLAN_EXCEPTION = "GetMealPlanException"
@@ -77,7 +79,11 @@ class FoodRepositoryImpl @Inject constructor(
                             meal = mealDay.meals.indexOf(meal) + 1,
                             recipeId = meal.id,
                             recipeName = meal.title,
-                            imageUrl = meal.image,
+                            imageUrl = getImageUrl(
+                                id = meal.id.toString(),
+                                imageType = meal.imageType,
+                                mealType = API_MEAL_TYPE_RECIPE
+                            ),
                             servings = meal.servings,
                             cookTime = meal.readyInMinutes
                         )
@@ -132,7 +138,7 @@ class FoodRepositoryImpl @Inject constructor(
                 date = recipe.dateInMillis,
                 slot = recipe.meal,
                 position = recipe.mealPosition,
-                type = MEAL_TYPE_RECIPE,
+                type = API_MEAL_TYPE_RECIPE,
                 recipe = MealRecipeItem(
                     id = recipe.recipeId,
                     title = recipe.recipeName,

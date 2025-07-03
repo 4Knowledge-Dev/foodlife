@@ -44,3 +44,13 @@ fun getCurrentWeekDays(): List<LocalDate> {
     }
     return weekDays
 }
+
+fun getGreetingText(): String {
+    val calendar = Calendar.getInstance()
+    return when(calendar.get(Calendar.HOUR_OF_DAY)) {
+        in 4..11 -> "Good morning"
+        in 12..17 -> "Good afternoon"
+        in 18..22 -> "Good evening"
+        else -> "Time to sleep!"
+    }
+}

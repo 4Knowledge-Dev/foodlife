@@ -28,8 +28,12 @@ class ClearMealPlanInteractor @Inject constructor(
                         }
                     }
                 }
-                deferredResults.awaitAll()
-                Result.Success(Unit)
+                val result = deferredResults.awaitAll()
+                if (result.firstOrNull { it is Result.Error } == null) {
+                    Result.Success(Unit)
+                } else {
+                    Result.Error(Exception("Failed to clear meal plan."))
+                }
             } catch (e: Exception) {
                 Result.Error(e)
             }

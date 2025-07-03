@@ -31,10 +31,7 @@ class AuthenticationManagerImpl @Inject constructor(
             if (userInfo.user != null && userInfo.additionalUserInfo != null) {
                 emit(
                     if (userInfo.additionalUserInfo!!.isNewUser) {
-                        createUserData(
-                            userId = userInfo.user!!.uid,
-                            email = userInfo.user!!.email!!
-                        )
+                        createUserData(userId = userInfo.user!!.uid)
                     } else {
                         getUserState(userInfo.user!!.uid)
                     }
@@ -67,10 +64,7 @@ class AuthenticationManagerImpl @Inject constructor(
                 .await()
             if (userInfo.user != null && userInfo.additionalUserInfo != null) {
                 emit(
-                    createUserData(
-                        userId = userInfo.user!!.uid,
-                        email = userInfo.user!!.email!!
-                    )
+                    createUserData(userId = userInfo.user!!.uid)
                 )
             } else {
                 Log.e(FirebaseException.FIREBASE_GET_DATA_EXCEPTION, "No user information founded!")
@@ -112,13 +106,9 @@ class AuthenticationManagerImpl @Inject constructor(
         }
     }
 
-    private suspend fun createUserData(
-        userId: String,
-        email: String
-    ): LoginResultType {
+    private suspend fun createUserData(userId: String): LoginResultType {
         val user = hashMapOf(
-            FirestoreReference.USER_DOCUMENT_IS_NEW_USER_FIELD to true,
-            FirestoreReference.USER_DOCUMENT_EMAIL_FIELD to email
+            FirestoreReference.USER_DOCUMENT_IS_NEW_USER_FIELD to true
         )
         return try {
             firestore.collection(FirestoreReference.USER_COLLECTION).document(userId)

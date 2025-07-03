@@ -102,6 +102,8 @@ fun RecipeScreen(
                             duration = SnackbarDuration.Short
                         )
                     }
+
+                    ResultState.NONE -> { /* Do nothing */ }
                 }
             }
     }
