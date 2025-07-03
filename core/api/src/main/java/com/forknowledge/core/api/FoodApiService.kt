@@ -3,7 +3,6 @@ package com.forknowledge.core.api
 import com.forknowledge.core.api.model.GenerateMealPlanResponse
 import com.forknowledge.core.api.model.MealPlanResponse
 import com.forknowledge.core.api.model.RecipeDetailResponse
-import com.forknowledge.core.api.model.RecipeResponse
 import com.forknowledge.core.api.model.SearchResponse
 import com.forknowledge.core.api.model.UserResponse
 import com.forknowledge.core.api.model.post.ConnectUser
@@ -32,7 +31,7 @@ interface FoodApiService {
     @GET("$API_HEADER_MEAL_PLANNER/generate")
     suspend fun generateMealPlan(
         @Query("timeFrame") timeFrame: String = "week",
-        @Query("targetCalories") targetCalories: String,
+        @Query("targetCalories") targetCalories: Int,
         @Query("diet") diet: String,
         @Query("exclude") excludeIngredients: String
     ): Response<GenerateMealPlanResponse>
@@ -55,6 +54,13 @@ interface FoodApiService {
     suspend fun deleteFromMealPlan(
         @Path("username") username: String,
         @Path("id") mealId: Int,
+        @Query("hash") hashKey: String
+    ): Response<Unit>
+
+    @DELETE("$API_HEADER_MEAL_PLANNER/{username}/day/{date}")
+    suspend fun clearMealPlanDay(
+        @Path("username") username: String,
+        @Path("date") date: String,
         @Query("hash") hashKey: String
     ): Response<Unit>
 

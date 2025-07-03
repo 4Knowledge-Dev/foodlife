@@ -6,24 +6,34 @@ import kotlinx.serialization.Serializable
 @InternalSerializationApi
 @Serializable
 data class GenerateMealPlanResponse(
-    val week: WeekResponse
+    val week: WeekPlanResponse
 )
 
 @InternalSerializationApi
 @Serializable
-data class WeekResponse(
-    val friday: MealDayResponse,
-    val monday: MealDayResponse,
-    val saturday: MealDayResponse,
-    val sunday: MealDayResponse,
-    val thursday: MealDayResponse,
-    val tuesday: MealDayResponse,
-    val wednesday: MealDayResponse
-)
+data class WeekPlanResponse(
+    val sunday: DayPlanResponse,
+    val monday: DayPlanResponse,
+    val tuesday: DayPlanResponse,
+    val wednesday: DayPlanResponse,
+    val thursday: DayPlanResponse,
+    val friday: DayPlanResponse,
+    val saturday: DayPlanResponse,
+){
+    fun toDayPlanResponseList() = listOf(
+        sunday,
+        monday,
+        tuesday,
+        wednesday,
+        thursday,
+        friday,
+        saturday
+    )
+}
 
 @InternalSerializationApi
 @Serializable
-data class MealDayResponse(
+data class DayPlanResponse(
     val meals: List<MealResponse>
 )
 
@@ -31,10 +41,9 @@ data class MealDayResponse(
 @Serializable
 data class MealResponse(
     val id: Int,
+    val title: String,
     val image: String,
     val imageType: String,
     val readyInMinutes: Int,
-    val servings: Int,
-    val sourceUrl: String,
-    val title: String
+    val servings: Int
 )

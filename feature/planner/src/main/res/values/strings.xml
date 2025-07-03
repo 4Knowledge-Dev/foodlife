@@ -18,8 +18,7 @@
     <string name="meal_planner_meal_plan_button_text_reload">Reload</string>
     <string name="meal_planner_meal_plan_snackbar_delete_success_message">Deleted successfully!</string>
     <string name="meal_planner_meal_plan_snackbar_delete_fail_message">Fail to delete!</string>
-
-    // Bottom sheet
-    <string name="meal_planner_bottom_sheet_swap_recipe_label">Swap</string>
     <string name="meal_planner_bottom_sheet_delete_recipe_label">Delete</string>
+    <string name="meal_planner_bottom_sheet_create_new_meal_plan">Create new plan</string>
+    <string name="meal_planner_bottom_sheet_clear_meal_plan">Clear meal plan</string>
 </resources>

@@ -22,7 +22,7 @@ fun String.toMealType() = when (this) {
 
 fun getImageUrl(
     id: String = "",
-    image: String,
+    image: String = "",
     mealType: String,
     imageType: String = ""
 ): String {

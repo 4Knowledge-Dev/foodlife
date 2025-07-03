@@ -1,7 +1,7 @@
 package com.forknowledge.core.domain.di
 
 import com.forknowledge.core.data.FoodRepository
-import com.forknowledge.feature.model.MealSearchRecipe
+import com.forknowledge.feature.model.AddToMealPlanRecipe
 import javax.inject.Inject
 
 class AddToMealPlanInteractor @Inject constructor(
@@ -9,16 +9,10 @@ class AddToMealPlanInteractor @Inject constructor(
     private val withUserToken: GetUserTokenInteractor
 ) {
 
-    suspend operator fun invoke(
-        dateInMillis: Long,
-        mealPosition: Int,
-        recipes: List<MealSearchRecipe>
-    ) = withUserToken { token ->
+    suspend operator fun invoke(recipes: List<AddToMealPlanRecipe>) = withUserToken { token ->
         foodRepository.addRecipeToMealPlan(
             username = token.username,
             hashKey = token.hashKey,
-            dateInMillis = dateInMillis,
-            mealSlot = mealPosition,
             recipes = recipes
         )
     }

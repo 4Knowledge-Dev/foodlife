@@ -92,3 +92,11 @@ data class Macros(
     val carbs: Double,
     val fat: Double
 )
+
+fun String.toDiet() = when(this) {
+    Diet.LOW_CARB.dietName -> Diet.LOW_CARB
+    Diet.HIGH_PROTEIN.dietName -> Diet.HIGH_PROTEIN
+    Diet.KETO.dietName -> Diet.KETO
+    Diet.VEGAN.dietName -> Diet.VEGAN
+    else -> Diet.BALANCE
+}

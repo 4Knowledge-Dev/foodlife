@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
 enum class ResultState {
-    SUCCESS, FAILURE
+    SUCCESS, FAILURE, NONE
 }
 
 sealed interface Result<out T> {

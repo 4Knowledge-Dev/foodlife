@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,6 +41,7 @@ import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.feature.model.MealRecipe
 import com.forknowledge.feature.planner.R
+import com.forknowledge.feature.planner.SheetAction
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,10 +61,16 @@ fun MealItem(
             onDismissRequest = { showBottomSheet = false }
         ) {
             ActionBottomSheet(
-                onDeleteRecipe = {
-                    showBottomSheet = false
-                    onDeleteRecipe()
-                }
+                actions = listOf(
+                    SheetAction(
+                        label = stringResource(R.string.meal_planner_bottom_sheet_delete_recipe_label),
+                        icon = painterResource(drawable.ic_delete),
+                        action = {
+                            showBottomSheet = false
+                            onDeleteRecipe()
+                        }
+                    )
+                )
             )
         }
     }
@@ -176,19 +185,22 @@ fun MealItem(
                 strokeWidth = 3.dp
             )
         } else {
-            Icon(
+            IconButton(
                 modifier = Modifier
                     .size(28.dp)
-                    .clickable { showBottomSheet = true }
                     .constrainAs(actionIcon) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
                         end.linkTo(parent.end, margin = 12.dp)
                     },
-                painter = painterResource(drawable.ic_options),
-                tint = Black374957,
-                contentDescription = null
-            )
+                onClick = { showBottomSheet = true }
+            ) {
+                Icon(
+                    painter = painterResource(drawable.ic_options),
+                    tint = Black374957,
+                    contentDescription = null
+                )
+            }
         }
     }
 }

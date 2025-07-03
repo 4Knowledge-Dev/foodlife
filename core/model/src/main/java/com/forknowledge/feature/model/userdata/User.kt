@@ -19,7 +19,7 @@ data class User(
     @JvmField
     val isWeightUnitKg: Boolean = true,
     val activityLevel: Long = 0,
-    val diet: Long = 0,
+    val diet: String = "",
     val excludes: List<String> = emptyList(),
     val targetNutrition: TargetNutrition = TargetNutrition()
 )

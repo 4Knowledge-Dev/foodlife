@@ -21,11 +21,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,7 +36,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
@@ -51,6 +53,9 @@ import com.forknowledge.core.common.ResultState
 import com.forknowledge.core.common.extension.toDayAndDateString
 import com.forknowledge.core.common.extension.toEpochMillis
 import com.forknowledge.core.common.extension.toEpochSeconds
+import com.forknowledge.core.common.getCurrentDate
+import com.forknowledge.core.common.getCurrentWeekDays
+import com.forknowledge.core.common.getGreetingText
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Green91C747
@@ -65,11 +70,8 @@ import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.core.ui.theme.state.FloatingAction
 import com.forknowledge.core.ui.theme.state.SnackBarState
 import com.forknowledge.feature.model.MealRecipe
-import com.forknowledge.feature.planner.MealAction
 import com.forknowledge.feature.planner.R
-import com.forknowledge.feature.planner.getCurrentDate
-import com.forknowledge.feature.planner.getCurrentWeekDays
-import kotlinx.coroutines.flow.filterNotNull
+import com.forknowledge.feature.planner.SheetAction
 import java.time.LocalDate
 
 @Composable
@@ -95,26 +97,24 @@ fun PlannerScreen(
         stringResource(R.string.meal_planner_meal_plan_snackbar_delete_success_message)
     val failMessage = stringResource(R.string.meal_planner_meal_plan_snackbar_delete_fail_message)
 
-    LaunchedEffect(Unit) {
-        snapshotFlow { deleteRecipeState }
-            .filterNotNull()
-            .collect { state ->
-                when (state) {
-                    ResultState.SUCCESS -> {
-                        snackbarHostState.showSnackbar(
-                            message = successMessage,
-                            duration = SnackbarDuration.Short
-                        )
-                    }
-
-                    ResultState.FAILURE -> {
-                        snackbarHostState.showSnackbar(
-                            message = failMessage,
-                            duration = SnackbarDuration.Short
-                        )
-                    }
-                }
+    LaunchedEffect(deleteRecipeState) {
+        when (deleteRecipeState) {
+            ResultState.SUCCESS -> {
+                snackbarHostState.showSnackbar(
+                    message = successMessage,
+                    duration = SnackbarDuration.Short
+                )
             }
+
+            ResultState.FAILURE -> {
+                snackbarHostState.showSnackbar(
+                    message = failMessage,
+                    duration = SnackbarDuration.Short
+                )
+            }
+
+            ResultState.NONE -> { /* Do nothing */ }
+        }
     }
 
     Scaffold(
@@ -131,7 +131,9 @@ fun PlannerScreen(
                     ),
                     selectedTabIndex = selectedTab,
                     weekDays = weekDays,
-                    onDateSelected = { selectedTab = it }
+                    onDateSelected = { selectedTab = it },
+                    onCreateNewMealPlan = { viewModel.createMealPlan() },
+                    onClearMealPlan = { viewModel.clearMealPlan() }
                 )
 
                 HorizontalDivider(
@@ -357,45 +359,108 @@ fun MealPlannerTopBar(
     modifier: Modifier = Modifier,
     selectedTabIndex: Int,
     weekDays: List<LocalDate>,
-    onDateSelected: (Int) -> Unit
+    onDateSelected: (Int) -> Unit,
+    onCreateNewMealPlan: () -> Unit,
+    onClearMealPlan: () -> Unit
 ) {
-    Row(
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            sheetState = sheetState,
+            containerColor = MaterialTheme.colorScheme.background,
+            onDismissRequest = { showBottomSheet = false }
+        ) {
+            ActionBottomSheet(
+                actions = listOf(
+                    SheetAction(
+                        label = stringResource(R.string.meal_planner_bottom_sheet_create_new_meal_plan),
+                        icon = painterResource(R.drawable.ic_fork_spoon),
+                        action = {
+                            showBottomSheet = false
+                            onCreateNewMealPlan()
+                        }
+                    ),
+                    SheetAction(
+                        label = stringResource(R.string.meal_planner_bottom_sheet_clear_meal_plan),
+                        icon = painterResource(R.drawable.ic_no_meal_plan),
+                        action = {
+                            showBottomSheet = false
+                            onClearMealPlan()
+                        }
+                    )
+                )
+            )
+        }
+    }
+
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
             .padding(top = 24.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        weekDays.forEachIndexed { index, day ->
-            val dayOfTheWeek = day.toDayAndDateString()
-            Column(
-                Modifier
-                    .size(
-                        width = 40.dp,
-                        height = 60.dp
-                    )
-                    .clickable { onDateSelected(index) },
-                horizontalAlignment = Alignment.CenterHorizontally
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            AppText(
+                text = getGreetingText(),
+                textStyle = Typography.labelLarge
+            )
+
+            IconButton(
+                onClick = { showBottomSheet = true }
             ) {
-                AppText(
-                    text = dayOfTheWeek.slice(0..1),
-                    textStyle = Typography.bodyMedium
+                Icon(
+                    painter = painterResource(drawable.ic_settings),
+                    tint = Black374957,
+                    contentDescription = null
                 )
+            }
+        }
 
-                AppText(
-                    text = dayOfTheWeek.substring(3),
-                    textStyle = Typography.labelMedium
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                if (index == selectedTabIndex) {
-                    HorizontalDivider(
-                        modifier = Modifier.fillMaxWidth(),
-                        thickness = 2.dp,
-                        color = GreenA1CE50
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            weekDays.forEachIndexed { index, day ->
+                val dayOfTheWeek = day.toDayAndDateString()
+                Column(
+                    Modifier
+                        .size(
+                            width = 40.dp,
+                            height = 60.dp
+                        )
+                        .clickable { onDateSelected(index) },
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    AppText(
+                        text = dayOfTheWeek.slice(0..1),
+                        textStyle = Typography.bodyMedium
                     )
+
+                    AppText(
+                        text = dayOfTheWeek.substring(3),
+                        textStyle = Typography.labelMedium
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    if (index == selectedTabIndex) {
+                        HorizontalDivider(
+                            modifier = Modifier.fillMaxWidth(),
+                            thickness = 2.dp,
+                            color = GreenA1CE50
+                        )
+                    }
                 }
             }
         }
@@ -467,23 +532,19 @@ fun MealSection(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActionBottomSheet(
-    onDeleteRecipe: () -> Unit
+    actions: List<SheetAction>
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 32.dp)
     ) {
-        MealAction.entries.forEach { action ->
+        actions.forEach { action ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
-                    .clickable {
-                        when (action) {
-                            MealAction.DELETE -> onDeleteRecipe()
-                        }
-                    }
+                    .height(60.dp)
+                    .clickable { action.action() }
                     .padding(
                         horizontal = 32.dp
                     ),
@@ -491,14 +552,14 @@ fun ActionBottomSheet(
             ) {
                 Icon(
                     modifier = Modifier.size(28.dp),
-                    painter = painterResource(action.icon),
+                    painter = action.icon,
                     tint = Black374957,
                     contentDescription = null
                 )
 
                 AppText(
                     modifier = Modifier.padding(start = 32.dp),
-                    text = stringResource(action.label),
+                    text = action.label,
                     textStyle = Typography.titleSmall
                 )
             }
@@ -566,7 +627,9 @@ fun MealPlannerTopBarPreview() {
     MealPlannerTopBar(
         selectedTabIndex = 0,
         weekDays = getCurrentWeekDays(),
-        onDateSelected = {}
+        onDateSelected = {},
+        onCreateNewMealPlan = {},
+        onClearMealPlan = {}
     )
 }
 
@@ -596,7 +659,13 @@ fun MealSectionPreview() {
 @Composable
 fun ActionBottomSheetPreview() {
     ActionBottomSheet(
-        onDeleteRecipe = {}
+        actions = listOf(
+            SheetAction(
+                label = "Create new plan",
+                icon = painterResource(R.drawable.ic_fork_spoon),
+                action = {}
+            )
+        )
     )
 }
 
