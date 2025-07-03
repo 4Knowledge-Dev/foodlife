@@ -11,6 +11,7 @@ import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.asFlowResult
 import com.forknowledge.core.data.FoodRepository
 import com.forknowledge.core.domain.di.AddToMealPlanInteractor
+import com.forknowledge.feature.model.AddToMealPlanRecipe
 import com.forknowledge.feature.model.MealSearchRecipe
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -36,7 +37,7 @@ class SearchViewModel @Inject constructor(
     private val foodRepository: FoodRepository
 ) : ViewModel() {
 
-    private val _searchQuery = MutableStateFlow<String>("")
+    private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
     private val _recipes = MutableStateFlow<PagingData<MealSearchRecipe>>(PagingData.empty())
@@ -123,15 +124,23 @@ class SearchViewModel @Inject constructor(
 
     fun addToMealPlan(
         dateInMillis: Long,
-        mealPosition: Int,
+        meal: Int,
     ) {
         shouldShowLoadingButton = true
-        viewModelScope.launch {
-            when (addToMealPlanInteractor(
+        val addRecipes = _selectedRecipes.value.map { recipe ->
+            AddToMealPlanRecipe(
                 dateInMillis = dateInMillis,
-                mealPosition = mealPosition,
-                recipes = _selectedRecipes.value
-            )) {
+                meal = meal,
+                recipeId = recipe.id,
+                recipeName = recipe.name,
+                imageUrl = recipe.imageUrl,
+                servings = recipe.servings,
+                cookTime = recipe.cookTime,
+            )
+        }
+
+        viewModelScope.launch {
+            when (addToMealPlanInteractor(recipes = addRecipes)) {
                 is Result.Loading -> shouldShowLoadingButton = true
                 is Result.Success -> {
                     clearSelectedRecipes()

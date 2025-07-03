@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.model.MealPlanDisplayData
+import com.forknowledge.feature.model.AddToMealPlanRecipe
 import com.forknowledge.feature.model.MealSearchRecipe
 import com.forknowledge.feature.model.NutritionSearchRecipe
 import com.forknowledge.feature.model.Recipe
@@ -16,6 +17,12 @@ interface FoodRepository {
     @OptIn(InternalSerializationApi::class)
     suspend fun connectUser(user: ConnectUser): Result<UserToken>
 
+    suspend fun generateMealPlan(
+        targetCalories: Int,
+        diet: String,
+        excludeIngredients: String
+    ): Flow<List<AddToMealPlanRecipe>>
+
     suspend fun getMealPlan(
         username: String,
         hashKey: String,
@@ -25,16 +32,19 @@ interface FoodRepository {
     suspend fun addRecipeToMealPlan(
         username: String,
         hashKey: String,
-        dateInMillis: Long,
-        mealSlot: Int,
-        mealPosition: Int = 0,
-        recipes: List<MealSearchRecipe>
+        recipes: List<AddToMealPlanRecipe>
     )
 
     suspend fun deleteRecipeFromMealPlan(
         recipeId: Int,
         username: String,
         hashKey: String,
+    )
+
+    suspend fun clearMealPlanDay(
+        date: String,
+        username: String,
+        hashKey: String
     )
 
     fun searchRecipeForNutrition(

@@ -51,6 +51,8 @@ import com.forknowledge.core.common.ResultState
 import com.forknowledge.core.common.extension.toDayAndDateString
 import com.forknowledge.core.common.extension.toEpochMillis
 import com.forknowledge.core.common.extension.toEpochSeconds
+import com.forknowledge.core.common.getCurrentDate
+import com.forknowledge.core.common.getCurrentWeekDays
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Green91C747
@@ -67,8 +69,6 @@ import com.forknowledge.core.ui.theme.state.SnackBarState
 import com.forknowledge.feature.model.MealRecipe
 import com.forknowledge.feature.planner.MealAction
 import com.forknowledge.feature.planner.R
-import com.forknowledge.feature.planner.getCurrentDate
-import com.forknowledge.feature.planner.getCurrentWeekDays
 import kotlinx.coroutines.flow.filterNotNull
 import java.time.LocalDate
 
@@ -166,6 +166,11 @@ fun PlannerScreen(
                 AppFloatingButton(
                     isExpanded = isAddMealPlanOptionsExpanded,
                     actions = listOf(
+                        FloatingAction(
+                            label = stringResource(R.string.meal_planner_create_new_meal_plan),
+                            icon = drawable.ic_calendar,
+                            action = { viewModel.createMealPlan() }
+                        ),
                         FloatingAction(
                             label = stringResource(R.string.meal_planner_meal_plan_breakfast_label),
                             icon = drawable.img_breakfast,

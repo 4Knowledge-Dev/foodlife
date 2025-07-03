@@ -107,7 +107,7 @@ class OnboardingViewModel @Inject constructor(
             isHeightUnitCm = isCmUnit,
             isWeightUnitKg = isKgUnit,
             activityLevel = activityLevel!!.ordinal.toLong(),
-            diet = diet!!.ordinal.toLong(),
+            diet = diet!!.dietName,
             excludes = excludes,
             targetNutrition = TargetNutrition(
                 calories = targetCalories.toLong(),

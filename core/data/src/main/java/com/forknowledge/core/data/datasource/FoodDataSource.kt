@@ -18,7 +18,7 @@ class FoodDataSource @Inject constructor(
     }
 
     suspend fun generateMealPlan(
-        targetCalories: String,
+        targetCalories: Int,
         diet: String,
         excludeIngredients: String
     ) = withContext(Dispatchers.IO) {
@@ -62,6 +62,18 @@ class FoodDataSource @Inject constructor(
             username = username,
             hashKey = hashKey,
             mealId = mealId,
+        )
+    }
+
+    suspend fun clearMealPlanDay(
+        date: String,
+        username: String,
+        hashKey: String
+    ) = withContext(Dispatchers.IO) {
+        apiService.clearMealPlanDay(
+            date = date,
+            username = username,
+            hashKey = hashKey
         )
     }
 

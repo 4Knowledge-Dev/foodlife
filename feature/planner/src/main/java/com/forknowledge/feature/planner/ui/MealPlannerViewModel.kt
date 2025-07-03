@@ -8,11 +8,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.ResultState
-import com.forknowledge.core.common.extension.toYearMonthDateString
 import com.forknowledge.core.data.model.MealPlanDisplayData
+import com.forknowledge.core.domain.di.ClearMealPlanInteractor
 import com.forknowledge.core.domain.di.DeleteFromMealPlanInteractor
+import com.forknowledge.core.domain.di.GenerateMealPlanInteractor
 import com.forknowledge.core.domain.di.GetMealPlanInteractor
-import com.forknowledge.feature.planner.getFirstDayOfWeek
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,8 +23,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MealPlannerViewModel @Inject constructor(
+    private val generateMealPlanInteractor: GenerateMealPlanInteractor,
     private val getMealPlanInteractor: GetMealPlanInteractor,
-    private val deleteFromMealPlanInteractor: DeleteFromMealPlanInteractor
+    private val deleteFromMealPlanInteractor: DeleteFromMealPlanInteractor,
+    private val clearMealPlanInteractor: ClearMealPlanInteractor
 ) : ViewModel() {
 
     private val _mealPlan = MutableStateFlow<List<MealPlanDisplayData>>(emptyList())
@@ -34,6 +36,9 @@ class MealPlannerViewModel @Inject constructor(
         private set
 
     var shouldShowError by mutableStateOf(false)
+        private set
+
+    var shouldShowCreateMealPlanError by mutableStateOf(false)
         private set
 
     var deleteRecipeState by mutableStateOf<ResultState?>(null)
@@ -92,11 +97,25 @@ class MealPlannerViewModel @Inject constructor(
         }
     }
 
+    fun createMealPlan() {
+        viewModelScope.launch {
+            generateMealPlanInteractor().collect { result ->
+                when (result) {
+                    is Result.Loading -> Unit
+                    is Result.Success -> getMealPlan()
+                    is Result.Error -> {
+                        shouldShowCreateMealPlanError = true
+                    }
+                }
+            }
+        }
+    }
+
     fun getMealPlan() {
         shouldShowLoading = true
         shouldShowError = false
         viewModelScope.launch {
-            when (val result = getMealPlanInteractor(getFirstDayOfWeek().toYearMonthDateString())) {
+            when (val result = getMealPlanInteractor()) {
                 is Result.Loading -> { /* Do nothing */
                 }
 
@@ -137,6 +156,21 @@ class MealPlannerViewModel @Inject constructor(
                 is Result.Error -> {
                     onProcessItem = 0
                     deleteRecipeState = ResultState.FAILURE
+                }
+            }
+        }
+    }
+
+    fun clearMealPlan(){
+        viewModelScope.launch {
+            when(clearMealPlanInteractor(_mealPlan.value)) {
+                is Result.Loading -> { /* Do nothing */
+                }
+                is Result.Success -> {
+
+                }
+                is Result.Error -> {
+
                 }
             }
         }

@@ -10,10 +10,13 @@ import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.api.model.post.MealItem
 import com.forknowledge.core.api.model.post.MealRecipeItem
 import com.forknowledge.core.common.Result
+import com.forknowledge.core.common.extension.toEpochSeconds
 import com.forknowledge.core.common.extension.toLocalDate
+import com.forknowledge.core.common.getCurrentWeekDays
 import com.forknowledge.core.data.datasource.FoodDataSource
 import com.forknowledge.core.data.datasource.SearchPagingSource
 import com.forknowledge.core.data.model.MealPlanDisplayData
+import com.forknowledge.feature.model.AddToMealPlanRecipe
 import com.forknowledge.feature.model.MealSearchRecipe
 import com.forknowledge.feature.model.NutritionSearchRecipe
 import com.forknowledge.feature.model.userdata.UserToken
@@ -25,6 +28,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.InternalSerializationApi
 import javax.inject.Inject
 
+const val MEAL_TYPE_RECIPE = "RECIPE"
 const val SEARCH_PAGE_SIZE = 30
 const val SEARCH_PREFETCH_DISTANCE = SEARCH_PAGE_SIZE
 const val GET_MEAL_PLAN_EXCEPTION = "GetMealPlanException"
@@ -48,6 +52,41 @@ class FoodRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Log.e(CONNECT_USER_EXCEPTION, "Connect user to server failed with ", e)
             Result.Error(e)
+        }
+    }
+
+    override suspend fun generateMealPlan(
+        targetCalories: Int,
+        diet: String,
+        excludeIngredients: String
+    ) = flow {
+        val response = dataSource.generateMealPlan(
+            targetCalories = targetCalories,
+            diet = diet,
+            excludeIngredients = excludeIngredients
+        )
+        if (response.isSuccessful && response.body() != null) {
+            val mealPlan = response.body()!!.week.toDayPlanResponseList()
+            val recipes = mutableListOf<AddToMealPlanRecipe>()
+            val dates = getCurrentWeekDays()
+            mealPlan.forEachIndexed { index, mealDay ->
+                recipes.addAll(
+                    mealDay.meals.map { meal ->
+                        AddToMealPlanRecipe(
+                            dateInMillis = dates[index].toEpochSeconds(),
+                            meal = mealDay.meals.indexOf(meal) + 1,
+                            recipeId = meal.id,
+                            recipeName = meal.title,
+                            imageUrl = meal.image,
+                            servings = meal.servings,
+                            cookTime = meal.readyInMinutes
+                        )
+                    }
+                )
+            }
+            emit(recipes)
+        } else {
+            emit(emptyList())
         }
     }
 
@@ -86,20 +125,17 @@ class FoodRepositoryImpl @Inject constructor(
     override suspend fun addRecipeToMealPlan(
         username: String,
         hashKey: String,
-        dateInMillis: Long,
-        mealSlot: Int,
-        mealPosition: Int,
-        recipes: List<MealSearchRecipe>
+        recipes: List<AddToMealPlanRecipe>
     ) {
         val meals = recipes.map { recipe ->
             MealItem(
-                date = dateInMillis,
-                slot = mealSlot,
-                position = mealPosition,
-                type = "RECIPE",
+                date = recipe.dateInMillis,
+                slot = recipe.meal,
+                position = recipe.mealPosition,
+                type = MEAL_TYPE_RECIPE,
                 recipe = MealRecipeItem(
-                    id = recipe.id,
-                    title = recipe.name,
+                    id = recipe.recipeId,
+                    title = recipe.recipeName,
                     image = recipe.imageUrl,
                     servings = recipe.servings,
                     readyInMinutes = recipe.cookTime
@@ -122,6 +158,18 @@ class FoodRepositoryImpl @Inject constructor(
             username = username,
             hashKey = hashKey,
             mealId = recipeId
+        )
+    }
+
+    override suspend fun clearMealPlanDay(
+        date: String,
+        username: String,
+        hashKey: String
+    ) {
+        dataSource.clearMealPlanDay(
+            date = date,
+            username = username,
+            hashKey = hashKey
         )
     }
 

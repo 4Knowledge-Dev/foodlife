@@ -4,7 +4,6 @@ import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.datatype.UserAuthState
 import com.forknowledge.core.data.model.DailyNutritionDisplayData
 import com.forknowledge.core.data.model.NutritionDisplayData
-import com.forknowledge.feature.model.NutritionSearchRecipe
 import com.forknowledge.feature.model.userdata.IntakeNutrition
 import com.forknowledge.feature.model.userdata.LogRecipe
 import com.forknowledge.feature.model.userdata.TargetNutrition

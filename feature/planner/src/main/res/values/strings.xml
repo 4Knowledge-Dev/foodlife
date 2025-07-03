@@ -9,6 +9,7 @@
         <item quantity="other">%1$d servings</item>
     </plurals>
     <string name="meal_planner_meal_plan_calories_text">%1$d kcal</string>
+    <string name="meal_planner_create_new_meal_plan">New meal plan</string>
     <string name="meal_planner_meal_plan_breakfast_label">Breakfast</string>
     <string name="meal_planner_meal_plan_lunch_label">Lunch</string>
     <string name="meal_planner_meal_plan_dinner_label">Dinner</string>
