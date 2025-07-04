@@ -8,7 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.ResultState
+import com.forknowledge.core.data.UserRepository
 import com.forknowledge.core.data.model.MealPlanDisplayData
+import com.forknowledge.core.data.model.TargetNutritionDisplayData
 import com.forknowledge.core.domain.di.ClearMealPlanInteractor
 import com.forknowledge.core.domain.di.DeleteFromMealPlanInteractor
 import com.forknowledge.core.domain.di.GenerateMealPlanInteractor
@@ -16,6 +18,7 @@ import com.forknowledge.core.domain.di.GetMealPlanInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -26,11 +29,15 @@ class MealPlannerViewModel @Inject constructor(
     private val generateMealPlanInteractor: GenerateMealPlanInteractor,
     private val getMealPlanInteractor: GetMealPlanInteractor,
     private val deleteFromMealPlanInteractor: DeleteFromMealPlanInteractor,
-    private val clearMealPlanInteractor: ClearMealPlanInteractor
+    private val clearMealPlanInteractor: ClearMealPlanInteractor,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
+    private val _targetNutrition = MutableStateFlow<TargetNutritionDisplayData?>(null)
+    val targetNutrition: StateFlow<TargetNutritionDisplayData?> = _targetNutrition.asStateFlow()
+
     private val _mealPlan = MutableStateFlow<List<MealPlanDisplayData>>(emptyList())
-    val mealPlan: StateFlow<List<MealPlanDisplayData>> = _mealPlan
+    val mealPlan: StateFlow<List<MealPlanDisplayData>> = _mealPlan.asStateFlow()
 
     var shouldShowLoading by mutableStateOf(false)
         private set
@@ -45,7 +52,18 @@ class MealPlannerViewModel @Inject constructor(
         private set
 
     init {
+        getUserTargetNutrition()
         getMealPlan()
+    }
+
+    private fun getUserTargetNutrition() {
+        viewModelScope.launch {
+            userRepository.getUserTargetNutrition().collect { nutrition ->
+                if (nutrition != null) {
+                    _targetNutrition.update { nutrition }
+                }
+            }
+        }
     }
 
     private fun updateMealPlanState(

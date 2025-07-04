@@ -11,8 +11,8 @@
     <string name="meal_planner_meal_plan_calories_text">%1$d kcal</string>
     <string name="meal_planner_meal_plan_breakfast_label">Breakfast</string>
     <string name="meal_planner_meal_plan_lunch_label">Lunch</string>
-    <string name="meal_planner_meal_plan_dinner_label">Dinner</string>
     <string name="meal_planner_meal_plan_snack_label">Snack</string>
+    <string name="meal_planner_meal_plan_dinner_label">Dinner</string>
     <string name="meal_planner_meal_plan_no_plan_today_text">You don’t have a meal plan today!</string>
     <string name="meal_planner_meal_plan_internet_error_text">Fail to load meal plan!</string>
     <string name="meal_planner_meal_plan_button_text_reload">Reload</string>
@@ -21,4 +21,8 @@
     <string name="meal_planner_bottom_sheet_delete_recipe_label">Delete</string>
     <string name="meal_planner_bottom_sheet_create_new_meal_plan">Create new plan</string>
     <string name="meal_planner_bottom_sheet_clear_meal_plan">Clear meal plan</string>
+    <string name="meal_planner_nutrition_progress_nutrient_name_calories">Cal</string>
+    <string name="meal_planner_nutrition_progress_nutrient_name_carbs">Carbs</string>
+    <string name="meal_planner_nutrition_progress_nutrient_name_protein">Protein</string>
+    <string name="meal_planner_nutrition_progress_nutrient_name_fat">Fat</string>
 </resources>

@@ -2,6 +2,7 @@ package com.forknowledge.core.common
 
 import com.forknowledge.core.common.healthtype.Goal
 import com.forknowledge.core.common.healthtype.NutrientType
+import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 /**
@@ -62,10 +63,10 @@ fun nutrientAmountToCaloriesRatio(
 /**
  * Calculate nutrient amount(g) from calories.
  * @param nutrient nutrient type.
- * @param calories calories.
+ * @param calories calories amount of the nutrient.
  * @return nutrient amount(g) from calories.
  */
 fun caloriesToNutrientAmount(
     nutrient: NutrientType,
     calories: Double
-): Long = (calories / nutrient.kcal).roundToLong()
+): Int = (calories / nutrient.kcal).roundToInt()

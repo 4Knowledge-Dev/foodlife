@@ -17,6 +17,7 @@ data class DayResponse(
     val date: Long,
     val day: String,
     val items: List<FoodResponse>,
+    val nutritionSummary: NutritionResponse,
     val nutritionSummaryBreakfast: NutritionResponse,
     val nutritionSummaryDinner: NutritionResponse,
     val nutritionSummaryLunch: NutritionResponse

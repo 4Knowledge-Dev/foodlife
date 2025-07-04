@@ -6,11 +6,15 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.forknowledge.core.api.FoodApiService
-import com.forknowledge.core.api.MEAL_TYPE_RECIPE
 import com.forknowledge.core.api.getImageUrl
+import com.forknowledge.core.api.model.NutrientResponse
 import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.api.model.post.MealItem
 import com.forknowledge.core.api.model.post.MealRecipeItem
+import com.forknowledge.core.common.AppConstant.NUTRIENT_CALORIES_NAME
+import com.forknowledge.core.common.AppConstant.NUTRIENT_CARB_NAME
+import com.forknowledge.core.common.AppConstant.NUTRIENT_FAT_NAME
+import com.forknowledge.core.common.AppConstant.NUTRIENT_PROTEIN_NAME
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.extension.toEpochSeconds
 import com.forknowledge.core.common.extension.toLocalDate
@@ -29,6 +33,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.InternalSerializationApi
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 const val API_MEAL_TYPE_RECIPE = "RECIPE"
 const val SEARCH_PAGE_SIZE = 30
@@ -111,6 +116,23 @@ class FoodRepositoryImpl @Inject constructor(
             val mealDays = response.body()!!.days
             mealDays.forEach { mealDay ->
                 val date = mealDay.date.toLocalDate()
+
+                // Total nutrients of the day
+                val nutritionSummary = mealDay.nutritionSummary.nutrients
+                val nutrients = listOf(
+                    nutritionSummary.getNutrientByName(NUTRIENT_CALORIES_NAME),
+                    nutritionSummary.getNutrientByName(NUTRIENT_CARB_NAME),
+                    nutritionSummary.getNutrientByName(NUTRIENT_PROTEIN_NAME),
+                    nutritionSummary.getNutrientByName(NUTRIENT_FAT_NAME)
+                )
+                val breakfastCalories =
+                    mealDay.nutritionSummaryBreakfast.nutrients.getNutrientByName(NUTRIENT_CALORIES_NAME).amount.roundToInt()
+                val lunchCalories =
+                    mealDay.nutritionSummaryLunch.nutrients.getNutrientByName(NUTRIENT_CALORIES_NAME).amount.roundToInt()
+                val dinnerCalories =
+                    mealDay.nutritionSummaryDinner.nutrients.getNutrientByName(NUTRIENT_CALORIES_NAME).amount.roundToInt()
+
+                // Filter recipes by slot
                 val recipes = mealDay.items
                 val breakfast = recipes.filter { it.slot == 1 }.map { it.toMealRecipe() }
                 val lunch = recipes.filter { it.slot == 2 }.map { it.toMealRecipe() }
@@ -118,6 +140,10 @@ class FoodRepositoryImpl @Inject constructor(
                 mealPlan.add(
                     MealPlanDisplayData(
                         date = date,
+                        nutritionSummary = nutrients.map { it.amount.roundToInt() },
+                        breakfastCalories = breakfastCalories,
+                        lunchCalories = lunchCalories,
+                        dinnerCalories = dinnerCalories,
                         breakfast = breakfast,
                         lunch = lunch,
                         dinner = dinner
@@ -126,6 +152,15 @@ class FoodRepositoryImpl @Inject constructor(
             }
         }
         return mealPlan
+    }
+
+    private fun List<NutrientResponse>.getNutrientByName(name: String): NutrientResponse {
+        return this.firstOrNull { it.name == name } ?: NutrientResponse(
+            name = name,
+            amount = 0f,
+            unit = "",
+            percentOfDailyNeeds = 0f
+        )
     }
 
     override suspend fun addRecipeToMealPlan(
