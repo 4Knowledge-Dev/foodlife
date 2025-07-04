@@ -299,7 +299,7 @@ fun PlannerScreen(
                         if (meal.breakfast.isNotEmpty()) {
                             MealSection(
                                 meal = stringResource(R.string.meal_planner_meal_plan_breakfast_label),
-                                calories = meal.breakfastCalories,
+                                calories = meal.breakfastNutrition[NUTRIENTS_CALORIES_INDEX],
                                 recipes = mealDay.breakfast,
                                 onProcessItem = onProcessItem,
                                 onNavigateToExplore = {
@@ -327,7 +327,7 @@ fun PlannerScreen(
                         if (mealDay.lunch.isNotEmpty()) {
                             MealSection(
                                 meal = stringResource(R.string.meal_planner_meal_plan_lunch_label),
-                                calories = meal.lunchCalories,
+                                calories = meal.lunchNutrition[NUTRIENTS_CALORIES_INDEX],
                                 recipes = mealDay.lunch,
                                 onProcessItem = onProcessItem,
                                 onNavigateToExplore = {
@@ -355,7 +355,7 @@ fun PlannerScreen(
                         if (mealDay.dinner.isNotEmpty()) {
                             MealSection(
                                 meal = stringResource(R.string.meal_planner_meal_plan_dinner_label),
-                                calories = meal.dinnerCalories,
+                                calories = meal.dinnerNutrition[NUTRIENTS_CALORIES_INDEX],
                                 recipes = mealDay.dinner,
                                 onProcessItem = onProcessItem,
                                 onNavigateToExplore = {
@@ -824,7 +824,11 @@ fun MealSectionPreview() {
                 imageUrl = "",
                 name = "Spaghetti Bolognese ".repeat(3),
                 cookTime = 30,
-                servings = 4
+                servings = 4,
+                calories = 1000,
+                carbs = 100,
+                protein = 100,
+                fat = 100
             )
         ),
         onNavigateToExplore = {},

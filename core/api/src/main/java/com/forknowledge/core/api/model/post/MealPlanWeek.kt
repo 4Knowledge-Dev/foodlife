@@ -22,5 +22,9 @@ data class MealRecipeItem(
     val title: String,
     val image: String,
     val servings: Int,
-    val readyInMinutes: Int
+    val readyInMinutes: Int,
+    val calories: Int? = null,
+    val carbs: Int? = null,
+    val protein: Int? = null,
+    val fat: Int? = null
 )

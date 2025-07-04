@@ -1,6 +1,11 @@
 package com.forknowledge.feature.model
 
+import com.forknowledge.core.common.AppConstant.NUTRIENT_CALORIES_NAME
+import com.forknowledge.core.common.AppConstant.NUTRIENT_CARB_NAME
+import com.forknowledge.core.common.AppConstant.NUTRIENT_FAT_NAME
+import com.forknowledge.core.common.AppConstant.NUTRIENT_PROTEIN_NAME
 import com.forknowledge.feature.model.userdata.LogRecipe
+import kotlin.math.roundToInt
 
 data class SearchRecipe(
     val id: Int,
@@ -19,13 +24,22 @@ data class SearchRecipe(
         nutrients = nutrients
     )
 
-    fun toMealSearchRecipe() = MealSearchRecipe(
-        id = id,
-        name = name,
-        imageUrl = imageUrl,
-        servings = servings,
-        cookTime = cookTime
-    )
+    fun toMealSearchRecipe(): MealSearchRecipe {
+        val nutrients = listOf(
+            nutrients.firstOrNull { it.name == NUTRIENT_CALORIES_NAME }?.amount ?: 0f,
+            nutrients.firstOrNull { it.name == NUTRIENT_CARB_NAME }?.amount ?: 0f,
+            nutrients.firstOrNull { it.name == NUTRIENT_PROTEIN_NAME }?.amount ?: 0f,
+            nutrients.firstOrNull { it.name == NUTRIENT_FAT_NAME }?.amount ?: 0f
+        )
+        return MealSearchRecipe(
+            id = id,
+            name = name,
+            imageUrl = imageUrl,
+            servings = servings,
+            cookTime = cookTime,
+            nutrients = nutrients.map { it.roundToInt() }
+        )
+    }
 }
 
 data class NutritionSearchRecipe(
@@ -49,7 +63,8 @@ data class MealSearchRecipe(
     val name: String,
     val imageUrl: String,
     val servings: Int,
-    val cookTime: Int
+    val cookTime: Int,
+    val nutrients: List<Int>
 )
 
 val logRecipes = listOf(

@@ -24,6 +24,14 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
+const val NUTRIENTS_CALORIES_INDEX = 0
+const val NUTRIENTS_CARB_INDEX = 1
+const val NUTRIENTS_PROTEIN_INDEX = 2
+const val NUTRIENTS_FAT_INDEX = 3
+const val MEAL_SLOT_BREAKFAST = 1
+const val MEAL_SLOT_LUNCH = 2
+const val MEAL_SLOT_DINNER = 3
+
 @HiltViewModel
 class MealPlannerViewModel @Inject constructor(
     private val generateMealPlanInteractor: GenerateMealPlanInteractor,
@@ -68,16 +76,53 @@ class MealPlannerViewModel @Inject constructor(
 
     private fun updateMealPlanState(
         date: LocalDate,
-        mealPosition: Int,
+        meal: Int,
         mealId: Int
     ) {
         _mealPlan.update { meals ->
-            when (mealPosition) {
-                1 -> {
+            when (meal) {
+                MEAL_SLOT_BREAKFAST -> {
                     meals.map { mealDay ->
                         if (mealDay.date == date) {
+                            val deleteMeal =
+                                mealDay.breakfast.first { it.mealId == mealId } // Meal that being deleted
+                            val remainingMeals =
+                                mealDay.breakfast.filterNot { it.mealId == mealId } // Remain meals after removing deleteMeal
+                            val newNutritionSummary = if (deleteMeal.calories == null) {
+                                listOf(
+                                    mealDay.nutritionSummary[NUTRIENTS_CALORIES_INDEX] - (mealDay.breakfastNutrition[NUTRIENTS_CALORIES_INDEX] - remainingMeals.sumOf { it.calories!! }),
+                                    mealDay.nutritionSummary[NUTRIENTS_CARB_INDEX] - (mealDay.breakfastNutrition[NUTRIENTS_CARB_INDEX] - remainingMeals.sumOf { it.carbs!! }),
+                                    mealDay.nutritionSummary[NUTRIENTS_PROTEIN_INDEX] - (mealDay.breakfastNutrition[NUTRIENTS_PROTEIN_INDEX] - remainingMeals.sumOf { it.protein!! }),
+                                    mealDay.nutritionSummary[NUTRIENTS_FAT_INDEX] - (mealDay.breakfastNutrition[NUTRIENTS_FAT_INDEX] - remainingMeals.sumOf { it.fat!! }),
+                                )
+                            } else {
+                                listOf(
+                                    mealDay.nutritionSummary[NUTRIENTS_CALORIES_INDEX] - deleteMeal.calories!!,
+                                    mealDay.nutritionSummary[NUTRIENTS_CARB_INDEX] - deleteMeal.carbs!!,
+                                    mealDay.nutritionSummary[NUTRIENTS_PROTEIN_INDEX] - deleteMeal.protein!!,
+                                    mealDay.nutritionSummary[NUTRIENTS_FAT_INDEX] - deleteMeal.fat!!
+                                )
+                            }
+                            val newBreakfastNutrition = if (deleteMeal.calories == null) {
+                                listOf(
+                                    mealDay.breakfastNutrition[NUTRIENTS_CALORIES_INDEX] - (mealDay.breakfastNutrition[NUTRIENTS_CALORIES_INDEX] - remainingMeals.sumOf { it.calories!! }),
+                                    mealDay.breakfastNutrition[NUTRIENTS_CARB_INDEX] - (mealDay.breakfastNutrition[NUTRIENTS_CARB_INDEX] - remainingMeals.sumOf { it.carbs!! }),
+                                    mealDay.breakfastNutrition[NUTRIENTS_PROTEIN_INDEX] - (mealDay.breakfastNutrition[NUTRIENTS_PROTEIN_INDEX] - remainingMeals.sumOf { it.protein!! }),
+                                    mealDay.breakfastNutrition[NUTRIENTS_FAT_INDEX] - (mealDay.breakfastNutrition[NUTRIENTS_FAT_INDEX] - remainingMeals.sumOf { it.fat!! }),
+                                )
+                            } else {
+                                listOf(
+                                    mealDay.breakfastNutrition[NUTRIENTS_CALORIES_INDEX] - deleteMeal.calories!!,
+                                    mealDay.breakfastNutrition[NUTRIENTS_CARB_INDEX] - deleteMeal.carbs!!,
+                                    mealDay.breakfastNutrition[NUTRIENTS_PROTEIN_INDEX] - deleteMeal.protein!!,
+                                    mealDay.breakfastNutrition[NUTRIENTS_FAT_INDEX] - deleteMeal.fat!!
+                                )
+                            }
+
                             mealDay.copy(
-                                breakfast = mealDay.breakfast.filter { it.mealId != mealId }
+                                nutritionSummary = newNutritionSummary,
+                                breakfastNutrition = newBreakfastNutrition,
+                                breakfast = remainingMeals
                             )
                         } else {
                             mealDay
@@ -85,11 +130,48 @@ class MealPlannerViewModel @Inject constructor(
                     }
                 }
 
-                2 -> {
+                MEAL_SLOT_LUNCH -> {
                     meals.map { mealDay ->
                         if (mealDay.date == date) {
+                            val deleteMeal =
+                                mealDay.lunch.first { it.mealId == mealId } // Meal that being deleted
+                            val remainingMeals =
+                                mealDay.lunch.filterNot { it.mealId == mealId } // Remain meals after removing deleteMeal
+                            val newNutritionSummary = if (deleteMeal.calories == null) {
+                                listOf(
+                                    mealDay.nutritionSummary[NUTRIENTS_CALORIES_INDEX] - (mealDay.lunchNutrition[NUTRIENTS_CALORIES_INDEX] - remainingMeals.sumOf { it.calories!! }),
+                                    mealDay.nutritionSummary[NUTRIENTS_CARB_INDEX] - (mealDay.lunchNutrition[NUTRIENTS_CARB_INDEX] - remainingMeals.sumOf { it.carbs!! }),
+                                    mealDay.nutritionSummary[NUTRIENTS_PROTEIN_INDEX] - (mealDay.lunchNutrition[NUTRIENTS_PROTEIN_INDEX] - remainingMeals.sumOf { it.protein!! }),
+                                    mealDay.nutritionSummary[NUTRIENTS_FAT_INDEX] - (mealDay.lunchNutrition[NUTRIENTS_FAT_INDEX] - remainingMeals.sumOf { it.fat!! }),
+                                )
+                            } else {
+                                listOf(
+                                    mealDay.nutritionSummary[NUTRIENTS_CALORIES_INDEX] - deleteMeal.calories!!,
+                                    mealDay.nutritionSummary[NUTRIENTS_CARB_INDEX] - deleteMeal.carbs!!,
+                                    mealDay.nutritionSummary[NUTRIENTS_PROTEIN_INDEX] - deleteMeal.protein!!,
+                                    mealDay.nutritionSummary[NUTRIENTS_FAT_INDEX] - deleteMeal.fat!!
+                                )
+                            }
+                            val newLunchNutrition = if (deleteMeal.calories == null) {
+                                listOf(
+                                    mealDay.lunchNutrition[NUTRIENTS_CALORIES_INDEX] - (mealDay.lunchNutrition[NUTRIENTS_CALORIES_INDEX] - remainingMeals.sumOf { it.calories!! }),
+                                    mealDay.lunchNutrition[NUTRIENTS_CARB_INDEX] - (mealDay.lunchNutrition[NUTRIENTS_CARB_INDEX] - remainingMeals.sumOf { it.carbs!! }),
+                                    mealDay.lunchNutrition[NUTRIENTS_PROTEIN_INDEX] - (mealDay.lunchNutrition[NUTRIENTS_PROTEIN_INDEX] - remainingMeals.sumOf { it.protein!! }),
+                                    mealDay.lunchNutrition[NUTRIENTS_FAT_INDEX] - (mealDay.lunchNutrition[NUTRIENTS_FAT_INDEX] - remainingMeals.sumOf { it.fat!! }),
+                                )
+                            } else {
+                                listOf(
+                                    mealDay.lunchNutrition[NUTRIENTS_CALORIES_INDEX] - deleteMeal.calories!!,
+                                    mealDay.lunchNutrition[NUTRIENTS_CARB_INDEX] - deleteMeal.carbs!!,
+                                    mealDay.lunchNutrition[NUTRIENTS_PROTEIN_INDEX] - deleteMeal.protein!!,
+                                    mealDay.lunchNutrition[NUTRIENTS_FAT_INDEX] - deleteMeal.fat!!
+                                )
+                            }
+
                             mealDay.copy(
-                                lunch = mealDay.lunch.filter { it.mealId != mealId }
+                                nutritionSummary = newNutritionSummary,
+                                lunchNutrition = newLunchNutrition,
+                                lunch = remainingMeals
                             )
                         } else {
                             mealDay
@@ -97,17 +179,56 @@ class MealPlannerViewModel @Inject constructor(
                     }
                 }
 
-                else -> {
+                MEAL_SLOT_DINNER -> {
                     meals.map { mealDay ->
                         if (mealDay.date == date) {
+                            val deleteMeal =
+                                mealDay.dinner.first { it.mealId == mealId } // Meal that being deleted
+                            val remainingMeals =
+                                mealDay.dinner.filterNot { it.mealId == mealId } // Remain meals after removing deleteMeal
+                            val newNutritionSummary = if (deleteMeal.calories == null) {
+                                listOf(
+                                    mealDay.nutritionSummary[NUTRIENTS_CALORIES_INDEX] - (mealDay.dinnerNutrition[NUTRIENTS_CALORIES_INDEX] - remainingMeals.sumOf { it.calories!! }),
+                                    mealDay.nutritionSummary[NUTRIENTS_CARB_INDEX] - (mealDay.dinnerNutrition[NUTRIENTS_CARB_INDEX] - remainingMeals.sumOf { it.carbs!! }),
+                                    mealDay.nutritionSummary[NUTRIENTS_PROTEIN_INDEX] - (mealDay.dinnerNutrition[NUTRIENTS_PROTEIN_INDEX] - remainingMeals.sumOf { it.protein!! }),
+                                    mealDay.nutritionSummary[NUTRIENTS_FAT_INDEX] - (mealDay.dinnerNutrition[NUTRIENTS_FAT_INDEX] - remainingMeals.sumOf { it.fat!! }),
+                                )
+                            } else {
+                                listOf(
+                                    mealDay.nutritionSummary[NUTRIENTS_CALORIES_INDEX] - deleteMeal.calories!!,
+                                    mealDay.nutritionSummary[NUTRIENTS_CARB_INDEX] - deleteMeal.carbs!!,
+                                    mealDay.nutritionSummary[NUTRIENTS_PROTEIN_INDEX] - deleteMeal.protein!!,
+                                    mealDay.nutritionSummary[NUTRIENTS_FAT_INDEX] - deleteMeal.fat!!
+                                )
+                            }
+                            val newDinnerNutrition = if (remainingMeals.isNotEmpty()) {
+                                listOf(
+                                    mealDay.dinnerNutrition[NUTRIENTS_CALORIES_INDEX] - (mealDay.dinnerNutrition[NUTRIENTS_CALORIES_INDEX] - remainingMeals.sumOf { it.calories!! }),
+                                    mealDay.dinnerNutrition[NUTRIENTS_CARB_INDEX] - (mealDay.dinnerNutrition[NUTRIENTS_CARB_INDEX] - remainingMeals.sumOf { it.carbs!! }),
+                                    mealDay.dinnerNutrition[NUTRIENTS_PROTEIN_INDEX] - (mealDay.dinnerNutrition[NUTRIENTS_PROTEIN_INDEX] - remainingMeals.sumOf { it.protein!! }),
+                                    mealDay.dinnerNutrition[NUTRIENTS_FAT_INDEX] - (mealDay.dinnerNutrition[NUTRIENTS_FAT_INDEX] - remainingMeals.sumOf { it.fat!! }),
+                                )
+                            } else {
+                                listOf(
+                                    mealDay.dinnerNutrition[NUTRIENTS_CALORIES_INDEX] - deleteMeal.calories!!,
+                                    mealDay.dinnerNutrition[NUTRIENTS_CARB_INDEX] - deleteMeal.carbs!!,
+                                    mealDay.dinnerNutrition[NUTRIENTS_PROTEIN_INDEX] - deleteMeal.protein!!,
+                                    mealDay.dinnerNutrition[NUTRIENTS_FAT_INDEX] - deleteMeal.fat!!
+                                )
+                            }
+
                             mealDay.copy(
-                                dinner = mealDay.dinner.filter { it.mealId != mealId }
+                                nutritionSummary = newNutritionSummary,
+                                dinnerNutrition = newDinnerNutrition,
+                                dinner = remainingMeals
                             )
                         } else {
                             mealDay
                         }
                     }
                 }
+
+                else -> meals
             }
         }
     }
@@ -166,12 +287,12 @@ class MealPlannerViewModel @Inject constructor(
 
                 is Result.Success -> {
                     deleteRecipeState = ResultState.SUCCESS
-                    onProcessItem = 0
                     updateMealPlanState(
                         date = date,
-                        mealPosition = mealPosition,
+                        meal = mealPosition,
                         mealId = mealId
                     )
+                    onProcessItem = 0
                 }
 
                 is Result.Error -> {

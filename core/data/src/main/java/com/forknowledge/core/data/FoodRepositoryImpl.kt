@@ -119,18 +119,34 @@ class FoodRepositoryImpl @Inject constructor(
 
                 // Total nutrients of the day
                 val nutritionSummary = mealDay.nutritionSummary.nutrients
-                val nutrients = listOf(
+                val breakfastSummary = mealDay.nutritionSummaryBreakfast.nutrients
+                val lunchSummary = mealDay.nutritionSummaryLunch.nutrients
+                val dinnerSummary = mealDay.nutritionSummaryDinner.nutrients
+
+                val nutrition = listOf(
                     nutritionSummary.getNutrientByName(NUTRIENT_CALORIES_NAME),
                     nutritionSummary.getNutrientByName(NUTRIENT_CARB_NAME),
                     nutritionSummary.getNutrientByName(NUTRIENT_PROTEIN_NAME),
                     nutritionSummary.getNutrientByName(NUTRIENT_FAT_NAME)
                 )
-                val breakfastCalories =
-                    mealDay.nutritionSummaryBreakfast.nutrients.getNutrientByName(NUTRIENT_CALORIES_NAME).amount.roundToInt()
-                val lunchCalories =
-                    mealDay.nutritionSummaryLunch.nutrients.getNutrientByName(NUTRIENT_CALORIES_NAME).amount.roundToInt()
-                val dinnerCalories =
-                    mealDay.nutritionSummaryDinner.nutrients.getNutrientByName(NUTRIENT_CALORIES_NAME).amount.roundToInt()
+                val breakfastNutrition = listOf(
+                    breakfastSummary.getNutrientByName(NUTRIENT_CALORIES_NAME),
+                    breakfastSummary.getNutrientByName(NUTRIENT_CARB_NAME),
+                    breakfastSummary.getNutrientByName(NUTRIENT_PROTEIN_NAME),
+                    breakfastSummary.getNutrientByName(NUTRIENT_FAT_NAME)
+                )
+                val lunchNutrition = listOf(
+                    lunchSummary.getNutrientByName(NUTRIENT_CALORIES_NAME),
+                    lunchSummary.getNutrientByName(NUTRIENT_CARB_NAME),
+                    lunchSummary.getNutrientByName(NUTRIENT_PROTEIN_NAME),
+                    lunchSummary.getNutrientByName(NUTRIENT_FAT_NAME)
+                )
+                val dinnerNutrition = listOf(
+                    dinnerSummary.getNutrientByName(NUTRIENT_CALORIES_NAME),
+                    dinnerSummary.getNutrientByName(NUTRIENT_CARB_NAME),
+                    dinnerSummary.getNutrientByName(NUTRIENT_PROTEIN_NAME),
+                    dinnerSummary.getNutrientByName(NUTRIENT_FAT_NAME)
+                )
 
                 // Filter recipes by slot
                 val recipes = mealDay.items
@@ -140,10 +156,10 @@ class FoodRepositoryImpl @Inject constructor(
                 mealPlan.add(
                     MealPlanDisplayData(
                         date = date,
-                        nutritionSummary = nutrients.map { it.amount.roundToInt() },
-                        breakfastCalories = breakfastCalories,
-                        lunchCalories = lunchCalories,
-                        dinnerCalories = dinnerCalories,
+                        nutritionSummary = nutrition.map { it.amount.roundToInt() },
+                        breakfastNutrition = breakfastNutrition.map { it.amount.roundToInt() },
+                        lunchNutrition = lunchNutrition.map { it.amount.roundToInt() },
+                        dinnerNutrition = dinnerNutrition.map { it.amount.roundToInt() },
                         breakfast = breakfast,
                         lunch = lunch,
                         dinner = dinner
@@ -179,7 +195,11 @@ class FoodRepositoryImpl @Inject constructor(
                     title = recipe.recipeName,
                     image = recipe.imageUrl,
                     servings = recipe.servings,
-                    readyInMinutes = recipe.cookTime
+                    readyInMinutes = recipe.cookTime,
+                    calories = recipe.calories,
+                    carbs = recipe.carbs,
+                    protein = recipe.protein,
+                    fat = recipe.fat
                 )
             )
         }
