@@ -18,7 +18,7 @@ import com.forknowledge.core.common.healthtype.SurveyQuestionType
 import com.forknowledge.core.common.healthtype.TargetWeightError
 import com.forknowledge.core.common.healthtype.questions
 import com.forknowledge.core.data.UserRepository
-import com.forknowledge.feature.model.userdata.TargetNutrition
+import com.forknowledge.feature.model.userdata.TargetNutritionData
 import com.forknowledge.feature.model.userdata.User
 import com.forknowledge.feature.onboarding.ui.DataUnit
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -109,7 +109,7 @@ class OnboardingViewModel @Inject constructor(
             activityLevel = activityLevel!!.ordinal.toLong(),
             diet = diet!!.dietName,
             excludes = excludes,
-            targetNutrition = TargetNutrition(
+            targetNutrition = TargetNutritionData(
                 calories = targetCalories.toLong(),
                 carbRatio = diet!!.macro.carbs,
                 proteinRatio = diet!!.macro.protein,

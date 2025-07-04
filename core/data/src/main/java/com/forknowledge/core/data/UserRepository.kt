@@ -4,9 +4,9 @@ import com.forknowledge.core.common.Result
 import com.forknowledge.core.data.datatype.UserAuthState
 import com.forknowledge.core.data.model.DailyNutritionDisplayData
 import com.forknowledge.core.data.model.NutritionDisplayData
+import com.forknowledge.core.data.model.TargetNutritionDisplayData
 import com.forknowledge.feature.model.userdata.IntakeNutrition
 import com.forknowledge.feature.model.userdata.LogRecipe
-import com.forknowledge.feature.model.userdata.TargetNutrition
 import com.forknowledge.feature.model.userdata.User
 import com.forknowledge.feature.model.userdata.UserToken
 import kotlinx.coroutines.flow.Flow
@@ -63,7 +63,7 @@ interface UserRepository {
      * Get user's target nutrition.
      * @return 4 target nutrition values: calories, carbs, proteins, fats.
      */
-    fun getUserTargetNutrition(): Flow<TargetNutrition?>
+    fun getUserTargetNutrition(): Flow<TargetNutritionDisplayData?>
 
     /**
      * Get user's nutrition record by specific date.

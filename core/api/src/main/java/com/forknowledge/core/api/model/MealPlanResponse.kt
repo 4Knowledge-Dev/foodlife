@@ -17,6 +17,7 @@ data class DayResponse(
     val date: Long,
     val day: String,
     val items: List<FoodResponse>,
+    val nutritionSummary: NutritionResponse,
     val nutritionSummaryBreakfast: NutritionResponse,
     val nutritionSummaryDinner: NutritionResponse,
     val nutritionSummaryLunch: NutritionResponse
@@ -41,7 +42,11 @@ data class FoodResponse(
         ),
         name = value.title,
         servings = value.servings,
-        cookTime = value.readyInMinutes
+        cookTime = value.readyInMinutes,
+        calories = value.calories,
+        carbs = value.carbs,
+        protein = value.protein,
+        fat = value.fat
     )
 }
 
@@ -53,5 +58,9 @@ data class ValueResponse(
     val image: String? = null,
     val imageType: String? = null,
     val servings: Int,
-    val readyInMinutes: Int
+    val readyInMinutes: Int,
+    val calories: Int? = null,
+    val carbs: Int? = null,
+    val protein: Int? = null,
+    val fat: Int? = null
 )

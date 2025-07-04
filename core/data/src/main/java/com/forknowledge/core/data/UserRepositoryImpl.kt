@@ -4,13 +4,16 @@ import android.util.Log
 import androidx.datastore.core.IOException
 import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_CALORIES_INDEX
 import com.forknowledge.core.common.Result
+import com.forknowledge.core.common.caloriesToNutrientAmount
 import com.forknowledge.core.common.extension.endOfDay
 import com.forknowledge.core.common.extension.startOfDay
 import com.forknowledge.core.common.extension.toFirestoreDocumentIdByDate
+import com.forknowledge.core.common.healthtype.NutrientType
 import com.forknowledge.core.data.datasource.PreferenceDatastore
 import com.forknowledge.core.data.datatype.UserAuthState
 import com.forknowledge.core.data.model.DailyNutritionDisplayData
 import com.forknowledge.core.data.model.NutritionDisplayData
+import com.forknowledge.core.data.model.TargetNutritionDisplayData
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_EXCEPTION
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_GET_DATA_EXCEPTION
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_TRANSACTION_EXCEPTION
@@ -38,6 +41,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 const val USER_RECORD_DATE_FIELD = "date"
 const val RECIPE_MEAL_TYPE_BREAKFAST = 1L
@@ -157,7 +161,28 @@ class UserRepositoryImpl @Inject constructor(
                     } else {
                         if (snapshot != null && snapshot.exists()) {
                             val user = snapshot.toObject(User::class.java) ?: User()
-                            channel.trySend(user.targetNutrition)
+                            val targetCalories = user.targetNutrition.calories
+                            channel.trySend(
+                                TargetNutritionDisplayData(
+                                    calories = targetCalories.toInt(),
+                                    carbs = caloriesToNutrientAmount(
+                                        nutrient = NutrientType.CARBOHYDRATE,
+                                        calories = targetCalories * user.targetNutrition.carbRatio
+                                    ),
+                                    protein = caloriesToNutrientAmount(
+                                        nutrient = NutrientType.PROTEIN,
+                                        calories = targetCalories * user.targetNutrition.proteinRatio
+                                    ),
+                                    fat = caloriesToNutrientAmount(
+                                        nutrient = NutrientType.FAT,
+                                        calories = targetCalories * user.targetNutrition.fatRatio
+                                    ),
+                                    breakfastCalories = (targetCalories * user.targetNutrition.breakfastRatio).roundToInt(),
+                                    lunchCalories = (targetCalories * user.targetNutrition.lunchRatio).roundToInt(),
+                                    dinnerCalories = (targetCalories * user.targetNutrition.dinnerRatio).roundToInt(),
+                                    snacksCalories = (targetCalories * user.targetNutrition.snacksRatio).roundToInt(),
+                                )
+                            )
                         } else {
                             Log.d(FIREBASE_GET_DATA_EXCEPTION, "No data found.")
                             channel.trySend(null)
@@ -192,23 +217,23 @@ class UserRepositoryImpl @Inject constructor(
                                     val mealCalories = listOf(
                                         recipes
                                             .filter { it.mealPosition == RECIPE_MEAL_TYPE_BREAKFAST }
-                                            .sumOf { it.calories },
+                                            .sumOf { it.calories.toDouble() },
                                         recipes
                                             .filter { it.mealPosition == RECIPE_MEAL_TYPE_LUNCH }
-                                            .sumOf { it.calories },
+                                            .sumOf { it.calories.toDouble() },
                                         recipes
                                             .filter { it.mealPosition == RECIPE_MEAL_TYPE_DINNER }
-                                            .sumOf { it.calories },
+                                            .sumOf { it.calories.toDouble() },
                                         recipes
                                             .filter { it.mealPosition == RECIPE_MEAL_TYPE_SNACKS }
-                                            .sumOf { it.calories }
+                                            .sumOf { it.calories.toDouble() }
                                     )
                                     channel.trySend(
                                         NutritionDisplayData(
                                             nutrients = nutrition.nutrients.ifEmpty {
                                                 null
                                             },
-                                            mealCalories = mealCalories
+                                            mealCalories = mealCalories.map { it.toInt() }
                                         )
                                     )
                                 } ?: channel.trySend(NutritionDisplayData())
@@ -273,7 +298,7 @@ class UserRepositoryImpl @Inject constructor(
                         imageUrl = recipe.imageUrl,
                         mealPosition = mealPosition.toLong(),
                         servings = recipe.servings.toLong(),
-                        calories = recipe.nutrients[0].amount.toLong() * recipe.servings
+                        calories = recipe.nutrients[0].amount * recipe.servings
                     )
                     newRecipeRecords = oldRecipeRecords + newRecipeRecord
                 }
@@ -328,7 +353,7 @@ class UserRepositoryImpl @Inject constructor(
                             imageUrl = recipe.imageUrl,
                             mealPosition = mealPosition.toLong(),
                             servings = recipe.servings.toLong(),
-                            calories = recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong() * recipe.servings
+                            calories = recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount * recipe.servings
                         )
                     )
                 )

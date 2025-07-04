@@ -1,6 +1,6 @@
 package com.forknowledge.feature.model.userdata
 
-data class TargetNutrition(
+data class TargetNutritionData(
     val calories: Long = 0,
     val carbRatio: Double = 0.0,
     val proteinRatio: Double = 0.0,

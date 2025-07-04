@@ -245,7 +245,7 @@ fun DailyProgressSection(
         mainNutrients.forEachIndexed { index, nutrient ->
             var progress by remember { mutableFloatStateOf(0f) }
             val animatedProgress by animateFloatAsState(
-                targetValue = progress.toFloat(),
+                targetValue = progress,
                 animationSpec = tween(durationMillis = 1000)
             )
             val target = when (index) {

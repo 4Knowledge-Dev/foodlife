@@ -215,7 +215,11 @@ fun MealItemPreview() {
             imageUrl = "",
             name = "Spaghetti Bolognese ".repeat(3),
             cookTime = 30,
-            servings = 4
+            servings = 4,
+            calories = 1000,
+            carbs = 100,
+            protein = 100,
+            fat = 100
         ),
         showLoading = true,
         onRecipeClick = {},

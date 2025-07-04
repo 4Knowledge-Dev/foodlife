@@ -21,5 +21,5 @@ data class User(
     val activityLevel: Long = 0,
     val diet: String = "",
     val excludes: List<String> = emptyList(),
-    val targetNutrition: TargetNutrition = TargetNutrition()
+    val targetNutrition: TargetNutritionData = TargetNutritionData()
 )

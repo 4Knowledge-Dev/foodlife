@@ -29,6 +29,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 const val SNACK_BAR_ADD_RECIPE_ERROR_DELAY = 2000L
+const val NUTRIENTS_CALORIES_INDEX = 0
+const val NUTRIENTS_CARB_INDEX = 1
+const val NUTRIENTS_PROTEIN_INDEX = 2
+const val NUTRIENTS_FAT_INDEX = 3
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -136,6 +140,10 @@ class SearchViewModel @Inject constructor(
                 imageUrl = recipe.imageUrl,
                 servings = recipe.servings,
                 cookTime = recipe.cookTime,
+                calories = recipe.nutrients[NUTRIENTS_CALORIES_INDEX],
+                carbs = recipe.nutrients[NUTRIENTS_CARB_INDEX],
+                protein = recipe.nutrients[NUTRIENTS_PROTEIN_INDEX],
+                fat = recipe.nutrients[NUTRIENTS_FAT_INDEX]
             )
         }
 
