@@ -285,7 +285,8 @@ class UserRepositoryImpl @Inject constructor(
                         if (recipeRecord.id == recipe.id.toLong() && recipeRecord.mealPosition == mealPosition.toLong()) {
                             recipeRecord.copy(
                                 servings = recipeRecord.servings + recipe.servings.toLong(),
-                                calories = recipeRecord.calories + recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong() * recipe.servings
+                                calories = recipeRecord.calories + recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong() * recipe.servings,
+
                             )
                         } else {
                             recipeRecord
