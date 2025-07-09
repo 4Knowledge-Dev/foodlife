@@ -73,11 +73,6 @@ fun AppAlertDialog(
     )
 }
 
-@Composable
-fun AppSnackBar() {
-
-}
-
 @Preview(showBackground = true)
 @Composable
 fun AppAlertDialogPreview() {

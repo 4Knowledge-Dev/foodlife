@@ -100,7 +100,12 @@ fun AppFloatingActionButton(
     onClick: () -> Unit
 ) {
     FloatingActionButton(
-        modifier = modifier.size(64.dp),
+        modifier = modifier
+            .padding(
+                bottom = 48.dp,
+                end = 24.dp
+            )
+            .size(64.dp),
         onClick = onClick,
         shape = CircleShape,
         containerColor = Green91C747,

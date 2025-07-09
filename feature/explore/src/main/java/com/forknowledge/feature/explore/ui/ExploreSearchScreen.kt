@@ -134,7 +134,6 @@ fun ExploreSearchScreen(
                             contentAlignment = Alignment.TopCenter
                         ) {
                             AppSnackBar(
-                                modifier = Modifier.padding(top = 36.dp),
                                 message = it.visuals.message,
                                 state = SnackBarState.FAILURE
                             )

@@ -98,6 +98,8 @@ interface FoodApiService {
 
     @POST("$API_HEADER_RECIPE/analyze")
     suspend fun analyzeRecipe(
+        @Query("includeNutrition") includeNutrition: Boolean = true,
+        @Query("language") language: String = "en",
         @Body analyzeRecipe: AnalyzeRecipe
-    )
+    ): Response<RecipeDetailResponse>
 }

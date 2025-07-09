@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.asFlowResult
 import com.forknowledge.core.data.FoodRepository
-import com.forknowledge.feature.model.Equipment
+import com.forknowledge.core.domain.di.CreateRecipeInteractor
 import com.forknowledge.feature.model.Ingredient
 import com.forknowledge.feature.model.Recipe
 import com.forknowledge.feature.model.Step
@@ -22,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateRecipeViewModel @Inject constructor(
-    private val foodRepository: FoodRepository
+    private val foodRepository: FoodRepository,
+    private val createRecipeInteractor: CreateRecipeInteractor
 ) : ViewModel() {
 
     private val _recipe = MutableStateFlow(Recipe())
@@ -30,6 +31,40 @@ class CreateRecipeViewModel @Inject constructor(
 
     var method by mutableStateOf("")
         private set
+
+    var shouldShowLoading by mutableStateOf(false)
+        private set
+
+    var shouldShowSaveRecipeError by mutableStateOf(false)
+        private set
+
+    var onNavigateToRecipeDetail by mutableStateOf(false)
+        private set
+
+    fun saveRecipe() {
+        shouldShowSaveRecipeError = false
+        viewModelScope.launch {
+            createRecipeInteractor(_recipe.value)
+                .asFlowResult()
+                .collect { result ->
+                    when (result) {
+                        is Result.Loading -> {
+                            shouldShowLoading = true
+                        }
+
+                        is Result.Success -> {
+                            shouldShowLoading = false
+                            onNavigateToRecipeDetail = true
+                        }
+
+                        is Result.Error -> {
+                            shouldShowLoading = false
+                            shouldShowSaveRecipeError = true
+                        }
+                    }
+                }
+        }
+    }
 
     fun updateRecipeName(recipeName: String) {
         _recipe.update { recipe ->
@@ -92,6 +127,7 @@ class CreateRecipeViewModel @Inject constructor(
                                     )
                                 }
                             }
+
                             is Result.Error -> {/* Do nothing */
                             }
                         }

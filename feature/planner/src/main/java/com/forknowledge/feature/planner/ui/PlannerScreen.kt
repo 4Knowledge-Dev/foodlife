@@ -115,6 +115,10 @@ fun PlannerScreen(
         stringResource(R.string.meal_planner_meal_plan_snackbar_delete_success_message)
     val failMessage = stringResource(R.string.meal_planner_meal_plan_snackbar_delete_fail_message)
 
+    LaunchedEffect(Unit) {
+        viewModel.resetState()
+    }
+
     LaunchedEffect(deleteRecipeState) {
         when (deleteRecipeState) {
             ResultState.SUCCESS -> {
@@ -164,21 +168,16 @@ fun PlannerScreen(
         },
         snackbarHost = {
             SnackbarHost(
+                modifier = Modifier.padding(top = 50.dp),
                 hostState = snackbarHostState,
                 snackbar = {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.TopCenter
-                    ) {
-                        AppSnackBar(
-                            modifier = Modifier.padding(top = 36.dp),
-                            message = it.visuals.message,
-                            state = when (deleteRecipeState) {
-                                ResultState.SUCCESS -> SnackBarState.SUCCESS
-                                else -> SnackBarState.FAILURE
-                            }
-                        )
-                    }
+                    AppSnackBar(
+                        message = it.visuals.message,
+                        state = when (deleteRecipeState) {
+                            ResultState.SUCCESS -> SnackBarState.SUCCESS
+                            else -> SnackBarState.FAILURE
+                        }
+                    )
                 }
             )
         },

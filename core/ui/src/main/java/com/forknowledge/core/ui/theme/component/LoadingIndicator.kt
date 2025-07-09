@@ -1,7 +1,9 @@
 package com.forknowledge.core.ui.theme.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -13,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.forknowledge.core.ui.theme.Black05172C
 import com.forknowledge.core.ui.theme.GreyB7BDC4
 
@@ -43,6 +46,20 @@ fun LoadingIndicatorBox(
             )
             .clip(RoundedCornerShape(12.dp))
             .background(Color.Transparent),
+        contentAlignment = Alignment.Center
+    ) {
+        LoadingIndicator()
+    }
+}
+
+@Composable
+fun LoadingIndicatorOverlay() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.1f))
+            .clickable(enabled = false, onClick = {})
+            .zIndex(1f),
         contentAlignment = Alignment.Center
     ) {
         LoadingIndicator()

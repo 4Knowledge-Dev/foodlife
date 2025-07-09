@@ -5,6 +5,7 @@ import com.forknowledge.core.data.datatype.UserAuthState
 import com.forknowledge.core.data.model.DailyNutritionDisplayData
 import com.forknowledge.core.data.model.NutritionDisplayData
 import com.forknowledge.core.data.model.TargetNutritionDisplayData
+import com.forknowledge.feature.model.Recipe
 import com.forknowledge.feature.model.userdata.IntakeNutrition
 import com.forknowledge.feature.model.userdata.LogRecipe
 import com.forknowledge.feature.model.userdata.User
@@ -107,4 +108,11 @@ interface UserRepository {
         startDate: Date,
         endDate: Date
     ): Flow<List<IntakeNutrition>>
+
+    /**
+     * Add a new recipe to database.
+     * @param [recipe] the recipe to create.
+     * @return [Result] of operation.
+     */
+    suspend fun createRecipe(recipe: Recipe): Result<Unit>
 }

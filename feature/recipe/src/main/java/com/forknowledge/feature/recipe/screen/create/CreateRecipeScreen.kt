@@ -31,12 +31,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,12 +72,17 @@ import com.forknowledge.core.common.extension.toFormattedNumber
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Green91C747
 import com.forknowledge.core.ui.theme.Grey8A949F
+import com.forknowledge.core.ui.theme.GreyB7BDC4
 import com.forknowledge.core.ui.theme.GreyC5C6C7
 import com.forknowledge.core.ui.theme.GreyFAFAFA
+import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppBasicTextField
 import com.forknowledge.core.ui.theme.component.AppButton
+import com.forknowledge.core.ui.theme.component.AppSnackBar
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.core.ui.theme.component.LoadingIndicatorOverlay
+import com.forknowledge.core.ui.theme.state.SnackBarState
 import com.forknowledge.feature.model.Ingredient
 import com.forknowledge.feature.model.Recipe
 import com.forknowledge.feature.model.Step
@@ -95,21 +104,62 @@ fun CreateRecipeScreen(
 ) {
     val recipe by viewModel.recipe.collectAsState()
     val method = viewModel.method
+    val shouldShowLoading = viewModel.shouldShowLoading
+    val shouldShowSaveRecipeError = viewModel.shouldShowSaveRecipeError
+    val onNavigateToRecipeDetail = viewModel.onNavigateToRecipeDetail
+
+    var isTitleValid by remember { mutableStateOf(true) }
+    var isServingsValid by remember { mutableStateOf(true) }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val snackBarMessage = stringResource(R.string.create_recipe_save_recipe_error)
+    LaunchedEffect(shouldShowSaveRecipeError) {
+        if (shouldShowSaveRecipeError) {
+            snackbarHostState.showSnackbar(
+                message = snackBarMessage,
+                duration = SnackbarDuration.Short
+            )
+        }
+    }
 
     Scaffold(
         topBar = { CreateRecipeTopBar(onNavigateBack) },
-        bottomBar = { CreateRecipeBottomBar { } }
-
+        bottomBar = {
+            CreateRecipeBottomBar {
+                isTitleValid = recipe.recipeName.isNotEmpty()
+                isServingsValid = recipe.servings > 0
+                if (isServingsValid && isTitleValid) {
+                    viewModel.saveRecipe()
+                }
+            }
+        },
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { snackbarData ->
+                    AppSnackBar(
+                        message = snackbarData.visuals.message,
+                        state = SnackBarState.FAILURE
+                    )
+                }
+            )
+        }
     ) { innerPadding ->
+        if (shouldShowLoading) {
+            LoadingIndicatorOverlay()
+        }
+
         CreateRecipeContent(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
                 .background(White)
-                .padding(vertical = 24.dp)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = 24.dp),
             recipe = recipe,
             method = method,
+            isTitleValid = isTitleValid,
+            isServingsValid = isServingsValid,
             onTitleChanged = { viewModel.updateRecipeName(it) },
             onDescriptionChanged = { viewModel.updateSummary(it) },
             onRecipeSourceChanged = { sourceName, sourceUrl ->
@@ -195,6 +245,8 @@ fun CreateRecipeContent(
     modifier: Modifier = Modifier,
     recipe: Recipe,
     method: String,
+    isTitleValid: Boolean,
+    isServingsValid: Boolean,
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onRecipeSourceChanged: (sourceName: String, sourceUrl: String) -> Unit,
@@ -271,6 +323,18 @@ fun CreateRecipeContent(
             }
         )
 
+        if (!isTitleValid) {
+            AppText(
+                modifier = Modifier
+                    .padding(top = 8.dp, end = 16.dp)
+                    .fillMaxWidth(),
+                text = stringResource(R.string.create_recipe_title_label_empty_error),
+                textStyle = Typography.bodySmall,
+                color = RedFF4950,
+                textAlign = TextAlign.End
+            )
+        }
+
         Row(
             modifier = Modifier
                 .padding(top = 16.dp, start = 16.dp, end = 16.dp)
@@ -338,6 +402,8 @@ fun CreateRecipeContent(
             title = stringResource(R.string.create_recipe_bottom_sheet_servings_title),
             value = recipe.servings.toString(),
             description = stringResource(R.string.create_recipe_set_servings_description),
+            focusedTextFieldColor = if (isServingsValid) Color.Black else RedFF4950,
+            unfocusedTextFieldColor = if (isServingsValid) Grey8A949F else RedFF4950,
             onValueChanged = { servings ->
                 if (servings.length <= ATTRIBUTE_SERVINGS_MAX_LENGTH) {
                     onServingsChanged(if (servings.isEmpty()) 0 else servings.toInt())
@@ -422,14 +488,16 @@ fun CreateRecipeContent(
         )
 
         recipe.ingredients.forEachIndexed { index, ingredient ->
-            val formattedAmount = ingredient.originalMeasures.amount.toFormattedNumber()
             val ingredientAmount = buildAnnotatedString {
-                withStyle(
-                    style = Typography.bodyMedium.toSpanStyle().copy(
-                        fontWeight = FontWeight.Bold
-                    )
-                ) {
-                    append("$formattedAmount ${ingredient.originalMeasures.unit} ")
+                if (ingredient.originalMeasures.amount > 0) {
+                    val formattedAmount = ingredient.originalMeasures.amount.toFormattedNumber()
+                    withStyle(
+                        style = Typography.bodyMedium.toSpanStyle().copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("$formattedAmount ${ingredient.originalMeasures.unit} ")
+                    }
                 }
                 withStyle(
                     style = Typography.bodyMedium.toSpanStyle()
@@ -572,6 +640,8 @@ fun RecipeSetInformation(
     title: String,
     value: String,
     description: String,
+    unfocusedTextFieldColor: Color = GreyB7BDC4,
+    focusedTextFieldColor: Color = Color.Black,
     onValueChanged: (String) -> Unit
 ) {
     ConstraintLayout(
@@ -599,7 +669,9 @@ fun RecipeSetInformation(
                     top.linkTo(parent.top)
                 },
             textStyle = Typography.bodyMedium.copy(textAlign = TextAlign.Center),
-            value = value,
+            unfocusedTextFieldColor = unfocusedTextFieldColor,
+            focusedTextFieldColor = focusedTextFieldColor,
+            value = value.ifEmpty { "" },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             onValueChanged = { value ->
                 onValueChanged(value)
@@ -684,6 +756,8 @@ fun CreateRecipeContentPreview() {
     CreateRecipeContent(
         recipe = Recipe(),
         method = "",
+        isTitleValid = false,
+        isServingsValid = false,
         onTitleChanged = {},
         onDescriptionChanged = {},
         onRecipeSourceChanged = { _, _ -> },

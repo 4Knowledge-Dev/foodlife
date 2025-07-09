@@ -19,11 +19,13 @@ import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_GET_DATA_
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_TRANSACTION_EXCEPTION
 import com.forknowledge.core.data.reference.FirestoreReference
 import com.forknowledge.core.data.reference.FirestoreReference.USER_COLLECTION
+import com.forknowledge.core.data.reference.FirestoreReference.USER_RECIPE_SUB_COLLECTION
 import com.forknowledge.core.data.reference.FirestoreReference.USER_RECORD_SUB_COLLECTION
+import com.forknowledge.feature.model.Recipe
 import com.forknowledge.feature.model.userdata.IntakeNutrition
 import com.forknowledge.feature.model.userdata.LogRecipe
 import com.forknowledge.feature.model.userdata.NutrientData
-import com.forknowledge.feature.model.userdata.RecipeData
+import com.forknowledge.feature.model.userdata.NutritionRecipeData
 import com.forknowledge.feature.model.userdata.User
 import com.forknowledge.feature.model.userdata.UserToken
 import com.google.firebase.FirebaseException
@@ -277,7 +279,7 @@ class UserRepositoryImpl @Inject constructor(
                 val oldNutrientRecords = intakeNutrition.nutrients
                 val oldRecipeRecords = intakeNutrition.recipes
                 val newNutrientRecords = mutableListOf<NutrientData>()
-                var newRecipeRecords = emptyList<RecipeData>()
+                var newRecipeRecords = emptyList<NutritionRecipeData>()
 
                 // Update recipe list, update servings and calories of recipe if it existed, otherwise add new recipe.
                 if (oldRecipeRecords.any { it.mealPosition == mealPosition.toLong() && it.id == recipe.id.toLong() }) {
@@ -287,13 +289,13 @@ class UserRepositoryImpl @Inject constructor(
                                 servings = recipeRecord.servings + recipe.servings.toLong(),
                                 calories = recipeRecord.calories + recipe.nutrients[RECIPE_NUTRIENT_CALORIES_INDEX].amount.toLong() * recipe.servings,
 
-                            )
+                                )
                         } else {
                             recipeRecord
                         }
                     }
                 } else {
-                    val newRecipeRecord = RecipeData(
+                    val newRecipeRecord = NutritionRecipeData(
                         id = recipe.id.toLong(),
                         name = recipe.name,
                         imageUrl = recipe.imageUrl,
@@ -348,7 +350,7 @@ class UserRepositoryImpl @Inject constructor(
                     date = date,
                     nutrients = newNutrientRecords,
                     recipes = listOf(
-                        RecipeData(
+                        NutritionRecipeData(
                             id = recipe.id.toLong(),
                             name = recipe.name,
                             imageUrl = recipe.imageUrl,
@@ -445,4 +447,17 @@ class UserRepositoryImpl @Inject constructor(
             }
         awaitClose()
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun createRecipe(recipe: Recipe) = withContext(Dispatchers.IO) {
+        val docRef = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+        try {
+            docRef.collection(USER_RECIPE_SUB_COLLECTION).document(recipe.recipeId.toString())
+                .set(recipe)
+                .await()
+            Result.Success(Unit)
+        } catch (e: FirebaseException) {
+            Log.e(FIREBASE_EXCEPTION, "Update data failed with ", e)
+            Result.Error(e)
+        }
+    }
 }

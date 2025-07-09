@@ -44,6 +44,7 @@
     <string name="create_recipe_button_save">Save</string>
     <string name="create_recipe_button_generate">Generate</string>
     <string name="create_recipe_title_label">Title</string>
+    <string name="create_recipe_title_label_empty_error">Enter recipe name</string>
     <string name="create_recipe_title_text_field_placeholder">Your recipe name</string>
     <string name="create_recipe_description_label">Description</string>
     <string name="create_recipe_description_text_field_placeholder">Introduce your recipe, add notes, cooking tips, etc…</string>
@@ -75,4 +76,5 @@
     <string name="create_recipe_item_instruction">Swipe to delete</string>
     <string name="create_recipe_ingredient_text_field_placeholder">Add one item</string>
     <string name="create_recipe_instruction_text_field_placeholder">Add one step</string>
+    <string name="create_recipe_save_recipe_error">Fail to create recipe!</string>
 </resources>
