@@ -57,6 +57,7 @@ import com.forknowledge.feature.planner.ui.PlannerScreen
 import com.forknowledge.feature.recipe.CreateRecipeRoute
 import com.forknowledge.feature.recipe.RecipeRoute
 import com.forknowledge.feature.recipe.SavedRecipeRoute
+import com.forknowledge.feature.recipe.navigateToSavedRecipeDetail
 import com.forknowledge.feature.recipe.screen.create.CreateRecipeScreen
 import com.forknowledge.feature.recipe.screen.recipe.RecipeScreen
 import com.forknowledge.feature.recipe.screen.savedrecipe.SavedRecipeScreen
@@ -166,6 +167,14 @@ fun AppScreen(
             }
             composable<SavedRecipeRoute> {
                 SavedRecipeScreen(
+                    onNavigateToRecipeDetail = { recipeId ->
+                        appState.navController.navigateToSavedRecipeDetail(
+                            RecipeRoute(
+                                isSavedRecipe = true,
+                                recipeId = recipeId
+                            )
+                        )
+                    },
                     onNavigateToCreateRecipe = { appState.navController.navigate(CreateRecipeRoute) }
                 )
             }
@@ -203,6 +212,11 @@ fun AppScreen(
                     dateInMillis = data.dateInMillis,
                     onNavigateToMealPlan = {
                         appState.navController.navigateToPlannerRoute()
+                    },
+                    onNavigateToRecipeDetail = { recipeId ->
+                        appState.navController.navigate(
+                            RecipeRoute(recipeId = recipeId)
+                        )
                     },
                     onNavigateBack = { appState.navController.popBackStack() }
                 )
@@ -253,12 +267,21 @@ fun AppScreen(
                 RecipeScreen(
                     dateInMillis = data.dateInMillis,
                     mealPosition = data.mealPosition,
+                    isSavedRecipe = data.isSavedRecipe,
                     recipeId = data.recipeId,
                     onNavigateBack = appState.navController::popBackStack
                 )
             }
             composable<CreateRecipeRoute> {
                 CreateRecipeScreen(
+                    onNavigateToRecipeDetail = { recipeId ->
+                        appState.navController.navigateToSavedRecipeDetail(
+                            RecipeRoute(
+                                isSavedRecipe = true,
+                                recipeId = recipeId
+                            )
+                        )
+                    },
                     onNavigateBack = appState.navController::popBackStack
                 )
             }

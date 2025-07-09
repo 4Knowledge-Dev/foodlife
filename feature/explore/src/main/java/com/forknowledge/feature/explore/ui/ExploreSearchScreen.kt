@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
@@ -50,7 +51,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import com.forknowledge.core.ui.R.drawable
-import com.forknowledge.core.ui.theme.Black101510
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Green86BF3E
 import com.forknowledge.core.ui.theme.Typography
@@ -71,6 +71,7 @@ fun ExploreSearchScreen(
     mealPosition: Int,
     dateInMillis: Long,
     onNavigateToMealPlan: () -> Unit,
+    onNavigateToRecipeDetail: (Int) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     // val focusRequester = remember { FocusRequester() }
@@ -170,7 +171,9 @@ fun ExploreSearchScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     items(
-                        count = recipes.itemCount, key = recipes.itemKey { it.id }) { index ->
+                        count = recipes.itemCount,
+                        key = recipes.itemKey { it.id }
+                    ) { index ->
                         recipes[index]?.let { recipe ->
                             RecipeItem(
                                 name = recipe.name,
@@ -180,6 +183,8 @@ fun ExploreSearchScreen(
                                 onItemClick = {
                                     if (isAddMealPlanProcess) {
                                         viewModel.updateSelectedRecipes(recipe)
+                                    } else {
+                                        onNavigateToRecipeDetail(recipe.id)
                                     }
                                 }
                             )
@@ -286,7 +291,7 @@ fun RecipeItem(
                 top = 12.dp, start = 6.dp, end = 6.dp
             )
             .size(
-                width = 160.dp, height = 210.dp
+                width = 160.dp, height = 190.dp
             )
             .background(
                 color = Color.Unspecified, shape = RoundedCornerShape(8.dp)
@@ -306,13 +311,14 @@ fun RecipeItem(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp)
+                .height(90.dp)
                 .background(
-                    if (isSelected == true) {
-                        Color.Unspecified
-                    } else {
-                        Black101510.copy(alpha = 0.3f)
-                    }
+                    Brush.verticalGradient(
+                        0.0f to Color.Transparent,
+                        0.3f to Color(0x4D1A1A1A),
+                        0.9f to Color(0xBF101010),
+                        1.0f to Color(0xFF222222)
+                    )
                 )
                 .padding(horizontal = 8.dp)
         ) {

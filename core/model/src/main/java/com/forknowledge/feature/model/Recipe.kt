@@ -31,32 +31,32 @@ data class Recipe(
 
 data class Ingredient(
     val ingredientId: Int = Random.nextInt(),
-    val ingredientName: String,
-    val imageUrl: String,
+    val ingredientName: String = "",
+    val imageUrl: String = "",
     val originalMeasures: Measure = Measure(0f, ""),
     val metricMeasures: Measure = Measure(0f, ""),
     val usMeasures: Measure = Measure(0f, "")
 )
 
 data class Measure(
-    val amount: Float,
-    val unit: String
+    val amount: Float = 0f,
+    val unit: String = ""
 )
 
 data class Step(
-    val stepNumber: Int,
-    val description: String,
-    val equipments: List<Equipment>,
-    val ingredients: List<Ingredient>
+    val stepNumber: Int = 1,
+    val description: String = "",
+    val equipments: List<Equipment> = emptyList(),
+    val ingredients: List<Ingredient> = emptyList()
 )
 
 data class Equipment(
-    val equipmentId: Int,
-    val equipmentName: String,
-    val imageUrl: String
+    val equipmentId: Int = Random.nextInt(10000, Int.MAX_VALUE),
+    val equipmentName: String = "",
+    val imageUrl: String = ""
 )
 
 data class Property(
-    val name: String,
-    val value: Int
+    val name: String = "",
+    val value: Int = 0
 )

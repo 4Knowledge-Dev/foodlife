@@ -37,9 +37,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,6 +51,7 @@ import com.forknowledge.core.common.extension.toFormattedNumber
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.GreenA1CE50
+import com.forknowledge.core.ui.theme.Grey808993
 import com.forknowledge.core.ui.theme.Grey8A949F
 import com.forknowledge.core.ui.theme.GreyDADADA
 import com.forknowledge.core.ui.theme.Typography
@@ -65,6 +68,7 @@ fun IngredientTabContent(
     summary: String,
     originalServings: Int,
     ingredients: List<Ingredient>,
+    showConvertUnit: Boolean,
     onServingsChange: (Int) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState()
@@ -89,141 +93,158 @@ fun IngredientTabContent(
         )
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(White)
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-        ExpandableText(
-            modifier = Modifier
-                .padding(vertical = 16.dp)
-                .fillMaxWidth(),
-            text = summary.htmlToPlainText(),
-            textStyle = Typography.bodyMedium,
-            color = Grey8A949F
+    if (ingredients.isEmpty()) {
+        AppText(
+            modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
+            text = stringResource(R.string.recipe_instruction_no_ingredients_label),
+            textStyle = Typography.titleMedium,
+            color = Grey808993,
+            textAlign = TextAlign.Center
         )
-
-        Row(
-            modifier = Modifier.padding(
-                top = 16.dp,
-                bottom = 8.dp
-            ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(White)
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            IconButton(
-                enabled = servings > 1,
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = Black374957
-                ),
-                onClick = {
-                    servings -= 1
-                    onServingsChange(servings)
-                }
-            ) {
-                Icon(
-                    painter = painterResource(id = drawable.ic_reduce_solid),
-                    contentDescription = null
+            if (summary.isNotEmpty()) {
+                ExpandableText(
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .fillMaxWidth(),
+                    text = summary.htmlToPlainText(),
+                    textStyle = Typography.bodyMedium,
+                    color = Grey8A949F
                 )
-            }
-
-            AppText(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                text = pluralStringResource(
-                    R.plurals.recipe_ingredients_servings,
-                    servings,
-                    servings
-                ),
-                color = Grey8A949F,
-                textStyle = Typography.bodyMedium
-            )
-
-            IconButton(
-                onClick = {
-                    servings += 1
-                    onServingsChange(servings)
-                }
-            ) {
-                Icon(
-                    painter = painterResource(id = drawable.ic_add_solid),
-                    tint = Black374957,
-                    contentDescription = null
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            AppText(
-                modifier = Modifier
-                    .background(
-                        color = White,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .clip(RoundedCornerShape(16.dp))
-                    .border(
-                        width = 1.dp,
-                        color = GreyDADADA,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .clickable { isBottomSheetVisible = true }
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                text = measureType.title,
-                textStyle = Typography.labelSmall
-            )
-        }
-
-        ingredients.forEach { ingredient ->
-            val measures = when (measureType) {
-                MeasureType.ORIGINAL -> {
-                    val amountPerServing = ingredient.originalMeasures.amount / originalServings
-                    ingredient.originalMeasures.copy(amount = amountPerServing * servings)
-                }
-
-                MeasureType.METRIC -> {
-                    val amountPerServing = ingredient.metricMeasures.amount / originalServings
-                    ingredient.metricMeasures.copy(amount = amountPerServing * servings)
-                }
-
-                MeasureType.US -> {
-                    val amountPerServing = ingredient.usMeasures.amount / originalServings
-                    ingredient.usMeasures.copy(amount = amountPerServing * servings)
-                }
-            }
-            val formattedAmount = measures.amount.toFormattedNumber()
-            val ingredientAmount = buildAnnotatedString {
-                withStyle(
-                    style = Typography.bodyMedium.toSpanStyle().copy(
-                        fontWeight = FontWeight.Bold
-                    )
-                ) {
-                    append("$formattedAmount ${measures.unit} ")
-                }
-                withStyle(
-                    style = Typography.bodyMedium.toSpanStyle()
-                ) {
-                    append(ingredient.ingredientName)
-                }
             }
 
             Row(
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier.padding(
+                    top = 16.dp,
+                    bottom = 8.dp
+                ),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                AsyncImage(
-                    modifier = Modifier.size(50.dp),
-                    model = ingredient.imageUrl,
-                    placeholder = painterResource(id = R.drawable.img_ingredient_error),
-                    error = painterResource(id = R.drawable.img_ingredient_error),
-                    contentDescription = null
+                IconButton(
+                    enabled = servings > 1,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = Black374957
+                    ),
+                    onClick = {
+                        servings -= 1
+                        onServingsChange(servings)
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = drawable.ic_reduce_solid),
+                        contentDescription = null
+                    )
+                }
+
+                AppText(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = pluralStringResource(
+                        R.plurals.recipe_ingredients_servings,
+                        servings,
+                        servings
+                    ),
+                    color = Grey8A949F,
+                    textStyle = Typography.bodyMedium
                 )
 
-                Text(
-                    modifier = Modifier.padding(start = 24.dp),
-                    text = ingredientAmount
-                )
+                IconButton(
+                    onClick = {
+                        servings += 1
+                        onServingsChange(servings)
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = drawable.ic_add_solid),
+                        tint = Black374957,
+                        contentDescription = null
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                if (showConvertUnit) {
+                    AppText(
+                        modifier = Modifier
+                            .background(
+                                color = White,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .clip(RoundedCornerShape(16.dp))
+                            .border(
+                                width = 1.dp,
+                                color = GreyDADADA,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .clickable { isBottomSheetVisible = true }
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        text = measureType.title,
+                        textStyle = Typography.labelSmall
+                    )
+                }
+            }
+
+            ingredients.forEach { ingredient ->
+                val measures = when (measureType) {
+                    MeasureType.ORIGINAL -> {
+                        val amountPerServing = ingredient.originalMeasures.amount / originalServings
+                        ingredient.originalMeasures.copy(amount = amountPerServing * servings)
+                    }
+
+                    MeasureType.METRIC -> {
+                        val amountPerServing = ingredient.metricMeasures.amount / originalServings
+                        ingredient.metricMeasures.copy(amount = amountPerServing * servings)
+                    }
+
+                    MeasureType.US -> {
+                        val amountPerServing = ingredient.usMeasures.amount / originalServings
+                        ingredient.usMeasures.copy(amount = amountPerServing * servings)
+                    }
+                }
+
+                val ingredientAmount = buildAnnotatedString {
+                    if (measures.amount > 0) {
+                        val formattedAmount = measures.amount.toFormattedNumber()
+                        withStyle(
+                            style = Typography.bodyMedium.toSpanStyle().copy(
+                                fontWeight = FontWeight.Bold
+                            )
+                        ) {
+                            append("$formattedAmount ${measures.unit} ")
+                        }
+                    }
+                    withStyle(
+                        style = Typography.bodyMedium.toSpanStyle()
+                    ) {
+                        append(ingredient.ingredientName)
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.padding(top = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    AsyncImage(
+                        modifier = Modifier.size(50.dp),
+                        model = ingredient.imageUrl,
+                        placeholder = painterResource(id = R.drawable.img_ingredient_error),
+                        error = painterResource(id = R.drawable.img_ingredient_error),
+                        contentDescription = null
+                    )
+
+                    Text(
+                        modifier = Modifier.padding(start = 24.dp),
+                        text = ingredientAmount
+                    )
+                }
             }
         }
     }
@@ -302,6 +323,7 @@ fun IngredientTabContentPreview() {
                 metricMeasures = Measure(amount = 2f, unit = "pieces"),
             ),
         ),
+        showConvertUnit = true,
         onServingsChange = {}
     )
 }

@@ -6,6 +6,7 @@ object FirestoreReference {
     const val USER_RECIPE_SUB_COLLECTION = "Recipe"
     const val USER_DOCUMENT_IS_NEW_USER_FIELD = "isNewUser"
     const val USER_DOCUMENT_EMAIL_FIELD = "email"
+    const val USER_RECIPE_ID_FIELD = "recipeId"
     const val USER_DOCUMENT_USERNAME_FIELD = "username"
     const val USER_DOCUMENT_HASH_KEY_FIELD = "hashKey"
 }

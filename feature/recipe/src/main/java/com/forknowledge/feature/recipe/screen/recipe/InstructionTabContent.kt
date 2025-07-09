@@ -27,11 +27,13 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.AsyncImage
 import com.forknowledge.core.ui.theme.Black374957
+import com.forknowledge.core.ui.theme.Grey808993
 import com.forknowledge.core.ui.theme.Grey8A949F
 import com.forknowledge.core.ui.theme.GreyDADADA
 import com.forknowledge.core.ui.theme.GreyEBEBEB
@@ -155,7 +157,7 @@ fun InstructionTabContent(
 
             StepSection(steps)
         }
-    } else {
+    } else if (sourceUrl.isNotEmpty()) {
         AndroidView(
             factory = {
                 WebView(it).apply {
@@ -163,6 +165,14 @@ fun InstructionTabContent(
                     loadUrl(sourceUrl)
                 }
             }
+        )
+    } else {
+        AppText(
+            modifier = Modifier.fillMaxWidth().padding(top = 24.dp),
+            text = stringResource(R.string.recipe_instruction_no_instruction_label),
+            textStyle = Typography.titleMedium,
+            color = Grey808993,
+            textAlign = TextAlign.Center
         )
     }
 }
