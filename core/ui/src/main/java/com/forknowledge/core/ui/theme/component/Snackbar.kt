@@ -2,7 +2,9 @@ package com.forknowledge.core.ui.theme.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,43 +32,49 @@ fun AppSnackBar(
     actionLabel: String? = null,
     onAction: () -> Unit = {}
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(45.dp)
-            .padding(horizontal = 16.dp)
-            .background(
-                color = when (state) {
-                    SnackBarState.SUCCESS -> GreenA1CE50
-                    SnackBarState.FAILURE -> RedF44336
-                    SnackBarState.DEFAULT -> Black212121
-                },
-                shape = RoundedCornerShape(4.dp)
-            )
-            .clip(RoundedCornerShape(16.dp))
-            .padding(horizontal = 24.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
     ) {
-        AppText(
-            modifier = Modifier.weight(0.7f),
-            text = message,
-            textStyle = Typography.bodyMedium,
-            color = White,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-
-        actionLabel?.let { label ->
-            TextButton(
-                modifier = Modifier.weight(0.3f),
-                onClick = onAction
-            ) {
-                AppText(
-                    text = label,
-                    textStyle = Typography.labelMedium,
-                    color = White
+        Row(
+            modifier = modifier
+                .padding(top = 100.dp)
+                .fillMaxWidth()
+                .height(45.dp)
+                .padding(horizontal = 16.dp)
+                .background(
+                    color = when (state) {
+                        SnackBarState.SUCCESS -> GreenA1CE50
+                        SnackBarState.FAILURE -> RedF44336
+                        SnackBarState.DEFAULT -> Black212121
+                    },
+                    shape = RoundedCornerShape(4.dp)
                 )
+                .clip(RoundedCornerShape(16.dp))
+                .padding(horizontal = 24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            AppText(
+                modifier = Modifier.weight(0.7f),
+                text = message,
+                textStyle = Typography.bodyMedium,
+                color = White,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            actionLabel?.let { label ->
+                TextButton(
+                    modifier = Modifier.weight(0.3f),
+                    onClick = onAction
+                ) {
+                    AppText(
+                        text = label,
+                        textStyle = Typography.labelMedium,
+                        color = White
+                    )
+                }
             }
         }
     }

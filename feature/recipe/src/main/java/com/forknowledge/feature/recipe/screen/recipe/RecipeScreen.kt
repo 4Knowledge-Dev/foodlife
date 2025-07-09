@@ -120,6 +120,7 @@ fun RecipeScreen(
         },
         snackbarHost = {
             SnackbarHost(
+                modifier = Modifier.padding(top = 50.dp),
                 hostState = snackbarHostState,
                 snackbar = {
                     Box(
@@ -127,7 +128,6 @@ fun RecipeScreen(
                         contentAlignment = Alignment.TopCenter
                     ) {
                         AppSnackBar(
-                            modifier = Modifier.padding(top = 50.dp),
                             message = it.visuals.message,
                             state = when (logRecipeResult) {
                                 ResultState.SUCCESS -> SnackBarState.SUCCESS

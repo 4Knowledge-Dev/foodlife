@@ -79,7 +79,12 @@ fun AppScreen(
                 )
             }
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = {
+            SnackbarHost(
+                modifier = Modifier.padding(bottom = 40.dp),
+                hostState = snackbarHostState
+            )
+        }
     ) { innerPadding ->
 
         val isOffline by appState.isOffline.collectAsStateWithLifecycle()

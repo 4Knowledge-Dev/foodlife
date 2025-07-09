@@ -30,7 +30,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.forknowledge.core.ui.R.drawable
+import com.forknowledge.core.ui.theme.Green86BF3E
 import com.forknowledge.core.ui.theme.GreyA7A6A6
+import com.forknowledge.core.ui.theme.GreyB7BDC4
 import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.openSansFamily
@@ -154,6 +156,8 @@ fun AppBasicTextField(
     label: String? = null,
     placeholder: String? = null,
     textStyle: TextStyle = Typography.bodyMedium,
+    focusedTextFieldColor: Color = Color.Black,
+    unfocusedTextFieldColor: Color = GreyB7BDC4,
     singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
@@ -198,6 +202,10 @@ fun AppBasicTextField(
                 contentPadding = PaddingValues(
                     vertical = 8.dp,
                     horizontal = 12.dp
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = unfocusedTextFieldColor,
+                    focusedBorderColor = focusedTextFieldColor,
                 )
             )
         },

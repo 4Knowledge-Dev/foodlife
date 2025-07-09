@@ -8,6 +8,7 @@ import androidx.paging.map
 import com.forknowledge.core.api.FoodApiService
 import com.forknowledge.core.api.getImageUrl
 import com.forknowledge.core.api.model.NutrientResponse
+import com.forknowledge.core.api.model.post.AnalyzeRecipe
 import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.api.model.post.MealItem
 import com.forknowledge.core.api.model.post.MealRecipeItem
@@ -23,8 +24,10 @@ import com.forknowledge.core.data.datasource.FoodDataSource
 import com.forknowledge.core.data.datasource.SearchPagingSource
 import com.forknowledge.core.data.model.MealPlanDisplayData
 import com.forknowledge.feature.model.AddToMealPlanRecipe
+import com.forknowledge.feature.model.Ingredient
 import com.forknowledge.feature.model.MealSearchRecipe
 import com.forknowledge.feature.model.NutritionSearchRecipe
+import com.forknowledge.feature.model.Step
 import com.forknowledge.feature.model.userdata.UserToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -312,6 +315,27 @@ class FoodRepositoryImpl @Inject constructor(
             emit(response.body()!!.instruction.first().steps.map { it.toInstruction() })
         } else {
             throw IllegalStateException()
+        }
+    }
+
+    override fun analyzeRecipe(
+        title: String,
+        servings: Int,
+        ingredients: List<Ingredient>,
+        steps: List<Step>
+    ) = flow {
+        val response = dataSource.analyzeRecipe(
+            AnalyzeRecipe(
+                title = title,
+                servings = servings,
+                ingredients = ingredients.map { it.ingredientName },
+                instructions = steps.joinToString(", ") { it.description }
+            )
+        )
+        if (response.isSuccessful && response.body() != null) {
+            emit(response.body()!!.toRecipe())
+        } else {
+            emit(null)
         }
     }
 }

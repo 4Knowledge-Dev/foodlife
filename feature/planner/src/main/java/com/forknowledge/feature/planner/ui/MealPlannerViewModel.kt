@@ -233,6 +233,10 @@ class MealPlannerViewModel @Inject constructor(
         }
     }
 
+    fun resetState() {
+        deleteRecipeState = ResultState.NONE
+    }
+
     fun createMealPlan() {
         shouldShowLoading = true
         viewModelScope.launch {

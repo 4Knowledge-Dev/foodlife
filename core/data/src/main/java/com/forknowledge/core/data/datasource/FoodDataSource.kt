@@ -1,6 +1,7 @@
 package com.forknowledge.core.data.datasource
 
 import com.forknowledge.core.api.FoodApiService
+import com.forknowledge.core.api.model.post.AnalyzeRecipe
 import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.api.model.post.MealItem
 import kotlinx.coroutines.Dispatchers
@@ -87,5 +88,9 @@ class FoodDataSource @Inject constructor(
 
     suspend fun analyzeInstructions(instruction: String) = withContext(Dispatchers.IO) {
         apiService.analyzeInstructions(instructions = instruction)
+    }
+
+    suspend fun analyzeRecipe(recipe: AnalyzeRecipe) = withContext(Dispatchers.IO) {
+        apiService.analyzeRecipe(analyzeRecipe = recipe)
     }
 }

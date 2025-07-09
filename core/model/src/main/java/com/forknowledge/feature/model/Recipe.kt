@@ -4,7 +4,7 @@ import com.forknowledge.feature.model.userdata.LogRecipe
 import kotlin.random.Random
 
 data class Recipe(
-    val recipeId: Int = Random.nextInt(),
+    val recipeId: Int = Random.nextInt(10000, Int.MAX_VALUE),
     val imageUrl: String = "",
     val recipeName: String = "",
     val summary: String = "",

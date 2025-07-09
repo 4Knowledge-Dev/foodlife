@@ -66,4 +66,11 @@ interface FoodRepository {
     fun parseIngredient(ingredient: String): Flow<Ingredient>
 
     fun analyzeInstructions(instruction: String): Flow<List<Step>>
+
+    fun analyzeRecipe(
+        title: String,
+        servings: Int,
+        ingredients: List<Ingredient>,
+        steps: List<Step>
+    ): Flow<Recipe?>
 }
