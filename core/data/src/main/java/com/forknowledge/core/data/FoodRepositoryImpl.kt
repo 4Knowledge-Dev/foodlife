@@ -296,4 +296,22 @@ class FoodRepositoryImpl @Inject constructor(
             emit(null)
         }
     }
+
+    override fun parseIngredient(ingredient: String) = flow {
+        val response = dataSource.parseIngredients(ingredient)
+        if (response.isSuccessful && response.body() != null) {
+            emit(response.body()!!.first().toIngredient())
+        } else {
+            throw IllegalStateException()
+        }
+    }
+
+    override fun analyzeInstructions(instruction: String) = flow {
+        val response = dataSource.analyzeInstructions(instruction)
+        if (response.isSuccessful && response.body() != null) {
+            emit(response.body()!!.instruction.first().steps.map { it.toInstruction() })
+        } else {
+            throw IllegalStateException()
+        }
+    }
 }

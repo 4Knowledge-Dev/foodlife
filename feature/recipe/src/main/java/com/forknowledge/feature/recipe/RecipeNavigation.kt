@@ -1,7 +1,11 @@
 package com.forknowledge.feature.recipe
 
-import com.forknowledge.feature.model.Nutrient
+import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import kotlinx.serialization.Serializable
+
+@Serializable
+data object SavedRecipeRoute
 
 @Serializable
 data class RecipeRoute(
@@ -12,3 +16,10 @@ data class RecipeRoute(
 
 @Serializable
 data object NutritionImpactRoute
+
+@Serializable
+data object CreateRecipeRoute
+
+fun NavController.navigateToSavedRecipe(navOptions: NavOptions? = null) {
+    navigate(SavedRecipeRoute, navOptions)
+}

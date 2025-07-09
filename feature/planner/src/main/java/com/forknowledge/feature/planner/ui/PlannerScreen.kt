@@ -79,7 +79,7 @@ import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.OrangeFB880C
 import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
-import com.forknowledge.core.ui.theme.component.AppFloatingButton
+import com.forknowledge.core.ui.theme.component.AppFloatingActionButtonSelection
 import com.forknowledge.core.ui.theme.component.AppSnackBar
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
@@ -184,7 +184,7 @@ fun PlannerScreen(
         },
         floatingActionButton = {
             if (!shouldShowLoading && !shouldShowError) {
-                AppFloatingButton(
+                AppFloatingActionButtonSelection(
                     isExpanded = isAddMealPlanOptionsExpanded,
                     actions = listOf(
                         FloatingAction(
@@ -305,20 +305,20 @@ fun PlannerScreen(
                                 onNavigateToExplore = {
                                     onNavigateToExplore(
                                         meal.date.toEpochSeconds(),
-                                        1
+                                        MEAL_SLOT_BREAKFAST
                                     )
                                 },
                                 onNavigateToRecipeDetail = { recipeId ->
                                     onNavigateToRecipeDetail(
                                         meal.date.toEpochMillis(),
-                                        1,
+                                        MEAL_SLOT_BREAKFAST,
                                         recipeId
                                     )
                                 },
                                 onDeleteRecipe = {
                                     viewModel.deleteRecipeFromMealPlan(
                                         meal.date,
-                                        1,
+                                        MEAL_SLOT_BREAKFAST,
                                         it
                                     )
                                 }
@@ -333,20 +333,20 @@ fun PlannerScreen(
                                 onNavigateToExplore = {
                                     onNavigateToExplore(
                                         meal.date.toEpochSeconds(),
-                                        2
+                                        MEAL_SLOT_LUNCH
                                     )
                                 },
                                 onNavigateToRecipeDetail = { recipeId ->
                                     onNavigateToRecipeDetail(
                                         meal.date.toEpochMillis(),
-                                        2,
+                                        MEAL_SLOT_LUNCH,
                                         recipeId
                                     )
                                 },
                                 onDeleteRecipe = {
                                     viewModel.deleteRecipeFromMealPlan(
                                         meal.date,
-                                        2,
+                                        MEAL_SLOT_LUNCH,
                                         it
                                     )
                                 }
@@ -361,20 +361,20 @@ fun PlannerScreen(
                                 onNavigateToExplore = {
                                     onNavigateToExplore(
                                         meal.date.toEpochSeconds(),
-                                        3
+                                        MEAL_SLOT_DINNER
                                     )
                                 },
                                 onNavigateToRecipeDetail = { recipeId ->
                                     onNavigateToRecipeDetail(
                                         meal.date.toEpochMillis(),
-                                        3,
+                                        MEAL_SLOT_DINNER,
                                         recipeId
                                     )
                                 },
                                 onDeleteRecipe = {
                                     viewModel.deleteRecipeFromMealPlan(
                                         meal.date,
-                                        3,
+                                        MEAL_SLOT_DINNER,
                                         it
                                     )
                                 }

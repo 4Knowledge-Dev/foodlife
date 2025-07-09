@@ -37,4 +37,42 @@
     <string name="recipe_health_score_nutrition_daily_percentage">%d%%</string>
     <string name="recipe_health_score_nutrition_table_note">* Percent Daily Values based on a 2,000 calorie diet.</string>
     <string name="recipe_health_score_nutrition_impact_guide">Health Scores are calculated based on nutrient density. A higher Health Score means a higher density of positive impact nutrients and lower density of negative impact nutrients.</string>
+
+    // Create recipe
+    <string name="create_recipe_top_bar_title">Add recipe</string>
+    <string name="create_recipe_button_create">Create</string>
+    <string name="create_recipe_button_save">Save</string>
+    <string name="create_recipe_button_generate">Generate</string>
+    <string name="create_recipe_title_label">Title</string>
+    <string name="create_recipe_title_text_field_placeholder">Your recipe name</string>
+    <string name="create_recipe_description_label">Description</string>
+    <string name="create_recipe_description_text_field_placeholder">Introduce your recipe, add notes, cooking tips, etc…</string>
+    <string name="create_recipe_add_source_button">Add recipe source</string>
+    <string name="create_recipe_bottom_sheet_add_source_title">Add source</string>
+    <string name="create_recipe_bottom_sheet_add_source_placeholder">Source name</string>
+    <string name="create_recipe_bottom_sheet_url_placeholder">URL</string>
+    <string name="create_recipe_bottom_sheet_source_name_error">Source name must not be empty</string>
+    <string name="create_recipe_bottom_sheet_url_error">This is not a valid URL</string>
+    <string name="create_recipe_bottom_sheet_servings_title">Servings</string>
+    <string name="create_recipe_bottom_sheet_servings_placeholder">The number of portions</string>
+    <string name="create_recipe_bottom_sheet_add_method_title">Add method</string>
+    <string name="create_recipe_bottom_sheet_add_method_placeholder">Put the garlic in a pan and then add the onion. Add some salt and oregano.</string>
+    <string name="create_recipe_bottom_sheet_add_method_instruction">Describe your recipe and we will generate a list of ingredients and instructions accordingly. Separate the steps with dots to make the method clearer.</string>
+    <string name="create_recipe_set_servings_description">Serving size will be used to calculate nutrition per serving. This must be less than 100 servings.</string>
+    <string name="create_recipe_set_prep_time_title">Prep time</string>
+    <string name="create_recipe_set_cook_time_title">Cook time</string>
+    <string name="create_recipe_set_prep_time_description">How long does it take to prepare this recipe in minute? This must be less than 1000 minutes.</string>
+    <string name="create_recipe_set_cook_time_description">How long does it take to cook in minute? This must be less than 1000 minutes.</string>
+    <plurals name="create_recipe_servings">
+        <item quantity="one">%d serving</item>
+        <item quantity="other">%d servings</item>
+    </plurals>
+    <plurals name="create_recipe_time">
+        <item quantity="one">%d min</item>
+        <item quantity="other">%d mins</item>
+    </plurals>
+    <string name="create_recipe_method_label">Recipe</string>
+    <string name="create_recipe_item_instruction">Swipe to delete</string>
+    <string name="create_recipe_ingredient_text_field_placeholder">Add one item</string>
+    <string name="create_recipe_instruction_text_field_placeholder">Add one step</string>
 </resources>

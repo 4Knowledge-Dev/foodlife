@@ -54,8 +54,12 @@ import com.forknowledge.feature.onboarding.onboardingNavGraph
 import com.forknowledge.feature.planner.PlannerRoute
 import com.forknowledge.feature.planner.navigateToPlannerRoute
 import com.forknowledge.feature.planner.ui.PlannerScreen
+import com.forknowledge.feature.recipe.CreateRecipeRoute
 import com.forknowledge.feature.recipe.RecipeRoute
-import com.forknowledge.feature.recipe.screen.RecipeScreen
+import com.forknowledge.feature.recipe.SavedRecipeRoute
+import com.forknowledge.feature.recipe.screen.create.CreateRecipeScreen
+import com.forknowledge.feature.recipe.screen.recipe.RecipeScreen
+import com.forknowledge.feature.recipe.screen.savedrecipe.SavedRecipeScreen
 import com.forknowledge.foodlife.R
 
 @Composable
@@ -155,6 +159,11 @@ fun AppScreen(
                     onNavigateBack = appState.navController::popBackStack
                 )
             }
+            composable<SavedRecipeRoute> {
+                SavedRecipeScreen(
+                    onNavigateToCreateRecipe = { appState.navController.navigate(CreateRecipeRoute) }
+                )
+            }
             composable<LogFoodRoute> { backStackEntry ->
                 val meal = backStackEntry.toRoute<LogFoodRoute>()
                 LogFoodScreen(
@@ -240,6 +249,11 @@ fun AppScreen(
                     dateInMillis = data.dateInMillis,
                     mealPosition = data.mealPosition,
                     recipeId = data.recipeId,
+                    onNavigateBack = appState.navController::popBackStack
+                )
+            }
+            composable<CreateRecipeRoute> {
+                CreateRecipeScreen(
                     onNavigateBack = appState.navController::popBackStack
                 )
             }

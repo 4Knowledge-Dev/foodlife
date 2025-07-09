@@ -1,4 +1,4 @@
-package com.forknowledge.feature.recipe
+package com.forknowledge.feature.recipe.screen.recipe
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

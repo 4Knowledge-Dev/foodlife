@@ -2,15 +2,19 @@ package com.forknowledge.core.api
 
 import com.forknowledge.core.api.model.GenerateMealPlanResponse
 import com.forknowledge.core.api.model.MealPlanResponse
+import com.forknowledge.core.api.model.ParseIngredientResponse
 import com.forknowledge.core.api.model.RecipeDetailResponse
 import com.forknowledge.core.api.model.SearchResponse
 import com.forknowledge.core.api.model.UserResponse
+import com.forknowledge.core.api.model.post.AnalyzeRecipe
 import com.forknowledge.core.api.model.post.ConnectUser
 import com.forknowledge.core.api.model.post.MealItem
 import kotlinx.serialization.InternalSerializationApi
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -78,4 +82,22 @@ interface FoodApiService {
         @Path("id") recipeId: Int,
         @Query("includeNutrition") includeNutrition: Boolean = true
     ): Response<RecipeDetailResponse>
+
+    @FormUrlEncoded
+    @POST("$API_HEADER_RECIPE/parseIngredients")
+    suspend fun parseIngredients(
+        @Field("ingredientList") ingredients: String,
+        @Query("language") language: String = "en"
+    ): Response<ParseIngredientResponse>
+
+    @FormUrlEncoded
+    @POST("$API_HEADER_RECIPE/analyzeInstructions")
+    suspend fun analyzeInstructions(
+        @Field("instructions") instructions: String
+    ): Response<AnalyzedInstructionResponse>
+
+    @POST("$API_HEADER_RECIPE/analyze")
+    suspend fun analyzeRecipe(
+        @Body analyzeRecipe: AnalyzeRecipe
+    )
 }

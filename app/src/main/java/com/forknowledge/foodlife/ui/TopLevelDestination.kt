@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import com.forknowledge.feature.explore.ExploreRoute
 import com.forknowledge.feature.nutrient.NutrientRoute
 import com.forknowledge.feature.planner.PlannerRoute
+import com.forknowledge.feature.recipe.SavedRecipeRoute
 import com.forknowledge.foodlife.R
 import kotlin.reflect.KClass
 
@@ -33,5 +34,12 @@ enum class TopLevelDestination(
         selectedIcon = R.drawable.ic_selected_search,
         titleText = R.string.top_level_destination_explore_title,
         route = ExploreRoute::class
+    ),
+
+    SAVED(
+        unselectedIcon = R.drawable.ic_unselected_save,
+        selectedIcon = R.drawable.ic_selected_save,
+        titleText = R.string.top_level_destination_saved_title,
+        route = SavedRecipeRoute::class
     )
 }

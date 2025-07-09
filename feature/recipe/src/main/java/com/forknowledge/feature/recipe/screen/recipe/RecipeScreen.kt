@@ -1,4 +1,4 @@
-package com.forknowledge.feature.recipe.screen
+package com.forknowledge.feature.recipe.screen.recipe
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -59,7 +59,7 @@ import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.core.ui.theme.state.SnackBarState
 import com.forknowledge.feature.model.Recipe
 import com.forknowledge.feature.recipe.R
-import com.forknowledge.feature.recipe.RecipeViewModel
+import com.forknowledge.feature.recipe.screen.recipe.RecipeViewModel
 import com.forknowledge.feature.recipe.type.RecipeTab
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch

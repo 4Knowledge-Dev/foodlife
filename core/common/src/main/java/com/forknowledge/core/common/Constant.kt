@@ -3,6 +3,10 @@ package com.forknowledge.core.common
 object AppConstant {
     const val SEARCH_DEBOUNCE = 500L
 
+    const val MEAL_SLOT_BREAKFAST = 1
+    const val MEAL_SLOT_LUNCH = 2
+    const val MEAL_SLOT_DINNER = 3
+
     const val RECIPE_NUTRIENT_CALORIES_INDEX = 0
     const val RECIPE_NUTRIENT_CARB_INDEX = 1
     const val RECIPE_NUTRIENT_NET_CARB_INDEX = 2

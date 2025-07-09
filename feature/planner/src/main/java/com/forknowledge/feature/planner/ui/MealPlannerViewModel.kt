@@ -201,7 +201,7 @@ class MealPlannerViewModel @Inject constructor(
                                     mealDay.nutritionSummary[NUTRIENTS_FAT_INDEX] - deleteMeal.fat!!
                                 )
                             }
-                            val newDinnerNutrition = if (remainingMeals.isNotEmpty()) {
+                            val newDinnerNutrition = if (deleteMeal.calories == null) {
                                 listOf(
                                     mealDay.dinnerNutrition[NUTRIENTS_CALORIES_INDEX] - (mealDay.dinnerNutrition[NUTRIENTS_CALORIES_INDEX] - remainingMeals.sumOf { it.calories!! }),
                                     mealDay.dinnerNutrition[NUTRIENTS_CARB_INDEX] - (mealDay.dinnerNutrition[NUTRIENTS_CARB_INDEX] - remainingMeals.sumOf { it.carbs!! }),
@@ -275,7 +275,7 @@ class MealPlannerViewModel @Inject constructor(
 
     fun deleteRecipeFromMealPlan(
         date: LocalDate,
-        mealPosition: Int,
+        meal: Int,
         mealId: Int
     ) {
         onProcessItem = mealId
@@ -289,7 +289,7 @@ class MealPlannerViewModel @Inject constructor(
                     deleteRecipeState = ResultState.SUCCESS
                     updateMealPlanState(
                         date = date,
-                        meal = mealPosition,
+                        meal = meal,
                         mealId = mealId
                     )
                     onProcessItem = 0
