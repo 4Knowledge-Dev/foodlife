@@ -100,6 +100,7 @@ const val ATTRIBUTE_TIME_MAX_LENGTH = 3
 @Composable
 fun CreateRecipeScreen(
     viewModel: CreateRecipeViewModel = hiltViewModel(),
+    onNavigateToRecipeDetail: (Int) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val recipe by viewModel.recipe.collectAsState()
@@ -120,6 +121,10 @@ fun CreateRecipeScreen(
                 duration = SnackbarDuration.Short
             )
         }
+    }
+
+    if (onNavigateToRecipeDetail) {
+        onNavigateToRecipeDetail(recipe.recipeId)
     }
 
     Scaffold(
@@ -425,7 +430,7 @@ fun CreateRecipeContent(
 
         RecipeSetInformation(
             modifier = Modifier.padding(top = 24.dp),
-            title = stringResource(R.string.create_recipe_set_prep_time_title),
+            title = stringResource(R.string.create_recipe_set_cook_time_title),
             value = recipe.cookingMinutes.toString(),
             description = stringResource(R.string.create_recipe_set_cook_time_description),
             onValueChanged = { time ->

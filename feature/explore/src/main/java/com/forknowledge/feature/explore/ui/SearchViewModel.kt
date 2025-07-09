@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.forknowledge.core.common.AppConstant.SEARCH_DEBOUNCE
 import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.asFlowResult
@@ -73,6 +74,7 @@ class SearchViewModel @Inject constructor(
             .flatMapLatest { query ->
                 foodRepository.searchRecipeForMeal(query = query)
             }
+            .cachedIn(viewModelScope)
             .asFlowResult()
             .onEach { result ->
                 if (_searchQuery.value.isNotEmpty()) {
@@ -111,6 +113,7 @@ class SearchViewModel @Inject constructor(
     fun search(query: String) {
         viewModelScope.launch {
             foodRepository.searchRecipeForMeal(query = query)
+                .cachedIn(viewModelScope)
                 .asFlowResult()
                 .collect { result ->
                     when (result) {

@@ -27,6 +27,8 @@ class CreateRecipeInteractor @Inject constructor(
                 flow {
                     if (analyzedRecipe != null) {
                         val data = recipe.copy(
+                            ingredients = analyzedRecipe.ingredients,
+                            steps = analyzedRecipe.steps,
                             healthScore = analyzedRecipe.healthScore,
                             nutrition = analyzedRecipe.nutrition,
                             properties = analyzedRecipe.properties

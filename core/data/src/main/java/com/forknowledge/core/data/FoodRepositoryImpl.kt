@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import com.forknowledge.core.api.FoodApiService
 import com.forknowledge.core.api.getImageUrl
@@ -329,7 +330,7 @@ class FoodRepositoryImpl @Inject constructor(
                 title = title,
                 servings = servings,
                 ingredients = ingredients.map { it.ingredientName },
-                instructions = steps.joinToString(", ") { it.description }
+                instructions = steps.joinToString(". ") { it.description }
             )
         )
         if (response.isSuccessful && response.body() != null) {

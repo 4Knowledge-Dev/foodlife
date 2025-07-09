@@ -59,7 +59,6 @@ import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.core.ui.theme.state.SnackBarState
 import com.forknowledge.feature.model.Recipe
 import com.forknowledge.feature.recipe.R
-import com.forknowledge.feature.recipe.screen.recipe.RecipeViewModel
 import com.forknowledge.feature.recipe.type.RecipeTab
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -67,8 +66,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun RecipeScreen(
     viewModel: RecipeViewModel = hiltViewModel(),
-    dateInMillis: Long = 0,
-    mealPosition: Int = 0,
+    dateInMillis: Long,
+    mealPosition: Int,
+    isSavedRecipe: Boolean,
     recipeId: Int,
     onNavigateBack: () -> Unit
 ) {
@@ -84,7 +84,10 @@ fun RecipeScreen(
     val failMessage = stringResource(R.string.recipe_snackbar_fail_to_log_recipe)
 
     LaunchedEffect(Unit) {
-        viewModel.getRecipe(recipeId)
+        viewModel.getRecipe(
+            isSavedRecipe = isSavedRecipe,
+            recipeId = recipeId
+        )
         snapshotFlow { logRecipeResult }
             .filterNotNull()
             .collect { resultState ->
@@ -103,7 +106,8 @@ fun RecipeScreen(
                         )
                     }
 
-                    ResultState.NONE -> { /* Do nothing */ }
+                    ResultState.NONE -> { /* Do nothing */
+                    }
                 }
             }
     }
@@ -162,6 +166,7 @@ fun RecipeScreen(
                     )*/
                     FrontLayerSection(
                         recipe = recipe,
+                        isSavedRecipe = isSavedRecipe,
                         onServingsChange = { servings = it }
                     )
                 }
@@ -280,6 +285,7 @@ fun BackLayerSection(
 @Composable
 fun FrontLayerSection(
     recipe: Recipe,
+    isSavedRecipe: Boolean,
     onServingsChange: (Int) -> Unit
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(RecipeTab.INGREDIENTS.ordinal) }
@@ -355,6 +361,7 @@ fun FrontLayerSection(
                         summary = recipe.summary,
                         originalServings = recipe.servings,
                         ingredients = recipe.ingredients,
+                        showConvertUnit = !isSavedRecipe,
                         onServingsChange = { onServingsChange(it) }
                     )
                 }

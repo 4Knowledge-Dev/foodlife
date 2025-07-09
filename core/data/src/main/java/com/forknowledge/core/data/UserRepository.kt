@@ -115,4 +115,17 @@ interface UserRepository {
      * @return [Result] of operation.
      */
     suspend fun createRecipe(recipe: Recipe): Result<Unit>
+
+    /**
+     * Get saved recipe information.
+     * @param [recipeId] the id of recipe.
+     * @return [Recipe] information.
+     */
+    fun getSavedRecipeById(recipeId: Int): Flow<Recipe>
+
+    /**
+     * Get saved recipe list.
+     * @return [List] of [Recipe].
+     */
+    fun getSavedRecipeList(): Flow<List<Recipe>>
 }

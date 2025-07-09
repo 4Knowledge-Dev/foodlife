@@ -37,9 +37,17 @@ class RecipeViewModel @Inject constructor(
     var logRecipeResult by mutableStateOf<ResultState?>(null)
         private set
 
-    fun getRecipe(id: Int) {
+    fun getRecipe(isSavedRecipe: Boolean, recipeId: Int) {
+        if (isSavedRecipe) {
+            getSavedRecipe(recipeId)
+        } else {
+            getUnsavedRecipe(recipeId)
+        }
+    }
+
+    fun getUnsavedRecipe(recipeId: Int) {
         viewModelScope.launch {
-            foodRepository.getRecipeInformation(id)
+            foodRepository.getRecipeInformation(recipeId)
                 .asFlowResult()
                 .collect { result ->
                     when (result) {
@@ -52,6 +60,27 @@ class RecipeViewModel @Inject constructor(
                             _recipe.update { result.data }
                         }
 
+                        is Result.Error -> {
+                            shouldShowLoading = false
+                        }
+                    }
+                }
+        }
+    }
+
+    fun getSavedRecipe(recipeId: Int) {
+        viewModelScope.launch {
+            userRepository.getSavedRecipeById(recipeId)
+                .asFlowResult()
+                .collect { result ->
+                    when (result) {
+                        is Result.Loading -> {
+                            shouldShowLoading = true
+                        }
+                        is Result.Success -> {
+                            shouldShowLoading = false
+                            _recipe.update { result.data }
+                        }
                         is Result.Error -> {
                             shouldShowLoading = false
                         }

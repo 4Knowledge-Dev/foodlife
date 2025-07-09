@@ -10,8 +10,8 @@
     <string name="recipe_snackbar_to_recipe_success">You made it!</string>
     <string name="recipe_snackbar_fail_to_log_recipe">Fail to log recipe!</string>
     <plurals name="recipe_ingredients_servings">
-        <item quantity="one">%d Serving</item>
-        <item quantity="other">%d Servings</item>
+        <item quantity="one">%d serving</item>
+        <item quantity="other">%d servings</item>
     </plurals>
     <plurals name="recipe_cook_time">
         <item quantity="one">%d min</item>
@@ -19,6 +19,7 @@
     </plurals>
     <string name="recipe_instruction_step_number">Step %d</string>
     <string name="recipe_instruction_equipment_header">Equipments</string>
+    <string name="recipe_instruction_no_instruction_label">No instructions yet</string>
     <string name="recipe_health_score_label">Health score</string>
     <string name="recipe_health_score_core_label">Score</string>
     <string name="recipe_health_score_max_point">/100</string>
@@ -37,6 +38,7 @@
     <string name="recipe_health_score_nutrition_daily_percentage">%d%%</string>
     <string name="recipe_health_score_nutrition_table_note">* Percent Daily Values based on a 2,000 calorie diet.</string>
     <string name="recipe_health_score_nutrition_impact_guide">Health Scores are calculated based on nutrient density. A higher Health Score means a higher density of positive impact nutrients and lower density of negative impact nutrients.</string>
+    <string name="recipe_instruction_no_ingredients_label">No ingredients yet</string>
 
     // Create recipe
     <string name="create_recipe_top_bar_title">Add recipe</string>
@@ -77,4 +79,12 @@
     <string name="create_recipe_ingredient_text_field_placeholder">Add one item</string>
     <string name="create_recipe_instruction_text_field_placeholder">Add one step</string>
     <string name="create_recipe_save_recipe_error">Fail to create recipe!</string>
+
+    // Saved
+    <string name="saved_recipe_title">Your recipes</string>
+    <string name="saved_recipe_get_recipe_error">Fail to get recipes!</string>
+    <plurals name="saved_recipe_item_cook_time_text">
+        <item quantity="one">%1$d min</item>
+        <item quantity="other">%1$d mins</item>
+    </plurals>
 </resources>

@@ -86,13 +86,19 @@ class CreateRecipeViewModel @Inject constructor(
 
     fun updatePrepTime(prepTime: Int) {
         _recipe.update { recipe ->
-            recipe.copy(preparationMinutes = prepTime)
+            recipe.copy(
+                readyInMinutes = prepTime + recipe.cookingMinutes,
+                preparationMinutes = prepTime
+            )
         }
     }
 
     fun updateCookTime(cookTime: Int) {
         _recipe.update { recipe ->
-            recipe.copy(cookingMinutes = cookTime)
+            recipe.copy(
+                readyInMinutes = cookTime + recipe.preparationMinutes,
+                cookingMinutes = cookTime
+            )
         }
     }
 

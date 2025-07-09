@@ -19,6 +19,7 @@ import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_GET_DATA_
 import com.forknowledge.core.data.reference.FirebaseException.FIREBASE_TRANSACTION_EXCEPTION
 import com.forknowledge.core.data.reference.FirestoreReference
 import com.forknowledge.core.data.reference.FirestoreReference.USER_COLLECTION
+import com.forknowledge.core.data.reference.FirestoreReference.USER_RECIPE_ID_FIELD
 import com.forknowledge.core.data.reference.FirestoreReference.USER_RECIPE_SUB_COLLECTION
 import com.forknowledge.core.data.reference.FirestoreReference.USER_RECORD_SUB_COLLECTION
 import com.forknowledge.feature.model.Recipe
@@ -460,4 +461,41 @@ class UserRepositoryImpl @Inject constructor(
             Result.Error(e)
         }
     }
+
+    override fun getSavedRecipeById(recipeId: Int) = callbackFlow {
+        val docRef = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+        docRef.collection(USER_RECIPE_SUB_COLLECTION)
+            .whereEqualTo(USER_RECIPE_ID_FIELD, recipeId)
+            .get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful && !task.result.isEmpty) {
+                    val recipe = task.result.documents[0].toObject(Recipe::class.java)
+                    recipe?.let {
+                        channel.trySend(it)
+                    } ?: channel.trySend(Recipe())
+                } else {
+                    Log.e(FIREBASE_GET_DATA_EXCEPTION, "Get data failed with ", task.exception)
+                    channel.trySend(Recipe())
+                }
+            }
+        awaitClose()
+    }.flowOn(Dispatchers.IO)
+
+    override fun getSavedRecipeList() = callbackFlow {
+        val docRef = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
+        docRef.collection(USER_RECIPE_SUB_COLLECTION)
+            .get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful && !task.result.isEmpty) {
+                    val recipes = task.result.documents.map { snapshot ->
+                        snapshot.toObject(Recipe::class.java) ?: Recipe()
+                    }
+                    channel.trySend(recipes)
+                } else {
+                    Log.e(FIREBASE_GET_DATA_EXCEPTION, "Get data failed with ", task.exception)
+                    channel.trySend(emptyList())
+                }
+            }
+        awaitClose()
+    }.flowOn(Dispatchers.IO)
 }
