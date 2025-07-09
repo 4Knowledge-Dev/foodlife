@@ -1,23 +1,24 @@
 package com.forknowledge.feature.model
 
 import com.forknowledge.feature.model.userdata.LogRecipe
+import kotlin.random.Random
 
 data class Recipe(
-    val recipeId: Int,
-    val imageUrl: String,
-    val recipeName: String,
-    val summary: String,
-    val readyInMinutes: Int,
-    val preparationMinutes: Int,
-    val cookingMinutes: Int,
-    val servings: Int,
-    val sourceName: String,
-    val sourceUrl: String,
-    val healthScore: Int,
-    val nutrition: List<Nutrient>,
-    val properties: List<Property>,
-    val ingredients: List<Ingredient>,
-    val steps: List<Step>
+    val recipeId: Int = Random.nextInt(),
+    val imageUrl: String = "",
+    val recipeName: String = "",
+    val summary: String = "",
+    val readyInMinutes: Int = 0,
+    val preparationMinutes: Int = 0,
+    val cookingMinutes: Int = 0,
+    val servings: Int = 0,
+    val sourceName: String = "",
+    val sourceUrl: String = "",
+    val healthScore: Int = 0,
+    val nutrition: List<Nutrient> = emptyList(),
+    val properties: List<Property> = emptyList(),
+    val ingredients: List<Ingredient> = emptyList(),
+    val steps: List<Step> = emptyList()
 ) {
     fun toLogRecipe() = LogRecipe(
         id = recipeId,
@@ -29,7 +30,7 @@ data class Recipe(
 }
 
 data class Ingredient(
-    val ingredientId: Int,
+    val ingredientId: Int = Random.nextInt(),
     val ingredientName: String,
     val imageUrl: String,
     val originalMeasures: Measure = Measure(0f, ""),

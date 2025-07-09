@@ -19,6 +19,7 @@ val Grey808993 = Color(0xFF808993) // Additional text
 val GreyB7BDC4 = Color(0xFFB7BDC4) // Border
 val GreyA7A6A6 = Color(0xFFA7A6A6)
 val Grey8A949F = Color(0xFF8A949F)
+val GreyC5C6C7 = Color(0xFFC5C6C7) // Stroke color
 val Grey7F000000 = Color(0x7F000000)
 
 val Green91C747 = Color(0xFF91C747)

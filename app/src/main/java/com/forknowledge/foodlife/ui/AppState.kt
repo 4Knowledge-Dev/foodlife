@@ -15,6 +15,7 @@ import com.forknowledge.core.data.NetworkManager
 import com.forknowledge.feature.explore.navigateToExplore
 import com.forknowledge.feature.nutrient.navigateToNutrient
 import com.forknowledge.feature.planner.navigateToPlanner
+import com.forknowledge.feature.recipe.navigateToSavedRecipe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -93,6 +94,7 @@ class AppState(
             TopLevelDestination.NUTRIENT -> navController.navigateToNutrient(navOptions)
             TopLevelDestination.PLANNER -> navController.navigateToPlanner(navOptions)
             TopLevelDestination.EXPLORE -> navController.navigateToExplore(navOptions)
+            TopLevelDestination.SAVED -> navController.navigateToSavedRecipe(navOptions)
         }
     }
 }

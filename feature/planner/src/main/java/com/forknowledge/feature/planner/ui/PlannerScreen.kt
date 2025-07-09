@@ -79,7 +79,7 @@ import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.OrangeFB880C
 import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
-import com.forknowledge.core.ui.theme.component.AppFloatingButton
+import com.forknowledge.core.ui.theme.component.AppFloatingActionButtonSelection
 import com.forknowledge.core.ui.theme.component.AppSnackBar
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
@@ -184,7 +184,7 @@ fun PlannerScreen(
         },
         floatingActionButton = {
             if (!shouldShowLoading && !shouldShowError) {
-                AppFloatingButton(
+                AppFloatingActionButtonSelection(
                     isExpanded = isAddMealPlanOptionsExpanded,
                     actions = listOf(
                         FloatingAction(

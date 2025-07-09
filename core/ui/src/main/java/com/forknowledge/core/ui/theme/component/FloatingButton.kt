@@ -35,7 +35,7 @@ import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.state.FloatingAction
 
 @Composable
-fun AppFloatingButton(
+fun AppFloatingActionButtonSelection(
     modifier: Modifier = Modifier,
     isExpanded: Boolean = false,
     actions: List<FloatingAction> = emptyList(),
@@ -95,6 +95,26 @@ fun AppFloatingButton(
 }
 
 @Composable
+fun AppFloatingActionButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    FloatingActionButton(
+        modifier = modifier.size(64.dp),
+        onClick = onClick,
+        shape = CircleShape,
+        containerColor = Green91C747,
+    ) {
+        Icon(
+            modifier = Modifier.size(36.dp),
+            painter = painterResource(id = R.drawable.ic_add),
+            tint = White,
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
 fun FloatingActionSection(
     label: String,
     icon: Int,
@@ -135,7 +155,7 @@ fun FloatingActionSection(
 @Preview
 @Composable
 fun AppFloatingButtonPreview() {
-    AppFloatingButton(
+    AppFloatingActionButtonSelection(
         isExpanded = false,
         onClick = {}
     )

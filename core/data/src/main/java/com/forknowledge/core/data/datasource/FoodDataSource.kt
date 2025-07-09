@@ -80,4 +80,12 @@ class FoodDataSource @Inject constructor(
     suspend fun getRecipeInformation(recipeId: Int) = withContext(Dispatchers.IO) {
         apiService.getRecipeInformation(recipeId)
     }
+
+    suspend fun parseIngredients(ingredient: String) = withContext(Dispatchers.IO) {
+        apiService.parseIngredients(ingredients = ingredient)
+    }
+
+    suspend fun analyzeInstructions(instruction: String) = withContext(Dispatchers.IO) {
+        apiService.analyzeInstructions(instructions = instruction)
+    }
 }

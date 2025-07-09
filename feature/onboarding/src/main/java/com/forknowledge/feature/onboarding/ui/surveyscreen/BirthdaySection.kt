@@ -51,6 +51,7 @@ fun BirthdaySection(
         label = stringResource(R.string.onboarding_survey_birthday_label),
         placeholder = stringResource(R.string.onboarding_survey_birthday_placeholder),
         trailingIcon = Icons.Default.DateRange,
+        readOnly = true
     )
 
     if (showModal) {

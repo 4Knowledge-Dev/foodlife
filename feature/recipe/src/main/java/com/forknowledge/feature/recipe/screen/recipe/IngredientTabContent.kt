@@ -1,4 +1,4 @@
-package com.forknowledge.feature.recipe.screen
+package com.forknowledge.feature.recipe.screen.recipe
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -38,7 +38,6 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -195,11 +194,17 @@ fun IngredientTabContent(
             val formattedAmount = measures.amount.toFormattedNumber()
             val ingredientAmount = buildAnnotatedString {
                 withStyle(
-                    style = SpanStyle(fontWeight = FontWeight.Bold)
+                    style = Typography.bodyMedium.toSpanStyle().copy(
+                        fontWeight = FontWeight.Bold
+                    )
                 ) {
                     append("$formattedAmount ${measures.unit} ")
                 }
-                append(ingredient.ingredientName)
+                withStyle(
+                    style = Typography.bodyMedium.toSpanStyle()
+                ) {
+                    append(ingredient.ingredientName)
+                }
             }
 
             Row(
