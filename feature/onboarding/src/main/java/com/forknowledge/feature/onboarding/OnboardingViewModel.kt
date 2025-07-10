@@ -11,6 +11,8 @@ import com.forknowledge.core.common.Result
 import com.forknowledge.core.common.calculateTDEE
 import com.forknowledge.core.common.calculateTargetCalories
 import com.forknowledge.core.common.extension.toAge
+import com.forknowledge.core.common.getCurrentDateTime
+import com.forknowledge.core.common.getEndDateProgress
 import com.forknowledge.core.common.healthtype.ActivityLevel
 import com.forknowledge.core.common.healthtype.Diet
 import com.forknowledge.core.common.healthtype.Gender
@@ -26,6 +28,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
+import kotlin.math.abs
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
@@ -98,6 +101,12 @@ class OnboardingViewModel @Inject constructor(
         private set
 
     var targetCalories by mutableIntStateOf(0)
+        private set
+
+    var startDate by mutableStateOf(getCurrentDateTime())
+        private set
+
+    var endDate by mutableStateOf(getCurrentDateTime())
         private set
 
     private fun updateTDEE() {
@@ -178,6 +187,11 @@ class OnboardingViewModel @Inject constructor(
         if (questions[progress] == SurveyQuestionType.EXCLUDE) {
             updateTDEE()
             updateTargetCalories()
+            endDate = getEndDateProgress(
+                startDate = startDate,
+                weightPerWeek = targetWeightPerWeek,
+                weightDifference = abs(targetWeight - currentWeight)
+            )
         }
 
         progress += if (questions[progress] == SurveyQuestionType.GOAL) {

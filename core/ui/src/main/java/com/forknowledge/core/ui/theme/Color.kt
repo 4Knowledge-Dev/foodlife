@@ -37,6 +37,7 @@ val RedFF4950 = Color(0xFFFF4950)
 val RedFF3939 = Color(0xFFFF3939)
 val RedF44336 = Color(0xFFF44336) // Error
 
+val OrangeFFA500 = Color(0xFFFFA500)
 val OrangeFF9524 = Color(0xFFFE9B45)
 val OrangeFB880C = Color(0xFFFB880C)
 val YellowFFAE01 = Color(0xFFFFAE01)

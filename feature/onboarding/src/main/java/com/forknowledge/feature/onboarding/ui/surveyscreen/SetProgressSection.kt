@@ -33,6 +33,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.forknowledge.core.common.extension.toDateMonthString
+import com.forknowledge.core.common.getCheckInProgressDate
 import com.forknowledge.core.common.healthtype.Goal
 import com.forknowledge.core.common.healthtype.Macros
 import com.forknowledge.core.common.healthtype.NutrientType
@@ -44,15 +46,19 @@ import com.forknowledge.core.ui.theme.Blue6ABFFF
 import com.forknowledge.core.ui.theme.BlueD9EBFF
 import com.forknowledge.core.ui.theme.Green86BF3E
 import com.forknowledge.core.ui.theme.Grey808993
+import com.forknowledge.core.ui.theme.OrangeFFA500
 import com.forknowledge.core.ui.theme.RedF44336
 import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.YellowFFAE01
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.core.ui.theme.component.ChartDataPoint
+import com.forknowledge.core.ui.theme.component.WeightProgressLineChart
 import com.forknowledge.feature.onboarding.R
 import com.himanshoe.charty.common.asSolidChartColor
 import com.himanshoe.charty.pie.PieChart
 import com.himanshoe.charty.pie.model.PieChartData
+import java.util.Date
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,8 +67,12 @@ fun SetProgressSection(
     tdee: Int,
     targetCalories: Int,
     goal: Goal,
-    targetWeightPerWeek: Double,
     macro: Macros,
+    currentWeight: Double,
+    targetWeight: Double,
+    targetWeightPerWeek: Double,
+    startDate: Date,
+    endDate: Date,
     onUpdateTargetWeightPerWeek: (Double) -> Unit
 ) {
     var progress by remember { mutableFloatStateOf(targetWeightPerWeek.toFloat()) }
@@ -92,89 +102,60 @@ fun SetProgressSection(
             ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AppText(
-            modifier = Modifier.fillMaxWidth(),
-            text = stringResource(id = R.string.onboarding_survey_progress_macro_title),
-            textStyle = Typography.titleSmall,
-            color = Black374957,
-            textAlign = TextAlign.Center
-        )
-
-        Box(
-            modifier = Modifier
-                .padding(top = 32.dp)
-                .size(200.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            PieChart(
-                modifier = Modifier.fillMaxSize(),
-                data = {
-                    listOf(
-                        PieChartData(
-                            label = macro.carbs.toString(),
-                            value = macro.carbs.toFloat(),
-                            color = RedFF4950.asSolidChartColor()
-                        ),
-                        PieChartData(
-                            label = macro.protein.toString(),
-                            value = macro.protein.toFloat(),
-                            color = YellowFFAE01.asSolidChartColor()
-                        ),
-                        PieChartData(
-                            label = macro.fat.toString(),
-                            value = macro.fat.toFloat(),
-                            color = Blue05A6F1.asSolidChartColor()
-                        )
-                    )
-                },
-                isDonutChart = true
-            )
-
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                AppText(
-                    text = targetCalories.toString(),
-                    textStyle = Typography.titleLarge,
-                    color = Black374957
-                )
-
-                AppText(
-                    text = stringResource(id = R.string.onboarding_survey_progress_calories_unit),
-                    textStyle = Typography.bodyLarge,
-                    color = Grey808993
-                )
-            }
-        }
-
-        Column(modifier = Modifier.padding(top = 24.dp)) {
-            NutrientMacro(
-                nutrientType = NutrientType.CARBOHYDRATE,
-                ratio = macro.carbs,
-                targetCalories = targetCalories
-            )
-
-            NutrientMacro(
-                nutrientType = NutrientType.PROTEIN,
-                ratio = macro.protein,
-                targetCalories = targetCalories
-            )
-
-            NutrientMacro(
-                nutrientType = NutrientType.FAT,
-                ratio = macro.fat,
-                targetCalories = targetCalories
-            )
-        }
-
         if (goal != Goal.EAT_HEALTHY) {
+            val weight = if (currentWeight > targetWeight) {
+                currentWeight - (currentWeight - targetWeight) / 3
+            } else {
+                currentWeight + (targetWeight - currentWeight) / 3
+            }
+
+            val checkInDate = getCheckInProgressDate(startDate)
+
+            val weightDataPoints = listOf(
+                ChartDataPoint(
+                    xProgress = 0.1f,
+                    value = currentWeight.toFloat(),
+                    labelDate = startDate.toDateMonthString(),
+                    labelValue = stringResource(
+                        R.string.onboarding_survey_progress_line_chart_value_label,
+                        currentWeight.toFloat()
+                    ),
+                    pointColor = Color.Red,
+                    //additionalLabel = stringResource(R.string.onboarding_survey_progress_line_chart_additional_label_starting_weight)
+                ),
+                ChartDataPoint(
+                    xProgress = 0.4f,
+                    value = weight.toFloat(),
+                    labelDate = checkInDate.toDateMonthString(),
+                    labelValue = stringResource(
+                        R.string.onboarding_survey_progress_line_chart_value_label,
+                        weight.toFloat()
+                    ),
+                    pointColor = OrangeFFA500,
+                    //additionalLabel = stringResource(R.string.onboarding_survey_progress_line_chart_additional_label_check_in)
+                ),
+                ChartDataPoint(
+                    xProgress = 0.9f,
+                    value = targetWeight.toFloat(),
+                    labelDate = endDate.toDateMonthString(),
+                    labelValue = stringResource(
+                        R.string.onboarding_survey_progress_line_chart_value_label,
+                        targetWeight.toFloat()
+                    ),
+                    pointColor = Color.Green,
+                    //additionalLabel = stringResource(R.string.onboarding_survey_progress_line_chart_additional_label_target_weight)
+                ),
+            )
+
             AppText(
-                modifier = Modifier
-                    .padding(top = 36.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 text = stringResource(id = R.string.onboarding_survey_progress_title),
                 textStyle = Typography.titleSmall,
                 color = Black374957,
                 textAlign = TextAlign.Center
             )
+
+            WeightProgressLineChart(dataPoints = weightDataPoints)
         }
 
         // TDEE
@@ -246,6 +227,81 @@ fun SetProgressSection(
                 text = stringResource(R.string.onboarding_survey_progress_target_calories_per_week_note),
                 textStyle = Typography.bodySmall,
                 color = Grey808993
+            )
+        }
+
+        AppText(
+            modifier = Modifier
+                .padding(top = 36.dp)
+                .fillMaxWidth(),
+            text = stringResource(id = R.string.onboarding_survey_progress_macro_title),
+            textStyle = Typography.titleSmall,
+            color = Black374957,
+            textAlign = TextAlign.Center
+        )
+
+        Box(
+            modifier = Modifier
+                .padding(top = 32.dp)
+                .size(200.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            PieChart(
+                modifier = Modifier.fillMaxSize(),
+                data = {
+                    listOf(
+                        PieChartData(
+                            label = macro.carbs.toString(),
+                            value = macro.carbs.toFloat(),
+                            color = RedFF4950.asSolidChartColor()
+                        ),
+                        PieChartData(
+                            label = macro.protein.toString(),
+                            value = macro.protein.toFloat(),
+                            color = YellowFFAE01.asSolidChartColor()
+                        ),
+                        PieChartData(
+                            label = macro.fat.toString(),
+                            value = macro.fat.toFloat(),
+                            color = Blue05A6F1.asSolidChartColor()
+                        )
+                    )
+                },
+                isDonutChart = true
+            )
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                AppText(
+                    text = targetCalories.toString(),
+                    textStyle = Typography.titleLarge,
+                    color = Black374957
+                )
+
+                AppText(
+                    text = stringResource(id = R.string.onboarding_survey_progress_calories_unit),
+                    textStyle = Typography.bodyLarge,
+                    color = Grey808993
+                )
+            }
+        }
+
+        Column(modifier = Modifier.padding(top = 24.dp)) {
+            NutrientMacro(
+                nutrientType = NutrientType.CARBOHYDRATE,
+                ratio = macro.carbs,
+                targetCalories = targetCalories
+            )
+
+            NutrientMacro(
+                nutrientType = NutrientType.PROTEIN,
+                ratio = macro.protein,
+                targetCalories = targetCalories
+            )
+
+            NutrientMacro(
+                nutrientType = NutrientType.FAT,
+                ratio = macro.fat,
+                targetCalories = targetCalories
             )
         }
     }
@@ -423,6 +479,10 @@ fun SetProgressSectionPreview() {
             protein = 0.3,
             fat = 0.2
         ),
+        currentWeight = 70.0,
+        targetWeight = 60.0,
+        startDate = Date(),
+        endDate = Date(),
         onUpdateTargetWeightPerWeek = {}
     )
 }

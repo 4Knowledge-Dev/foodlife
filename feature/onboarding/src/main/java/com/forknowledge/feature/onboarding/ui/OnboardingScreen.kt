@@ -196,8 +196,12 @@ fun SurveyScreen(
                         tdee = viewModel.tdee,
                         targetCalories = viewModel.targetCalories,
                         goal = viewModel.goal!!,
-                        targetWeightPerWeek = viewModel.targetWeightPerWeek,
                         macro = viewModel.diet!!.macro,
+                        targetWeightPerWeek = viewModel.targetWeightPerWeek,
+                        currentWeight = viewModel.currentWeight,
+                        targetWeight = viewModel.targetWeight,
+                        startDate = viewModel.startDate,
+                        endDate = viewModel.endDate,
                         onUpdateTargetWeightPerWeek = { viewModel.onWeightPerWeekChanged(it) }
                     )
                 }
