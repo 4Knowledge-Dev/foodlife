@@ -30,7 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.ProgressIndicatorDefaults.drawStopIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -409,7 +408,7 @@ fun NutrientSection(
             }
         }
 
-        Row(
+        /*Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
@@ -429,9 +428,9 @@ fun NutrientSection(
                 modifier = Modifier.padding(start = 16.dp),
                 color = GreyDADADA
             )
-        }
+        }*/
 
-        Row(
+        /*Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 24.dp),
@@ -456,7 +455,7 @@ fun NutrientSection(
                 activityUnit = stringResource(R.string.nutrient_activity_calories_unit),
                 style = Typography.titleMedium
             )
-        }
+        }*/
     }
 }
 

@@ -5,9 +5,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.forknowledge.feature.nutrient.navigateToNutrientRoute
 import com.forknowledge.feature.onboarding.ui.SurveyScreen
 import com.forknowledge.feature.onboarding.ui.WelcomeScreen
-import com.forknowledge.feature.planner.navigateToPlannerRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -41,6 +41,6 @@ fun NavGraphBuilder.welcomeScreen(navController: NavController) {
 
 fun NavGraphBuilder.surveyScreen(navController: NavController) {
     composable<SurveyRoute> {
-        SurveyScreen(onNavigateToPlanner = { navController.navigateToPlannerRoute() })
+        SurveyScreen(onNavigateToHome = { navController.navigateToNutrientRoute() })
     }
 }

@@ -36,7 +36,8 @@ enum class SurveyQuestionType(
     EXCLUDE(
         "Allergies",
         "Allergens or ingredients that must be excluded."
-    )
+    ),
+    SET_PROGRESS("", "")
 }
 
 val questions = SurveyQuestionType.entries.toList()

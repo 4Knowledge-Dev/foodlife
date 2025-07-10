@@ -3,7 +3,6 @@ package com.forknowledge.feature.nutrient.dailyinsights
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.ProgressIndicatorDefaults.drawStopIndicator
@@ -58,8 +58,8 @@ import com.forknowledge.core.common.nutrientAmountToCaloriesRatio
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Blue05A6F1
-import com.forknowledge.core.ui.theme.Green91C747
-import com.forknowledge.core.ui.theme.GreenE2F2EC
+import com.forknowledge.core.ui.theme.Green6EA111
+import com.forknowledge.core.ui.theme.GreenA1CE50
 import com.forknowledge.core.ui.theme.GreyF4F5F5
 import com.forknowledge.core.ui.theme.GreyFAFAFA
 import com.forknowledge.core.ui.theme.RedFF4950
@@ -162,12 +162,15 @@ fun InsightsTopBar(
             )
         },
         navigationIcon = {
-            Icon(
-                modifier = Modifier.clickable { onNavigateBack() },
-                painter = painterResource(drawable.ic_back),
-                tint = Black374957,
-                contentDescription = null
-            )
+            IconButton(
+                onClick = { onNavigateBack() }
+            ) {
+                Icon(
+                    painter = painterResource(drawable.ic_back),
+                    tint = Black374957,
+                    contentDescription = null
+                )
+            }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = White
@@ -193,7 +196,7 @@ fun DailyProgressSection(
             )
             .fillMaxWidth()
             .background(
-                color = Green91C747,
+                color = GreenA1CE50,
                 shape = RoundedCornerShape(24.dp)
             )
             .padding(
@@ -291,13 +294,13 @@ fun DailyProgressSection(
                     .height(5.dp),
                 progress = { animatedProgress },
                 color = White,
-                trackColor = GreenE2F2EC,
+                trackColor = Green6EA111,
                 gapSize = (-4).dp,
                 drawStopIndicator = {
                     drawStopIndicator(
                         drawScope = this,
                         stopSize = ProgressIndicatorDefaults.LinearTrackStopIndicatorSize,
-                        color = if (nutrient.amount.roundToInt() >= target) White else GreenE2F2EC,
+                        color = if (nutrient.amount.roundToInt() >= target) White else Green6EA111,
                         strokeCap = StrokeCap.Round
                     )
                 }

@@ -172,7 +172,7 @@ fun LogFoodTopAppBar(
                     text = {
                         AppText(
                             text = stringResource(tab.label),
-                            textStyle = Typography.labelMedium
+                            textStyle = Typography.labelSmall
                         )
                     },
                     selectedContentColor = Green86BF3E,

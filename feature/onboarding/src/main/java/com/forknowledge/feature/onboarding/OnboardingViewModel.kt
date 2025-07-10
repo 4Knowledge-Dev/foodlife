@@ -8,8 +8,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.forknowledge.core.common.Result
+import com.forknowledge.core.common.calculateTDEE
 import com.forknowledge.core.common.calculateTargetCalories
 import com.forknowledge.core.common.extension.toAge
+import com.forknowledge.core.common.getCurrentDateTime
+import com.forknowledge.core.common.getEndDateProgress
 import com.forknowledge.core.common.healthtype.ActivityLevel
 import com.forknowledge.core.common.healthtype.Diet
 import com.forknowledge.core.common.healthtype.Gender
@@ -25,13 +28,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.util.Date
 import javax.inject.Inject
+import kotlin.math.abs
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    var onNavigateToPlanner by mutableStateOf(false)
+    var onNavigateToHome by mutableStateOf(false)
         private set
 
     var progress by mutableIntStateOf(0)
@@ -48,6 +52,7 @@ class OnboardingViewModel @Inject constructor(
                 SurveyQuestionType.ACTIVITY_LEVEL -> activityLevel != null
                 SurveyQuestionType.DIET -> diet != null
                 SurveyQuestionType.EXCLUDE -> true
+                SurveyQuestionType.SET_PROGRESS -> true
             }
         }
 
@@ -74,7 +79,7 @@ class OnboardingViewModel @Inject constructor(
     var activityLevel by mutableStateOf<ActivityLevel?>(null)
         private set
 
-    var weightPerWeek by mutableDoubleStateOf(0.5)
+    var targetWeightPerWeek by mutableDoubleStateOf(0.5)
         private set
 
     var diet by mutableStateOf<Diet?>(null)
@@ -92,7 +97,39 @@ class OnboardingViewModel @Inject constructor(
     var isNextEnable by mutableStateOf(false)
         private set
 
-    var targetCalories = 0
+    var tdee by mutableIntStateOf(0)
+        private set
+
+    var targetCalories by mutableIntStateOf(0)
+        private set
+
+    var startDate by mutableStateOf(getCurrentDateTime())
+        private set
+
+    var endDate by mutableStateOf(getCurrentDateTime())
+        private set
+
+    private fun updateTDEE() {
+        tdee = calculateTDEE(
+            gender = gender == Gender.MALE,
+            age = birthday!!.toAge(),
+            height = height,
+            weight = currentWeight,
+            activityIndex = activityLevel!!.index,
+        ).toInt()
+    }
+
+    private fun updateTargetCalories() {
+        targetCalories = calculateTargetCalories(
+            gender = gender == Gender.MALE,
+            age = birthday!!.toAge(),
+            height = height,
+            weight = currentWeight,
+            activityIndex = activityLevel!!.index,
+            goal = goal!!,
+            weightPerWeek = targetWeightPerWeek,
+        )
+    }
 
     private fun createUserInfo(): User {
         return User(
@@ -103,7 +140,7 @@ class OnboardingViewModel @Inject constructor(
             goal = goal!!.ordinal.toLong(),
             currentWeight = currentWeight,
             targetWeight = targetWeight,
-            weighPerWeek = weightPerWeek,
+            weighPerWeek = targetWeightPerWeek,
             isHeightUnitCm = isCmUnit,
             isWeightUnitKg = isKgUnit,
             activityLevel = activityLevel!!.ordinal.toLong(),
@@ -130,23 +167,14 @@ class OnboardingViewModel @Inject constructor(
     }
 
     fun onNextClicked() {
-        if (questions[progress] == SurveyQuestionType.EXCLUDE) {
-            targetCalories = calculateTargetCalories(
-                gender = gender == Gender.MALE,
-                age = birthday!!.toAge(),
-                height = height,
-                weight = currentWeight,
-                activityIndex = activityLevel!!.index,
-                goal = goal!!,
-                weightPerWeek = weightPerWeek,
-            )
+        if (questions[progress] == SurveyQuestionType.SET_PROGRESS) {
             viewModelScope.launch {
                 when (userRepository.updateUserInfo(createUserInfo())) {
                     is Result.Loading -> { /* Do nothing */
                     }
 
                     is Result.Success -> {
-                        onNavigateToPlanner = true
+                        onNavigateToHome = true
                     }
 
                     is Result.Error -> { /* Do nothing */
@@ -155,6 +183,17 @@ class OnboardingViewModel @Inject constructor(
             }
             return
         }
+
+        if (questions[progress] == SurveyQuestionType.EXCLUDE) {
+            updateTDEE()
+            updateTargetCalories()
+            endDate = getEndDateProgress(
+                startDate = startDate,
+                weightPerWeek = targetWeightPerWeek,
+                weightDifference = abs(targetWeight - currentWeight)
+            )
+        }
+
         progress += if (questions[progress] == SurveyQuestionType.GOAL) {
             when (goal) {
                 Goal.EAT_HEALTHY -> 2
@@ -237,5 +276,11 @@ class OnboardingViewModel @Inject constructor(
 
     fun onWeightUnitChanged(weightUnit: Boolean) {
         isKgUnit = weightUnit
+    }
+
+    fun onWeightPerWeekChanged(weightPerWeek: Double) {
+        targetWeightPerWeek = weightPerWeek
+        updateTDEE()
+        updateTargetCalories()
     }
 }

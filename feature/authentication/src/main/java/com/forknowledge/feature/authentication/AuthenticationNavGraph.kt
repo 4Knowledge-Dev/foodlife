@@ -15,8 +15,8 @@ import com.forknowledge.feature.authentication.ui.screen.signInWithEmail.SignInW
 import com.forknowledge.feature.authentication.ui.screen.signInWithEmail.SignUpWithEmailScreen
 import com.forknowledge.feature.authentication.ui.screen.signInWithEmail.navigateToSignInWithEmail
 import com.forknowledge.feature.authentication.ui.screen.signInWithEmail.navigateToSignUpWithEmail
+import com.forknowledge.feature.nutrient.navigateToNutrientRoute
 import com.forknowledge.feature.onboarding.navigateToOnboarding
-import com.forknowledge.feature.planner.navigateToPlannerRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -30,12 +30,6 @@ data object SignInWithEmailRoute
 
 @Serializable
 data object SignUpWithEmailRoute
-
-fun NavController.navigateToAuthentication() = navigate(AuthenticationRoute) {
-    popUpTo(graph.findStartDestination().id) {
-        inclusive = true
-    }
-}
 
 fun NavGraphBuilder.authenticationNavGraph(
     navController: NavController
@@ -56,7 +50,7 @@ fun NavGraphBuilder.signInOptionsScreen(navController: NavController) {
             viewModel = hiltViewModel<GoogleSignInViewModel>(),
             signInWithEmailClicked = navController::navigateToSignInWithEmail,
             onNavigateToOnboarding = { navController.navigateToOnboarding() },
-            onNavigateToPlanner = { navController.navigateToPlannerRoute() }
+            onNavigateToHome = { navController.navigateToNutrientRoute() }
         )
     }
 }
@@ -71,7 +65,7 @@ fun NavGraphBuilder.signInWithEmailScreen(navController: NavController) {
             onBackClicked = navController::popBackStack,
             onNavigateToRegisterClicked = navController::navigateToSignUpWithEmail,
             onNavigateToOnboarding = { navController.navigateToOnboarding() },
-            onNavigateToPlanner = { navController.navigateToPlannerRoute() }
+            onNavigateToHome = { navController.navigateToNutrientRoute() }
         )
     }
 }

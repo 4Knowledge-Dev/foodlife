@@ -31,12 +31,13 @@ val Green9AAD01 = Color(0xFF9AAD01)
 val GreenA1CE50 = Color(0xFFA1CE50)
 val Green86BF3E = Color(0xFF86BF3E)
 val Green70BF0C = Color(0xFF70BF0C)
-val GreenE2F2EC = Color(0xFFE2F2EC)
+val Green6EA111 = Color(0xCC6EA111)
 
 val RedFF4950 = Color(0xFFFF4950)
 val RedFF3939 = Color(0xFFFF3939)
 val RedF44336 = Color(0xFFF44336) // Error
 
+val OrangeFFA500 = Color(0xFFFFA500)
 val OrangeFF9524 = Color(0xFFFE9B45)
 val OrangeFB880C = Color(0xFFFB880C)
 val YellowFFAE01 = Color(0xFFFFAE01)
@@ -44,5 +45,6 @@ val YellowFFC04C = Color(0xFFFFC04C)
 
 val Blue05A6F1 = Color(0xFF05A6F1)
 val Blue6ABFFF = Color(0xFF6ABFFF)
+val BlueD9EBFF = Color(0xFFD9EBFF)
 
 val Blue4C5BB5 = Color(0xFF4C5BB5)

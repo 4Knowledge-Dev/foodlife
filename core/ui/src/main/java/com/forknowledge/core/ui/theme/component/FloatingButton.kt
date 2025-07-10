@@ -19,18 +19,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.forknowledge.core.ui.R
 import com.forknowledge.core.ui.theme.Green91C747
+import com.forknowledge.core.ui.theme.GreyEBEBEB
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.state.FloatingAction
 
@@ -61,7 +63,7 @@ fun AppFloatingActionButtonSelection(
                 exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 })
             ) {
                 Column(
-                    modifier = Modifier.padding(bottom = 70.dp),
+                    modifier = Modifier.padding(bottom = 50.dp),
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -128,13 +130,18 @@ fun FloatingActionSection(
     Row(
         modifier = Modifier
             .padding(top = 16.dp)
+            .background(
+                color = Color.Unspecified,
+                shape = RoundedCornerShape(21.dp)
+            )
+            .clip(RoundedCornerShape(21.dp))
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AppText(
             modifier = Modifier
                 .background(
-                    color = MaterialTheme.colorScheme.background,
+                    color = GreyEBEBEB,
                     shape = RoundedCornerShape(21.dp)
                 )
                 .padding(8.dp),
@@ -146,7 +153,7 @@ fun FloatingActionSection(
             modifier = Modifier
                 .padding(start = 16.dp)
                 .background(
-                    color = MaterialTheme.colorScheme.background,
+                    color = GreyEBEBEB,
                     shape = CircleShape
                 )
                 .padding(4.dp)
@@ -157,7 +164,7 @@ fun FloatingActionSection(
     }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun AppFloatingButtonPreview() {
     AppFloatingActionButtonSelection(
@@ -166,7 +173,7 @@ fun AppFloatingButtonPreview() {
     )
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun FloatingActionSectionPreview() {
     FloatingActionSection(

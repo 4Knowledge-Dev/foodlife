@@ -33,7 +33,7 @@ class CreateRecipeInteractor @Inject constructor(
                             nutrition = analyzedRecipe.nutrition,
                             properties = analyzedRecipe.properties
                         )
-                        when (val result = userRepository.createRecipe(data)) {
+                        when (val result = userRepository.saveRecipe(data)) {
                             is Result.Loading -> emit(Result.Loading)
                             is Result.Success -> {
                                 emit(Result.Success(Unit))

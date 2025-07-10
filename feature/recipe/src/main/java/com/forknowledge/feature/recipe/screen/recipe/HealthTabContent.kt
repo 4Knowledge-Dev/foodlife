@@ -183,7 +183,7 @@ fun HealthScoreCard(
                 end.linkTo(guideline)
             },
             text = annotatedScore,
-            style = Typography.displaySmall
+            style = Typography.bodyLarge
         )
 
         VerticalDivider(
@@ -249,12 +249,12 @@ fun GlycemicSection(
                 width = Dimension.fillToConstraints
             },
             text = label,
-            textStyle = Typography.bodyMedium
+            textStyle = Typography.bodySmall
         )
 
         Box(
             modifier = Modifier
-                .width(40.dp)
+                .width(30.dp)
                 .background(
                     color = evaluate.color,
                     shape = RoundedCornerShape(16.dp)
@@ -269,7 +269,7 @@ fun GlycemicSection(
         ) {
             AppText(
                 text = value.toString(),
-                textStyle = Typography.labelMedium,
+                textStyle = Typography.labelSmall,
                 color = White
             )
         }
@@ -283,7 +283,7 @@ fun GlycemicSection(
                 horizontalBias = 1f
             },
             text = stringResource(evaluate.evaluate),
-            textStyle = Typography.labelMedium
+            textStyle = Typography.labelSmall
         )
     }
 }

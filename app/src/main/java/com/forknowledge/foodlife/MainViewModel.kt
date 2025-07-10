@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.forknowledge.core.data.UserRepository
 import com.forknowledge.core.data.datatype.UserAuthState
 import com.forknowledge.feature.authentication.AuthenticationRoute
+import com.forknowledge.feature.nutrient.NutrientRoute
 import com.forknowledge.feature.onboarding.OnboardingRoute
-import com.forknowledge.feature.planner.PlannerRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,7 +43,7 @@ class MainViewModel @Inject constructor(
 
                     UserAuthState.OLD_USER -> {
                         _isLoading.value = false
-                        PlannerRoute
+                        NutrientRoute
                     }
                 }
             }

@@ -1,7 +1,6 @@
 package com.forknowledge.feature.planner
 
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavOptions
 import kotlinx.serialization.Serializable
 
@@ -14,8 +13,6 @@ fun NavController.navigateToPlanner(navOptions: NavOptions? = null) {
 
 fun NavController.navigateToPlannerRoute() {
     navigate(PlannerRoute) {
-        popUpTo(graph.findStartDestination().id) {
-            inclusive = true
-        }
+        popUpTo(PlannerRoute) { inclusive = true }
     }
 }
