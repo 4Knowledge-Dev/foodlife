@@ -114,7 +114,7 @@ interface UserRepository {
      * @param [recipe] the recipe to create.
      * @return [Result] of operation.
      */
-    suspend fun createRecipe(recipe: Recipe): Result<Unit>
+    suspend fun saveRecipe(recipe: Recipe): Result<Unit>
 
     /**
      * Get saved recipe information.

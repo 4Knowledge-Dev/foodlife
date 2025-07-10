@@ -172,7 +172,7 @@ fun StatisticsTopAppBar(
             )
         }
 
-        SecondaryTabRow(
+        /*SecondaryTabRow(
             selectedTabIndex = selected,
             containerColor = MaterialTheme.colorScheme.background,
             indicator = {
@@ -199,7 +199,7 @@ fun StatisticsTopAppBar(
                     onClick = { onTabChanged(index) }
                 )
             }
-        }
+        }*/
     }
 }
 

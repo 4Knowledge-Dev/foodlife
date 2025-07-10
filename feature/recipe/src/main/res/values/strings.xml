@@ -26,7 +26,7 @@
     <string name="recipe_health_score_glycemic_index">Glycemic Index</string>
     <string name="recipe_health_score_glycemic_load">Glycemic Load</string>
     <string name="recipe_health_score_glycemic_evaluate_high">High</string>
-    <string name="recipe_health_score_glycemic_evaluate_medium">Medium</string>
+    <string name="recipe_health_score_glycemic_evaluate_medium">Med</string>
     <string name="recipe_health_score_glycemic_evaluate_low">Low</string>
     <string name="recipe_health_score_evaluate_excellent">Excellent</string>
     <string name="recipe_health_score_evaluate_good">Good</string>

@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.forknowledge.core.common.extension.toDayMonthString
 import com.forknowledge.core.data.model.StatisticsNutrientRecord
 import com.forknowledge.core.ui.theme.Green91C747
+import com.forknowledge.core.ui.theme.Grey808993
 import com.forknowledge.core.ui.theme.OrangeFB880C
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
@@ -41,6 +42,12 @@ fun DietaryEnergy(
     }.toFloat() / nutritionRecords.size
 
     Column(modifier = Modifier.fillMaxWidth()) {
+        AppText(
+            text = stringResource(R.string.statistics_daily_label),
+            textStyle = Typography.labelMedium,
+            color = Grey808993
+        )
+
         Row(
             modifier = Modifier.padding(top = 8.dp)
         ) {

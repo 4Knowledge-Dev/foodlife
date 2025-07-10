@@ -65,7 +65,7 @@
     <string name="statistics_history_intake_nutrition_value">%d %s</string>
     <string name="statistics_not_enough_data_message">Not enough data available!</string>
     <string name="statistics_nutrition_group_energy">Energy</string>
-    <string name="statistics_nutrition_group_carbs">Carbohydrates</string>
+    <string name="statistics_nutrition_group_carbs">Carbs</string>
     <string name="statistics_nutrition_group_other_nutrition">Nutrients</string>
     <string name="statistics_nutrition_group_vitamins">Vitamins</string>
     <string name="statistics_nutrition_group_minerals">Minerals</string>

@@ -49,19 +49,20 @@ import com.forknowledge.feature.onboarding.ui.surveyscreen.ExcludeSection
 import com.forknowledge.feature.onboarding.ui.surveyscreen.GenderSection
 import com.forknowledge.feature.onboarding.ui.surveyscreen.GoalSection
 import com.forknowledge.feature.onboarding.ui.surveyscreen.HeightSection
+import com.forknowledge.feature.onboarding.ui.surveyscreen.SetProgressSection
 import com.forknowledge.feature.onboarding.ui.surveyscreen.WeightSection
 
 @Composable
 fun SurveyScreen(
     viewModel: OnboardingViewModel = hiltViewModel(),
-    onNavigateToPlanner: () -> Unit
+    onNavigateToHome: () -> Unit
 ) {
     val question = viewModel.question
     val progress = (viewModel.progress + 1).toFloat() / (questions.size)
-    val onNavigateToPlanner = viewModel.onNavigateToPlanner
+    val onNavigateToPlanner = viewModel.onNavigateToHome
 
     if (onNavigateToPlanner) {
-        onNavigateToPlanner()
+        onNavigateToHome()
     }
 
     Scaffold(
@@ -73,6 +74,7 @@ fun SurveyScreen(
         },
         bottomBar = {
             SurveyBottomBar(
+                isLastStep = question.ordinal == questions.size - 1,
                 isPreviousVisible = question.ordinal > 0,
                 isNextEnabled = viewModel.isNextEnable,
                 onPreviousClicked = viewModel::onPreviousClicked,
@@ -120,19 +122,20 @@ fun SurveyScreen(
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
+                if (progress.ordinal < questions.size - 1) {
+                    AppText(
+                        modifier = Modifier.padding(top = 16.dp),
+                        text = progress.question,
+                        textStyle = Typography.headlineSmall,
+                    )
 
-                AppText(
-                    modifier = Modifier.padding(top = 16.dp),
-                    text = progress.question,
-                    textStyle = Typography.headlineSmall,
-                )
-
-                AppText(
-                    modifier = Modifier.padding(top = 8.dp),
-                    text = progress.description,
-                    textStyle = Typography.bodyMedium,
-                    color = Grey7F000000
-                )
+                    AppText(
+                        modifier = Modifier.padding(top = 8.dp),
+                        text = progress.description,
+                        textStyle = Typography.bodyMedium,
+                        color = Grey7F000000
+                    )
+                }
 
                 when (progress) {
                     SurveyQuestionType.GENDER -> GenderSection(
@@ -189,7 +192,14 @@ fun SurveyScreen(
                         onIngredientSelected = { viewModel.onIngredientSelected(it) }
                     )
 
-                    else -> {}
+                    SurveyQuestionType.SET_PROGRESS -> SetProgressSection(
+                        tdee = viewModel.tdee,
+                        targetCalories = viewModel.targetCalories,
+                        goal = viewModel.goal!!,
+                        targetWeightPerWeek = viewModel.targetWeightPerWeek,
+                        macro = viewModel.diet!!.macro,
+                        onUpdateTargetWeightPerWeek = { viewModel.onWeightPerWeekChanged(it) }
+                    )
                 }
             }
         }
@@ -217,6 +227,7 @@ fun SurveyTopBar(progress: Float) {
 
 @Composable
 fun SurveyBottomBar(
+    isLastStep: Boolean,
     isPreviousVisible: Boolean,
     isNextEnabled: Boolean,
     onPreviousClicked: () -> Unit,
@@ -254,7 +265,13 @@ fun SurveyBottomBar(
                     }
                 ),
             buttonColor = Green91C747,
-            buttonText = stringResource(R.string.onboarding_survey_next),
+            buttonText = stringResource(
+                if (isLastStep) {
+                    R.string.onboarding_survey_progress_button_text_finish
+                } else {
+                    R.string.onboarding_survey_next
+                }
+            ),
             textStyle = Typography.labelSmall,
             icon = drawable.ic_arrow_next,
             enabled = isNextEnabled,

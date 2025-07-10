@@ -25,7 +25,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:model"))
     implementation(project(":core:data"))
-    implementation(project(":feature:planner"))
+    implementation(project(":feature:nutrition"))
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -41,4 +41,5 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.charty)
 }

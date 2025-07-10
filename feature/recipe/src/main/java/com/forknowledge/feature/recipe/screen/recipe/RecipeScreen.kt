@@ -113,7 +113,11 @@ fun RecipeScreen(
     }
 
     Scaffold(
-        topBar = { RecipeTopBar(onNavigateBack) },
+        topBar = {
+            RecipeTopBar(
+                showSaveButton = !isSavedRecipe,
+                onNavigateBack = { onNavigateBack() })
+        },
         bottomBar = {
             if (recipe != null && dateInMillis != 0L && mealPosition != 0) {
                 RecipeBottomBar(
@@ -177,6 +181,7 @@ fun RecipeScreen(
 
 @Composable
 fun RecipeTopBar(
+    showSaveButton: Boolean,
     onNavigateBack: () -> Unit
 ) {
     Row(
@@ -195,15 +200,17 @@ fun RecipeTopBar(
             )
         }
 
-        IconButton(
-            onClick = { /*TODO*/ },
-        ) {
-            Icon(
-                painter = painterResource(id = drawable.ic_options),
-                tint = Black374957,
-                contentDescription = null
-            )
-        }
+        /*if (showSaveButton) {
+            IconButton(
+                onClick = { *//*TODO*//* },
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_unsave),
+                    tint = Black374957,
+                    contentDescription = null
+                )
+            }
+        }*/
     }
 }
 
@@ -338,7 +345,7 @@ fun FrontLayerSection(
                     text = {
                         AppText(
                             text = stringResource(tab.title),
-                            textStyle = Typography.labelMedium
+                            textStyle = Typography.labelSmall
                         )
                     },
                     onClick = {
@@ -392,6 +399,7 @@ fun FrontLayerSection(
 @Composable
 fun RecipeTopBarPreview() {
     RecipeTopBar(
+        showSaveButton = true,
         onNavigateBack = {}
     )
 }

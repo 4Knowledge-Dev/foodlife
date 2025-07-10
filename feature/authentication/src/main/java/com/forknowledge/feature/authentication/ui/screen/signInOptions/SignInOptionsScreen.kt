@@ -71,7 +71,7 @@ fun SignInOptionScreen(
     viewModel: GoogleSignInViewModel,
     signInWithEmailClicked: () -> Unit,
     onNavigateToOnboarding: () -> Unit,
-    onNavigateToPlanner: () -> Unit
+    onNavigateToHome: () -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
@@ -98,7 +98,7 @@ fun SignInOptionScreen(
 
     when (loginState) {
         LoginResultType.SUCCESS_NEW_USER -> onNavigateToOnboarding()
-        LoginResultType.SUCCESS_OLD_USER -> onNavigateToPlanner()
+        LoginResultType.SUCCESS_OLD_USER -> onNavigateToHome()
         LoginResultType.FAIL -> {
             Toast.makeText(
                 context,

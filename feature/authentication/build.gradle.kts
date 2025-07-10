@@ -37,7 +37,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:data"))
     implementation(project(":feature:onboarding"))
-    implementation(project(":feature:planner"))
+    implementation(project(":feature:nutrition"))
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))

@@ -3,10 +3,35 @@ package com.forknowledge.core.common
 import com.forknowledge.core.common.healthtype.Goal
 import com.forknowledge.core.common.healthtype.NutrientType
 import kotlin.math.roundToInt
-import kotlin.math.roundToLong
+
+/**
+ * Calculate TDEE(Total Daily Energy Expenditure).
+ * @param gender user gender.
+ * @param weight user weight.
+ * @param height user height.
+ * @param age user age.
+ * @param activityIndex user activity index.
+ * @return TDEE.
+ */
+fun calculateTDEE(
+    gender: Boolean,
+    weight: Double,
+    height: Double,
+    age: Int,
+    activityIndex: Float,
+): Double {
+    val bmr = 10 * weight + 6.25 * height - 5 * age + if (gender) 5 else -161
+    return bmr * activityIndex
+}
 
 /**
  * Calculate target calories per day to gain or loss [weightPerWeek].
+ * @param gender user gender.
+ * @param weight user weight.
+ * @param height user height.
+ * @param age user age.
+ * @param activityIndex user activity index.
+ * @param goal user goal.
  * @param weightPerWeek weight loss/gain per week.
  * @return target calories per day.
  */
@@ -19,8 +44,7 @@ fun calculateTargetCalories(
     goal: Goal,
     weightPerWeek: Double
 ): Int {
-    val bmr = 10 * weight + 6.25 * height - 5 * age + if (gender) 5 else -161
-    val tdee = bmr * activityIndex
+    val tdee = calculateTDEE(gender, weight, height, age, activityIndex)
     return when (goal) {
         Goal.LOSE_WEIGHT -> (tdee - getDeficitOrExcessCaloriesPerDay(weightPerWeek)).toInt()
         Goal.EAT_HEALTHY -> tdee.toInt()
@@ -39,7 +63,7 @@ fun getDeficitOrExcessCaloriesPerDay(weightPerWeek: Double) = weightPerWeek / 0.
 /**
  * Calculate calories from nutrient amount.
  * @param nutrient nutrient type.
- * @param amount nutrient amount.
+ * @param amount nutrient amount(g).
  * @return calories from nutrient amount.
  */
 fun nutrientAmountToCalories(
@@ -48,7 +72,7 @@ fun nutrientAmountToCalories(
 ): Float = amount * nutrient.kcal
 
 /**
- * Calculate calories from nutrient amount.
+ * Calculate calories from nutrient amount(g).
  * @param nutrient nutrient type.
  * @param amount nutrient amount by gram.
  * @param totalCalories of the day.
@@ -61,12 +85,14 @@ fun nutrientAmountToCaloriesRatio(
 ): Float = amount * nutrient.kcal / totalCalories
 
 /**
- * Calculate nutrient amount(g) from calories.
+ * Calculate nutrient amount(g) from it's ratio.
  * @param nutrient nutrient type.
- * @param calories calories amount of the nutrient.
+ * @param totalCalories total calories of 3 nutrients carbs, protein, fat.
+ * @param ratio nutrient ratio.
  * @return nutrient amount(g) from calories.
  */
-fun caloriesToNutrientAmount(
+fun nutrientRatioToNutrientAmount(
     nutrient: NutrientType,
-    calories: Double
-): Int = (calories / nutrient.kcal).roundToInt()
+    totalCalories: Int,
+    ratio: Double
+): Int = (totalCalories * ratio / nutrient.kcal).roundToInt()

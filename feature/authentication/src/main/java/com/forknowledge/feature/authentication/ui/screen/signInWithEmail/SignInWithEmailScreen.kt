@@ -54,7 +54,7 @@ internal fun SignInWithEmailScreen(
     onBackClicked: () -> Unit,
     onNavigateToRegisterClicked: () -> Unit,
     onNavigateToOnboarding: () -> Unit,
-    onNavigateToPlanner: () -> Unit
+    onNavigateToHome: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -67,7 +67,7 @@ internal fun SignInWithEmailScreen(
 
     when (signInState) {
         LoginResultType.SUCCESS_NEW_USER -> onNavigateToOnboarding()
-        LoginResultType.SUCCESS_OLD_USER -> onNavigateToPlanner()
+        LoginResultType.SUCCESS_OLD_USER -> onNavigateToHome()
         LoginResultType.FAIL -> {
             Toast.makeText(
                 context,

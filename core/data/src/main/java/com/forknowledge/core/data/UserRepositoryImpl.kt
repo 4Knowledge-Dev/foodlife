@@ -4,11 +4,11 @@ import android.util.Log
 import androidx.datastore.core.IOException
 import com.forknowledge.core.common.AppConstant.RECIPE_NUTRIENT_CALORIES_INDEX
 import com.forknowledge.core.common.Result
-import com.forknowledge.core.common.caloriesToNutrientAmount
 import com.forknowledge.core.common.extension.endOfDay
 import com.forknowledge.core.common.extension.startOfDay
 import com.forknowledge.core.common.extension.toFirestoreDocumentIdByDate
 import com.forknowledge.core.common.healthtype.NutrientType
+import com.forknowledge.core.common.nutrientRatioToNutrientAmount
 import com.forknowledge.core.data.datasource.PreferenceDatastore
 import com.forknowledge.core.data.datatype.UserAuthState
 import com.forknowledge.core.data.model.DailyNutritionDisplayData
@@ -168,17 +168,20 @@ class UserRepositoryImpl @Inject constructor(
                             channel.trySend(
                                 TargetNutritionDisplayData(
                                     calories = targetCalories.toInt(),
-                                    carbs = caloriesToNutrientAmount(
+                                    carbs = nutrientRatioToNutrientAmount(
                                         nutrient = NutrientType.CARBOHYDRATE,
-                                        calories = targetCalories * user.targetNutrition.carbRatio
+                                        totalCalories = targetCalories.toInt(),
+                                        ratio = user.targetNutrition.carbRatio
                                     ),
-                                    protein = caloriesToNutrientAmount(
+                                    protein = nutrientRatioToNutrientAmount(
                                         nutrient = NutrientType.PROTEIN,
-                                        calories = targetCalories * user.targetNutrition.proteinRatio
+                                        totalCalories = targetCalories.toInt(),
+                                        ratio = user.targetNutrition.proteinRatio
                                     ),
-                                    fat = caloriesToNutrientAmount(
+                                    fat = nutrientRatioToNutrientAmount(
                                         nutrient = NutrientType.FAT,
-                                        calories = targetCalories * user.targetNutrition.fatRatio
+                                        totalCalories = targetCalories.toInt(),
+                                        ratio = user.targetNutrition.fatRatio
                                     ),
                                     breakfastCalories = (targetCalories * user.targetNutrition.breakfastRatio).roundToInt(),
                                     lunchCalories = (targetCalories * user.targetNutrition.lunchRatio).roundToInt(),
@@ -449,7 +452,7 @@ class UserRepositoryImpl @Inject constructor(
         awaitClose()
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun createRecipe(recipe: Recipe) = withContext(Dispatchers.IO) {
+    override suspend fun saveRecipe(recipe: Recipe) = withContext(Dispatchers.IO) {
         val docRef = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
         try {
             docRef.collection(USER_RECIPE_SUB_COLLECTION).document(recipe.recipeId.toString())
@@ -483,19 +486,21 @@ class UserRepositoryImpl @Inject constructor(
 
     override fun getSavedRecipeList() = callbackFlow {
         val docRef = firestore.collection(USER_COLLECTION).document(auth.currentUser!!.uid)
-        docRef.collection(USER_RECIPE_SUB_COLLECTION)
-            .get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful && !task.result.isEmpty) {
-                    val recipes = task.result.documents.map { snapshot ->
-                        snapshot.toObject(Recipe::class.java) ?: Recipe()
+        val listenerRegistration = docRef.collection(USER_RECIPE_SUB_COLLECTION)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e(FIREBASE_EXCEPTION, "Get data failed with ", error)
+                    channel.trySend(emptyList())
+                    return@addSnapshotListener
+                } else {
+                    val recipes = if (snapshot != null && !snapshot.isEmpty) {
+                        snapshot.documents.map { it.toObject(Recipe::class.java) ?: Recipe() }
+                    } else {
+                        emptyList()
                     }
                     channel.trySend(recipes)
-                } else {
-                    Log.e(FIREBASE_GET_DATA_EXCEPTION, "Get data failed with ", task.exception)
-                    channel.trySend(emptyList())
                 }
             }
-        awaitClose()
+        awaitClose { listenerRegistration.remove() }
     }.flowOn(Dispatchers.IO)
 }

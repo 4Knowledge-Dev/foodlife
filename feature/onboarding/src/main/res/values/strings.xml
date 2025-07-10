@@ -20,4 +20,20 @@
     <string name="onboarding_survey_birthday_placeholder">MM/DD/yyyy</string>
     <string name="onboarding_survey_date_picker_button_confirm">OK</string>
     <string name="onboarding_survey_date_picker_headline">Enter your birthday</string>
+    <string name="onboarding_survey_progress_macro_title">Your personalized calories plan is ready</string>
+    <string name="onboarding_survey_progress_title">Adjust your progress speed you want to follow</string>
+    <string name="onboarding_survey_progress_tdee_label">TDEE</string>
+    <string name="onboarding_survey_progress_calories_deficit_label">Calories deficit</string>
+    <string name="onboarding_survey_progress_calories_exceed_label">Calories exceed</string>
+    <string name="onboarding_survey_progress_calories_target_label">Calories target</string>
+    <string name="onboarding_survey_progress_text_calories">%d kcal</string>
+    <string name="onboarding_survey_progress_text_target_calories_per_week">%.1f kg/week</string>
+    <string name="onboarding_survey_progress_target_calories_per_week_note">Maximum 1 kg/week weight loss/gain is recommended for long term success!</string>
+    <string name="onboarding_survey_progress_button_text_finish">Finish</string>
+    <string name="onboarding_survey_progress_calories_unit">kcal</string>
+    <string name="onboarding_survey_progress_macro_value">%1$dg (%2$d%%)</string>
+
+    // Theory
+    <string name="onboarding_survey_progress_bottom_sheet_tdee_title">Total Daily Energy Expenditure (TDEE)</string>
+    <string name="onboarding_survey_progress_bottom_sheet_tdee_description">The total number of calories your body needs in a day to do everything — from breathing, eating, and walking to working or exercising. If you eat the same amount as your TDEE, your weight stays the same. Eating less than your TDEE helps you lose weight, while eating more makes you gain weight.</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.forknowledge.feature.nutrient
 
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavOptions
 import kotlinx.serialization.Serializable
 
@@ -35,4 +36,12 @@ data class StatisticsRoute(
 
 fun NavController.navigateToNutrient(navOptions: NavOptions? = null) {
     navigate(NutrientRoute, navOptions)
+}
+
+fun NavController.navigateToNutrientRoute() {
+    navigate(NutrientRoute) {
+        popUpTo(graph.findStartDestination().id) {
+            inclusive = true
+        }
+    }
 }

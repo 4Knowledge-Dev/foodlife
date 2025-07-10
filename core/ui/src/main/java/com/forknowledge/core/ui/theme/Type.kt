@@ -54,7 +54,7 @@ val Typography = Typography(
     ),
     titleLarge = TextStyle(
         fontFamily = openSansFamily,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 28.sp
     ),
     titleMedium = TextStyle(
@@ -64,7 +64,7 @@ val Typography = Typography(
     ),
     titleSmall = TextStyle(
         fontFamily = openSansFamily,
-        fontWeight = FontWeight.W600,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 21.sp
     ),
     displayLarge = TextStyle(
