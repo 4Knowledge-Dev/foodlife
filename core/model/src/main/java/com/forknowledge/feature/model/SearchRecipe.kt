@@ -1,11 +1,12 @@
 package com.forknowledge.feature.model
 
-import com.forknowledge.core.common.AppConstant.NUTRIENT_CALORIES_NAME
-import com.forknowledge.core.common.AppConstant.NUTRIENT_CARB_NAME
-import com.forknowledge.core.common.AppConstant.NUTRIENT_FAT_NAME
-import com.forknowledge.core.common.AppConstant.NUTRIENT_PROTEIN_NAME
 import com.forknowledge.feature.model.userdata.LogRecipe
 import kotlin.math.roundToInt
+
+const val NUTRIENT_CALORIES_NAME = "Calories"
+const val NUTRIENT_CARB_NAME = "Carbohydrates"
+const val NUTRIENT_PROTEIN_NAME = "Protein"
+const val NUTRIENT_FAT_NAME = "Fat"
 
 data class SearchRecipe(
     val id: Int,

@@ -7,6 +7,7 @@ import com.forknowledge.core.data.UserRepository
 import com.forknowledge.feature.model.userdata.UserToken
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.serialization.InternalSerializationApi
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -31,6 +32,7 @@ class GetUserTokenInteractor @Inject constructor(
         }
     }
 
+    @OptIn(InternalSerializationApi::class)
     private suspend fun getUserToken(): UserToken {
         return when (val result = userRepository.getUserTokenFromLocal()) {
             is Result.Success -> {

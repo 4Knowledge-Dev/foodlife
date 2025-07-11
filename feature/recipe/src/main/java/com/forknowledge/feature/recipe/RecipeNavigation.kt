@@ -17,9 +17,6 @@ data class RecipeRoute(
 )
 
 @Serializable
-data object NutritionImpactRoute
-
-@Serializable
 data object CreateRecipeRoute
 
 fun NavController.navigateToSavedRecipe(navOptions: NavOptions? = null) {

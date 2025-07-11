@@ -359,7 +359,7 @@ fun FrontLayerSection(
         HorizontalPager(
             modifier = Modifier.fillMaxWidth(),
             state = pagerState,
-            beyondViewportPageCount = 2,
+            beyondViewportPageCount = 1,
             verticalAlignment = Alignment.Top
         ) { pageIndex ->
             when (RecipeTab.entries[pageIndex]) {

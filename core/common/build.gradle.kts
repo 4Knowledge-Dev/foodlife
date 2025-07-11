@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -20,7 +21,11 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:model"))
+
     implementation(libs.kotlinx.coroutine)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
+    implementation(libs.androidx.navigation.component)
+    implementation(libs.kotlinx.serialization.json)
 }

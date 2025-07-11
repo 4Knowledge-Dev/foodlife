@@ -1,5 +1,7 @@
 package com.forknowledge.feature.recipe.screen.recipe
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -18,6 +21,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,7 +34,6 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
@@ -36,15 +43,20 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.forknowledge.core.ui.R.drawable
 import com.forknowledge.core.ui.theme.Black063336
+import com.forknowledge.core.ui.theme.Green70BF0C
+import com.forknowledge.core.ui.theme.Grey808993
 import com.forknowledge.core.ui.theme.Grey8A949F
 import com.forknowledge.core.ui.theme.GreyDADADA
 import com.forknowledge.core.ui.theme.GreyF4F5F5
 import com.forknowledge.core.ui.theme.GreyFAFAFA
+import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.component.AppText
 import com.forknowledge.feature.model.Nutrient
 import com.forknowledge.feature.model.Property
 import com.forknowledge.feature.recipe.R
+import com.forknowledge.feature.recipe.negativeImpact
+import com.forknowledge.feature.recipe.positiveImpact
 import com.forknowledge.feature.recipe.type.GlycemicEvaluate
 import com.forknowledge.feature.recipe.type.toGlycemicIndexEvaluate
 import com.forknowledge.feature.recipe.type.toGlycemicLoadEvaluate
@@ -77,11 +89,48 @@ fun HealthTabContent(
             glycemicLoad = properties.getOrNull(1)?.value ?: 0
         )
 
-        HealthSectionHeader(
+        AppText(
             modifier = Modifier.padding(top = 20.dp),
-            label = stringResource(R.string.recipe_health_score_nutrition_label),
-            onShowInfoClick = {}
+            text = stringResource(R.string.recipe_health_score_nutrition_with_positive_impact_label),
+            textStyle = Typography.bodyLarge,
+            color = Grey808993
         )
+
+        NutritionImpact(
+            isPositiveNutrients = true,
+            nutrition = nutrition.filter { positiveImpact.contains(it.name) }
+        )
+
+        AppText(
+            modifier = Modifier.padding(top = 20.dp),
+            text = stringResource(R.string.recipe_health_score_nutrition_with_negative_impact_label),
+            textStyle = Typography.bodyLarge,
+            color = Grey808993
+        )
+
+        NutritionImpact(
+            isPositiveNutrients = false,
+            nutrition = nutrition.filter { negativeImpact.contains(it.name) }
+        )
+
+        Row(
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            AppText(
+                text = stringResource(R.string.recipe_health_score_nutrition_label),
+                textStyle = Typography.titleSmall
+            )
+
+            AppText(
+                text = stringResource(R.string.recipe_health_score_nutrition_daily_percentage_label),
+                textStyle = Typography.bodyMedium,
+                color = Grey808993
+            )
+        }
 
         NutritionTable(
             modifier = Modifier.padding(top = 16.dp),
@@ -157,8 +206,11 @@ fun HealthScoreCard(
 
         val healthScoreEvaluate = healthScore.toHealthScoreEvaluate()
         val annotatedScore = buildAnnotatedString {
-            withStyle(SpanStyle(color = healthScoreEvaluate.color)) { append(healthScore.toString()) }
-            withStyle(SpanStyle(color = Grey8A949F)) {
+            withStyle(
+                Typography.labelMedium.copy(color = healthScoreEvaluate.color).toSpanStyle()
+            ) { append(healthScore.toString()) }
+
+            withStyle(Typography.bodyMedium.copy(color = Grey8A949F).toSpanStyle()) {
                 append(stringResource(R.string.recipe_health_score_max_point))
             }
         }
@@ -182,8 +234,7 @@ fun HealthScoreCard(
                 start.linkTo(parent.start)
                 end.linkTo(guideline)
             },
-            text = annotatedScore,
-            style = Typography.bodyLarge
+            text = annotatedScore
         )
 
         VerticalDivider(
@@ -289,6 +340,111 @@ fun GlycemicSection(
 }
 
 @Composable
+fun NutritionImpact(
+    nutrition: List<Nutrient>,
+    isPositiveNutrients: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .padding(top = 8.dp)
+            .fillMaxWidth()
+            .background(
+                color = Color.Unspecified,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clip(RoundedCornerShape(12.dp))
+            .border(
+                width = 1.dp,
+                color = GreyDADADA,
+                shape = RoundedCornerShape(12.dp)
+            )
+    ) {
+        nutrition.forEachIndexed { index, nutrient ->
+            var barValue by remember { mutableFloatStateOf(0.01f) }
+            val animatedProgress by animateFloatAsState(
+                targetValue = barValue,
+                animationSpec = tween(durationMillis = 1000)
+            )
+            LaunchedEffect(nutrient) {
+                barValue = if (nutrient.dailyPercentValue <= 80) {
+                    nutrient.dailyPercentValue.toFloat() / 100
+                } else {
+                    0.80f
+                }
+            }
+
+            ConstraintLayout(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(if (index % 2 == 0) White else GreyF4F5F5)
+                    .padding(
+                        vertical = 8.dp,
+                        horizontal = 16.dp
+                    )
+            ) {
+                val (name, amount, bar, dailyPercentage) = createRefs()
+
+                AppText(
+                    modifier = Modifier
+                        .constrainAs(name) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                        },
+                    text = nutrient.name
+                )
+
+                AppText(
+                    modifier = Modifier
+                        .constrainAs(amount) {
+                            top.linkTo(name.top)
+                            bottom.linkTo(name.bottom)
+                            start.linkTo(name.end, margin = 8.dp)
+                        },
+                    text = stringResource(
+                        R.string.recipe_health_score_nutrition_amount,
+                        nutrient.amount,
+                        nutrient.unit
+                    ),
+                    color = Grey808993
+                )
+
+                Box(
+                    modifier = Modifier
+                        .constrainAs(bar) {
+                            top.linkTo(name.bottom, margin = 4.dp)
+                            start.linkTo(parent.start)
+                        }
+                        .height(15.dp)
+                        .fillMaxWidth(animatedProgress)
+                        .background(
+                            color = if (isPositiveNutrients) Green70BF0C else RedFF4950,
+                            shape = RoundedCornerShape(
+                                topEnd = 12.dp,
+                                bottomEnd = 12.dp
+                            )
+                        )
+                )
+
+                AppText(
+                    modifier = Modifier.constrainAs(dailyPercentage) {
+                        top.linkTo(bar.top)
+                        bottom.linkTo(bar.bottom)
+                        start.linkTo(bar.end, margin = 8.dp)
+                        end.linkTo(parent.end)
+                        horizontalBias = 0f
+                    },
+                    text = stringResource(
+                        R.string.recipe_health_score_nutrition_daily_percentage_with_unit,
+                        nutrient.dailyPercentValue
+                    ),
+                    textStyle = Typography.bodyMedium
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun NutritionTable(
     modifier: Modifier = Modifier,
     nutrition: List<Nutrient>
@@ -387,6 +543,22 @@ fun HealthScoreCardPreview() {
 
 @Preview(showBackground = true)
 @Composable
+fun NutritionImpactPreview() {
+    NutritionImpact(
+        isPositiveNutrients = true,
+        nutrition = List(3) {
+            Nutrient(
+                name = "Carbs",
+                amount = 35.5f,
+                unit = "g",
+                dailyPercentValue = 100
+            )
+        }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
 fun NutritionTablePreview() {
     NutritionTable(
         nutrition = listOf(
@@ -401,6 +573,32 @@ fun NutritionTablePreview() {
                 amount = 100.5f,
                 unit = "g",
                 dailyPercentValue = 100
+            )
+        )
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HealthTabContentPreview() {
+    HealthTabContent(
+        healthScore = 69,
+        nutrition = List(3) {
+            Nutrient(
+                name = "Carbs",
+                amount = 35.5f,
+                unit = "g",
+                dailyPercentValue = 100
+            )
+        },
+        properties = listOf(
+            Property(
+                name = "Glycemic Index",
+                value = 100
+            ),
+            Property(
+                name = "Glycemic Load",
+                value = 10
             )
         )
     )
