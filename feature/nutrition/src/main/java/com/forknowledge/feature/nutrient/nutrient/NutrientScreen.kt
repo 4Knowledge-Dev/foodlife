@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.ProgressIndicatorDefaults.drawStopIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -96,6 +97,7 @@ fun NutrientScreen(
     onNavigateToLogFood: (Int, Long) -> Unit,
     onNavigateToDailyInsights: (Long) -> Unit,
     onNavigateToNutrientGroup: () -> Unit,
+    onNavigateToLoggedRecipe: (String) -> Unit,
     viewModel: NutritionViewModel = hiltViewModel()
 ) {
     val date = viewModel.date
@@ -143,9 +145,8 @@ fun NutrientScreen(
                 MealSection(
                     targetNutrition = nutrition,
                     intakeNutrition = intakeNutrition,
-                    onNavigateToLogFood = {
-                        onNavigateToLogFood(it, date.time)
-                    }
+                    onNavigateToLogFood = { onNavigateToLogFood(it, date.time) },
+                    onNavigateToLoggedRecipe = { onNavigateToLoggedRecipe(it) }
                 )
             }
         }
@@ -408,7 +409,7 @@ fun NutrientSection(
             }
         }
 
-        /*Row(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
@@ -428,9 +429,9 @@ fun NutrientSection(
                 modifier = Modifier.padding(start = 16.dp),
                 color = GreyDADADA
             )
-        }*/
+        }
 
-        /*Row(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 24.dp),
@@ -455,7 +456,7 @@ fun NutrientSection(
                 activityUnit = stringResource(R.string.nutrient_activity_calories_unit),
                 style = Typography.titleMedium
             )
-        }*/
+        }
     }
 }
 
@@ -463,7 +464,8 @@ fun NutrientSection(
 fun MealSection(
     targetNutrition: TargetNutritionDisplayData,
     intakeNutrition: NutritionDisplayData,
-    onNavigateToLogFood: (Int) -> Unit
+    onNavigateToLogFood: (Int) -> Unit,
+    onNavigateToLoggedRecipe: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -505,7 +507,8 @@ fun MealSection(
             calories = intakeNutrition.mealCalories[0],
             totalCalories = targetNutrition.breakfastCalories,
             image = R.drawable.img_breakfast,
-            onNavigateToLogFood = { onNavigateToLogFood(1) }
+            onNavigateToLogFood = { onNavigateToLogFood(1) },
+            onNavigateToLoggedRecipe = { onNavigateToLoggedRecipe(it) }
         )
 
         HorizontalDivider(
@@ -521,7 +524,8 @@ fun MealSection(
             calories = intakeNutrition.mealCalories[1],
             totalCalories = targetNutrition.lunchCalories,
             image = R.drawable.img_lunch,
-            onNavigateToLogFood = { onNavigateToLogFood(2) }
+            onNavigateToLogFood = { onNavigateToLogFood(2) },
+            onNavigateToLoggedRecipe = { onNavigateToLoggedRecipe(it) }
         )
 
         HorizontalDivider(
@@ -537,7 +541,8 @@ fun MealSection(
             calories = intakeNutrition.mealCalories[2],
             totalCalories = targetNutrition.dinnerCalories,
             image = R.drawable.img_dinner,
-            onNavigateToLogFood = { onNavigateToLogFood(3) }
+            onNavigateToLogFood = { onNavigateToLogFood(3) },
+            onNavigateToLoggedRecipe = { onNavigateToLoggedRecipe(it) }
         )
 
         HorizontalDivider(
@@ -553,7 +558,8 @@ fun MealSection(
             calories = intakeNutrition.mealCalories[3],
             totalCalories = targetNutrition.snacksCalories,
             image = R.drawable.img_snack,
-            onNavigateToLogFood = { onNavigateToLogFood(4) }
+            onNavigateToLogFood = { onNavigateToLogFood(4) },
+            onNavigateToLoggedRecipe = { onNavigateToLoggedRecipe(it) }
         )
     }
 }
@@ -697,7 +703,8 @@ fun MealCard(
     calories: Int,
     totalCalories: Int,
     @DrawableRes image: Int,
-    onNavigateToLogFood: (String) -> Unit
+    onNavigateToLogFood: (String) -> Unit,
+    onNavigateToLoggedRecipe: (String) -> Unit
 ) {
     var targetProgress by remember { mutableFloatStateOf(0F) }
     val animatedProgress by animateFloatAsState(
@@ -712,6 +719,7 @@ fun MealCard(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onNavigateToLoggedRecipe(label) }
             .padding(
                 vertical = 16.dp,
                 horizontal = 16.dp
@@ -795,7 +803,7 @@ fun MealCard(
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Preview(showBackground = true)
 @Composable
 fun DateSelectorPreview() {
     AppBarDateSelector(
@@ -838,7 +846,8 @@ fun MealSectionPreview() {
             snacksCalories = 1000
         ),
         intakeNutrition = NutritionDisplayData(),
-        onNavigateToLogFood = {}
+        onNavigateToLogFood = {},
+        onNavigateToLoggedRecipe = {}
     )
 }
 
@@ -872,6 +881,7 @@ fun MealCardPreview() {
         calories = 1500,
         totalCalories = 2000,
         image = R.drawable.img_snack,
-        onNavigateToLogFood = {}
+        onNavigateToLogFood = {},
+        onNavigateToLoggedRecipe = {}
     )
 }

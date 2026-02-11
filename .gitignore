@@ -51,3 +51,4 @@ captures/
 
 # Kotlin
 .kotlin
+/gradle/gradle-daemon-jvm.properties

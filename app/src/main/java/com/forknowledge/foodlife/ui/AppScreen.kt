@@ -43,6 +43,8 @@ import com.forknowledge.feature.nutrient.NutrientRoute
 import com.forknowledge.feature.nutrient.SearchRoute
 import com.forknowledge.feature.nutrient.StatisticsRoute
 import com.forknowledge.feature.nutrient.dailyinsights.DailyInsightsScreen
+import com.forknowledge.feature.nutrient.loggedrecipe.LoggedRecipeRoute
+import com.forknowledge.feature.nutrient.loggedrecipe.LoggedRecipeScreen
 import com.forknowledge.feature.nutrient.nutrient.NutrientScreen
 import com.forknowledge.feature.nutrient.search.SearchScreen
 import com.forknowledge.feature.nutrient.statistics.AdditionalNutritionScreen
@@ -124,6 +126,11 @@ fun AppScreen(
                     },
                     onNavigateToNutrientGroup = {
                         appState.navController.navigate(NutrientGroupRoute)
+                    },
+                    onNavigateToLoggedRecipe = { meal ->
+                        appState.navController.navigate(
+                            LoggedRecipeRoute(meal)
+                        )
                     }
                 )
             }
@@ -188,6 +195,13 @@ fun AppScreen(
                             SearchRoute(mealPosition, date)
                         )
                     },
+                    onNavigateBack = { appState.navController.popBackStack() }
+                )
+            }
+            composable<LoggedRecipeRoute> { backStackEntry ->
+                val data = backStackEntry.toRoute<LoggedRecipeRoute>()
+                LoggedRecipeScreen(
+                    meal = data.meal,
                     onNavigateBack = { appState.navController.popBackStack() }
                 )
             }

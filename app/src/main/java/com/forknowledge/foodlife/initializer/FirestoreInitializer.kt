@@ -3,10 +3,9 @@ package com.forknowledge.foodlife.initializer
 import android.content.Context
 import androidx.startup.Initializer
 import com.forknowledge.foodlife.BuildConfig
+import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestoreSettings
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
 
 class FirestoreInitializer : Initializer<FirebaseFirestore> {
 

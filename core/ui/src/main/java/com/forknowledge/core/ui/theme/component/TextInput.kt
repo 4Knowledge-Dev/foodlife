@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.forknowledge.core.ui.R.drawable
-import com.forknowledge.core.ui.theme.Green86BF3E
 import com.forknowledge.core.ui.theme.GreyA7A6A6
 import com.forknowledge.core.ui.theme.GreyB7BDC4
 import com.forknowledge.core.ui.theme.GreyEBEBEB
@@ -136,7 +135,7 @@ fun AppOutlinedTextField(
         trailingIcon = trailingIcon?.let { icon ->
             {
                 Icon(
-                    imageVector = trailingIcon,
+                    imageVector = icon,
                     contentDescription = "Select date"
                 )
             }

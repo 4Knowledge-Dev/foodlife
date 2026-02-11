@@ -1,17 +1,16 @@
-import java.util.Properties
+import com.android.build.api.dsl.LibraryExtension
 
 plugins {
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.hilt)
-    kotlin("kapt")
+    alias(libs.plugins.google.devtools.ksp)
 }
 
-android {
+configure<LibraryExtension> {
     namespace = "com.forknowledge.feature.authentication"
-    compileSdk = 35
+    compileSdk = 36
 
     buildTypes {
         release {
@@ -26,8 +25,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
+}
+
+kotlin {
+    compilerOptions {
+        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_3
     }
 }
 
@@ -51,7 +53,7 @@ dependencies {
     implementation(libs.androidx.media3.dash)
     implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.hilt)
-    kapt(libs.androidx.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
     implementation(libs.androidx.lifecycle.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(platform(libs.firebase.bom))
