@@ -17,14 +17,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.ProgressIndicatorDefaults.drawStopIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,7 +33,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,8 +50,6 @@ import com.forknowledge.core.common.extension.toDayMonthDateString
 import com.forknowledge.core.common.healthtype.NutrientType
 import com.forknowledge.core.common.nutrientAmountToCalories
 import com.forknowledge.core.common.nutrientAmountToCaloriesRatio
-import com.forknowledge.core.ui.R.drawable
-import com.forknowledge.core.ui.theme.Black374957
 import com.forknowledge.core.ui.theme.Blue05A6F1
 import com.forknowledge.core.ui.theme.Green6EA111
 import com.forknowledge.core.ui.theme.GreenA1CE50
@@ -66,6 +59,7 @@ import com.forknowledge.core.ui.theme.RedFF4950
 import com.forknowledge.core.ui.theme.Typography
 import com.forknowledge.core.ui.theme.YellowFFAE01
 import com.forknowledge.core.ui.theme.component.AppText
+import com.forknowledge.core.ui.theme.component.AppTopBar
 import com.forknowledge.core.ui.theme.component.ErrorMessage
 import com.forknowledge.core.ui.theme.component.LoadingIndicator
 import com.forknowledge.feature.model.userdata.NutrientData
@@ -149,32 +143,9 @@ fun InsightsTopBar(
     date: Date,
     onNavigateBack: () -> Unit
 ) {
-    TopAppBar(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(White)
-            .padding(horizontal = 16.dp),
-        title = {
-            AppText(
-                modifier = Modifier.padding(start = 32.dp),
-                text = date.toDayMonthDateString(),
-                textStyle = Typography.labelLarge
-            )
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = { onNavigateBack() }
-            ) {
-                Icon(
-                    painter = painterResource(drawable.ic_back),
-                    tint = Black374957,
-                    contentDescription = null
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = White
-        )
+    AppTopBar(
+        title = date.toDayMonthDateString(),
+        onNavigateBack = onNavigateBack
     )
 }
 
@@ -605,7 +576,7 @@ fun InsightsTopBarPreview() {
     )
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun DailyProgressSectionPreview() {
     DailyProgressSection(
